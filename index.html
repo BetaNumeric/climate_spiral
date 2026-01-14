@@ -24,9 +24,24 @@
             font-family: serif;
             pointer-events: auto;
             flex-shrink: 0; 
+            z-index: 25;
+            position: relative;
+            overflow: hidden;
         }
         .icon-btn:hover { background: #555; }
         .icon-btn.active { background: #555; border-color: #8b9be1; color: #8b9be1; }
+
+        .btn-icon-img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+            display: block; /* Default to show if loaded */
+        }
+        
+        .btn-text {
+            display: none; /* Hidden by default, shown via onerror */
+            line-height: 1;
+        }
 
         /* Bottom Controls Wrapper */
         #bottomWrapper {
@@ -34,21 +49,21 @@
             bottom: 20px;
             left: 20px;
             right: 20px;
-            display: flex;
-            flex-direction: row; 
-            justify-content: flex-end; 
-            align-items: center;
             pointer-events: none; 
-            gap: 15px;
             z-index: 20;
+            height: 40px; /* Explicit height for alignment */
         }
 
-        /* Timeline Container */
+        /* Timeline Container - Fluid Width */
         #timelineContainer {
-            width: 100%;
-            max-width: 600px;
+            position: absolute;
+            bottom: 0;
+            left: 0; /* Anchored left */
+            right: 160px; /* Anchored right (space for 3 buttons + gaps) */
+            height: 40px;
+            
             background: rgba(0, 0, 0, 0.8);
-            padding: 10px 15px;
+            padding: 0 15px;
             border-radius: 30px;
             border: 1px solid #333;
             display: flex;
@@ -57,24 +72,41 @@
             pointer-events: auto;
             
             /* Animation properties */
-            transition: max-width 0.5s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             overflow: hidden;
             white-space: nowrap;
+            z-index: 20;
+            box-sizing: border-box;
         }
 
         /* Collapsed State */
         #timelineContainer.collapsed {
-            max-width: 0;
             opacity: 0;
-            padding: 0 0; 
-            border-width: 0;
-            margin: 0;
+            transform: translateY(20px);
             pointer-events: none;
         }
         
         /* Hidden via Settings */
         #timelineContainer.hidden-setting {
             display: none !important;
+        }
+
+        /* Timeline Labels Responsive Logic */
+        @media (max-width: 600px) {
+            #timelineStart, #timelineEnd {
+                display: none;
+            }
+        }
+
+        /* Button Group - Anchored Right */
+        #buttonGroup {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+            z-index: 25;
         }
 
         /* Range Slider Styling */
@@ -102,13 +134,6 @@
         }
         input[type=range]:focus { outline: none; }
 
-        /* Button Group */
-        #buttonGroup {
-            display: flex;
-            gap: 10px;
-            pointer-events: auto;
-        }
-
         /* Panels (Info & Settings) */
         .panel {
             position: absolute;
@@ -120,10 +145,10 @@
             min-width: 260px;
             border: 1px solid #333;
             display: none; 
-            z-index: 25;
+            z-index: 30;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             pointer-events: auto;
-            max-height: 80vh;
+            max-height: 70vh;
             overflow-y: auto;
         }
         .panel.visible { display: block; }
@@ -317,7 +342,7 @@
         <div class="setting-row">
             <span>Interpolate Gaps</span>
             <label class="switch">
-                <input type="checkbox" id="interpolationToggle" checked>
+                <input type="checkbox" id="interpolationToggle">
                 <span class="slider-switch"></span>
             </label>
         </div>
@@ -352,7 +377,7 @@
                 <span>Coil Spacing</span>
                 <span id="spacingValue" class="slider-val">0.3</span>
             </div>
-            <input type="range" id="spacingSlider" min="0.0" max="2.0" step="0.1" value="0.3" style="width:100%;">
+            <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.3" style="width:100%;">
         </div>
 
         <!-- Speed Slider -->
@@ -377,9 +402,18 @@
 
         <!-- Buttons -->
         <div id="buttonGroup">
-            <button id="playBtn" class="icon-btn" title="Play Animation">▶</button>
-            <button id="settingsBtn" class="icon-btn">⚙</button>
-            <button id="infoBtn" class="icon-btn">i</button>
+            <button id="playBtn" class="icon-btn" title="Play Animation">
+                <img src="icons/pause.png" alt="Play" id="playIconImg" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="btn-text">❚❚</span>
+            </button>
+            <button id="settingsBtn" class="icon-btn" title="Settings">
+                <img src="icons/settings.png" alt="Settings" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="btn-text">⚙</span>
+            </button>
+            <button id="infoBtn" class="icon-btn" title="Info">
+                <img src="icons/info.png" alt="Info" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="btn-text">i</span>
+            </button>
         </div>
     </div>
 
@@ -477,6 +511,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // Auto-fetch data on load
         fetchLatestData();
         
+        // Start animation automatically
+        toggleAnimation();
+        
         animate();
 
         // --- Functions ---
@@ -557,6 +594,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Listeners
             window.addEventListener('resize', onWindowResize);
             setupUI();
+            
+            // Initial call to set correct zoom/frustum for current window size
+            onWindowResize();
         }
 
         function handleFile(file) {
@@ -565,16 +605,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 currentDataText = e.target.result; // Update source
                 updateDataVisualization();
                 
-                // Reset animation & sliders
-                isAnimating = false;
+                // Reset to start and PLAY
                 animationIndex = 0;
                 if(spiralMesh) {
-                    // Force full redraw
-                    spiralMesh.geometry.setDrawRange(0, Infinity);
-                    animationIndex = totalIndices;
-                    document.getElementById('timelineSlider').value = 100;
-                    updateTimelineState(totalIndices);
+                    spiralMesh.geometry.setDrawRange(0, 0);
+                    animationIndex = 0;
+                    document.getElementById('timelineSlider').value = 0;
+                    updateTimelineState(0);
                 }
+                
+                // Ensure it's animating
+                if (!isAnimating) toggleAnimation();
             };
             reader.readAsText(file);
         }
@@ -597,15 +638,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     currentDataText = text;
                     updateDataVisualization();
                     
-                    // Reset
-                    isAnimating = false;
+                    // Reset to start and PLAY
                     animationIndex = 0;
                     if(spiralMesh) {
-                        spiralMesh.geometry.setDrawRange(0, Infinity);
-                        animationIndex = totalIndices;
-                        document.getElementById('timelineSlider').value = 100;
-                        updateTimelineState(totalIndices);
+                        spiralMesh.geometry.setDrawRange(0, 0);
+                        animationIndex = 0;
+                        document.getElementById('timelineSlider').value = 0;
+                        updateTimelineState(0);
                     }
+                    
+                    if (!isAnimating) toggleAnimation();
                     
                     statusEl.innerText = "Success!";
                     statusEl.style.color = "#2ecc71";
@@ -817,7 +859,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Unified Toggle Logic
             helpersSwitch.addEventListener('change', (e) => {
                 const visible = e.target.checked;
-                // Removed gridHelper toggle because it's deleted
                 if(yearLabelsGroup) yearLabelsGroup.visible = visible;
                 if(monthLabelsGroup) monthLabelsGroup.visible = visible;
                 if(yearIndicatorMesh) yearIndicatorMesh.visible = visible;
@@ -916,9 +957,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function toggleAnimation() {
             isAnimating = !isAnimating;
             const playBtn = document.getElementById('playBtn');
-            
+            const playIcon = document.getElementById('playIconImg'); // img inside button
+            const playText = playBtn.querySelector('.btn-text');
+
             if (isAnimating) {
-                playBtn.innerHTML = '❚❚';
+                // Switch to Pause
+                if(playIcon) {
+                    playIcon.src = 'icons/pause.png';
+                    playIcon.alt = 'Pause';
+                }
+                playText.innerText = '❚❚';
+                
                 playBtn.classList.add('active');
                 playBtn.title = "Pause Animation";
                 
@@ -927,7 +976,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     if (spiralMesh) spiralMesh.geometry.setDrawRange(0, 0);
                 }
             } else {
-                playBtn.innerHTML = '▶';
+                // Switch to Play
+                if(playIcon) {
+                    playIcon.src = 'icons/play.png';
+                    playIcon.alt = 'Play';
+                }
+                playText.innerText = '▶';
+                
                 playBtn.classList.remove('active');
                 playBtn.title = "Play Animation";
             }
@@ -974,13 +1029,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const loader = new FontLoader();
-            
-            // Calc initial state
-            const azimuthAngle = controls.getAzimuthalAngle();
-            const polarAngle = controls.getPolarAngle();
-            const topDownThreshold = 1.2;
-            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
-            const inverseOpacity = 1 - opacityFade;
 
             months.forEach((month, index) => {
                 const angle = (index / 12) * Math.PI * 2 + CONFIG.angleOffset;
@@ -992,7 +1040,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.width = 128; 
                 canvas.height = 64;
                 ctx.fillStyle = '#666';
-                ctx.font = 'bold 32px Arial'; 
+                ctx.font = 'bold 20px Arial'; // Changed to 20px
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(month, 64, 32);
@@ -1016,10 +1064,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 mesh.rotation.x = -Math.PI / 2;
                 // Move down to floor
                 mesh.position.y = -2.0;
-                
-                // Init state
-                mesh.material.opacity = inverseOpacity;
-                mesh.rotation.z = azimuthAngle;
 
                 monthLabelsGroup.add(mesh);
             });
@@ -1128,12 +1172,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Update Legend
             document.getElementById('legendMin').innerText = currentMinAnomaly.toFixed(1) + "°C";
             document.getElementById('legendMax').innerText = "+" + currentMaxAnomaly.toFixed(1) + "°C";
-            
-            // Initial opacity/rotation vars
-            const azimuthAngle = controls.getAzimuthalAngle();
-            const polarAngle = controls.getPolarAngle();
-            const topDownThreshold = 1.2;
-            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
 
             // Second Pass: Build Geometry
             data.forEach((entry, yearIdx) => {
@@ -1162,31 +1200,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
                 if (entry.year % 10 === 0) {
                     const yearOffset = entry.year - startYearData;
-                    const y = (yearOffset) * CONFIG.heightPerYear;
-                    
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 128;
-                    canvas.height = 64;
-                    ctx.fillStyle = '#eee';
-                    ctx.font = 'bold 40px Arial';
-                    ctx.fillText(entry.year, 10, 50);
-
-                    const texture = new THREE.CanvasTexture(canvas);
-                    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
-                    const sprite = new THREE.Sprite(spriteMat);
-                    sprite.scale.set(6, 3, 1);
-                    sprite.position.set(CONFIG.radiusBase + 10, y, 0);
-                    
-                    // Init opacity
-                    sprite.material.opacity = opacityFade;
-                    
-                    yearLabels.add(sprite);
+                    addYearLabel(entry.year, (yearOffset) * CONFIG.heightPerYear, yearLabels);
                 }
             });
-            
-            // Set initial rotation
-            yearLabels.rotation.y = azimuthAngle;
             
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
             
@@ -1277,7 +1293,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             canvas.width = 128;
             canvas.height = 64;
             ctx.fillStyle = '#eee';
-            ctx.font = 'bold 40px Arial';
+            ctx.font = 'bold 32px Arial'; // Changed to 32px
             ctx.fillText(year, 10, 50);
 
             const texture = new THREE.CanvasTexture(canvas);
@@ -1298,10 +1314,19 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             perspectiveCamera.aspect = aspect;
             perspectiveCamera.updateProjectionMatrix();
 
-            orthographicCamera.left = -frustumSize * aspect / 2;
-            orthographicCamera.right = frustumSize * aspect / 2;
-            orthographicCamera.top = frustumSize / 2;
-            orthographicCamera.bottom = -frustumSize / 2;
+            // Mobile optimization: adjust zoom/frustum for portrait mode
+            let adjustedFrustum = frustumSize;
+            if (aspect < 1) {
+                // If portrait, increase view size to fit width
+                // Target width is ~45 units to fit spiral (diam ~35) + labels
+                const targetWidth = 45; 
+                adjustedFrustum = targetWidth / aspect; 
+            }
+
+            orthographicCamera.left = -adjustedFrustum * aspect / 2;
+            orthographicCamera.right = adjustedFrustum * aspect / 2;
+            orthographicCamera.top = adjustedFrustum / 2;
+            orthographicCamera.bottom = -adjustedFrustum / 2;
             orthographicCamera.updateProjectionMatrix();
         }
         
@@ -1329,6 +1354,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             requestAnimationFrame(animate);
             updateAnimation();
             controls.update();
+            renderer.render(scene, activeCamera);
             
             // Calculate opacity based on viewing angle
             const polarAngle = controls.getPolarAngle();
@@ -1387,8 +1413,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                      sprite.material.opacity = inverseOpacity * 0.6;
                  });
             }
-
-            renderer.render(scene, activeCamera);
         }
     </script>
 </body>
