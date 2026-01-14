@@ -363,7 +363,7 @@
         <!-- File Upload & Fetch -->
         <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px; flex-direction:column; align-items:flex-start; gap:10px;">
             <div style="display:flex; justify-content:space-between; width:100%;">
-                <span>Data Source</span>
+                <span>Data Source <span id="dataOrigin" style="font-size:0.75rem; color:#888; margin-left:5px;">(Init)</span></span>
                 <span id="fetchStatus" class="loading-text">Fetching...</span>
             </div>
             <div style="display:flex; gap:10px; width:100%;">
@@ -592,6 +592,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
             });
         }
+        
+        // Helper to update the Data Source Label
+        function updateSourceLabel(text) {
+            const el = document.getElementById('dataOrigin');
+            if(el) {
+                el.innerText = `(${text})`;
+                el.style.color = "#8b9be1"; // Highlight color
+            }
+        }
 
         function handleFile(file) {
             const reader = new FileReader();
@@ -599,6 +608,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 currentDataText = e.target.result; // Update source
                 updateDataVisualization();
                 resetAnimation();
+                updateSourceLabel("User File");
             };
             reader.readAsText(file);
         }
@@ -613,12 +623,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const directUrl = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt";
             const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
             
-            const onSuccess = (text) => {
+            const onSuccess = (text, sourceLabel) => {
                 currentDataText = text;
                 updateDataVisualization();
                 resetAnimation();
                 statusEl.innerText = "Success!";
                 statusEl.style.color = "#2ecc71";
+                updateSourceLabel(sourceLabel);
                 setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
             };
 
@@ -628,7 +639,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     if(!response.ok) throw new Error("Direct fetch failed");
                     return response.text();
                 })
-                .then(onSuccess)
+                .then(text => onSuccess(text, "NASA Direct"))
                 .catch(err => {
                     console.log("Direct fetch failed (likely CORS), trying proxy...", err);
                     statusEl.innerText = "Trying Proxy...";
@@ -639,7 +650,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                             if(!response.ok) throw new Error("Proxy fetch failed");
                             return response.text();
                         })
-                        .then(onSuccess)
+                        .then(text => onSuccess(text, "Via Proxy"))
                         .catch(finalErr => {
                             console.warn("All fetches failed", finalErr);
                             statusEl.innerText = "Fetch Failed";
@@ -666,13 +677,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     resetAnimation();
                     statusEl.innerText = "Local Data";
                     statusEl.style.color = "#2ecc71";
+                    updateSourceLabel("Local Data");
                     setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
                 })
                 .catch(error => {
                     console.log("Local fetch failed, using embedded data.", error);
-                    statusEl.innerText = "Embedded Data";
-                    statusEl.style.color = "#aaa";
-                    // currentDataText is already initialized to INITIAL_DATA_SOURCE
+                    statusEl.innerText = "";
+                    updateSourceLabel("Embedded Data");
                 });
         }
         
