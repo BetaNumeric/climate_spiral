@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Temperature Spiral 3D</title>
+    <title>Climate Spiral</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -373,7 +373,7 @@
                 </label>
             </div>
             <input type="file" id="fileUpload" accept=".txt" style="display:none;">
-            <p style="font-size:0.75rem; color:#888; margin:0;">"Fetch" uses a CORS proxy. For local use, drag & drop the file.</p>
+            <p style="font-size:0.75rem; color:#888; margin:0;">"Fetch" tries NASA direct/proxy. Initial load checks local.</p>
         </div>
 
         <!-- Spacing Slider -->
@@ -425,7 +425,6 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
         // --- Configuration ---
         const CONFIG = {
@@ -445,42 +444,10 @@
         };
 
         const INITIAL_DATA_SOURCE = `
-        GLOBAL Land-Ocean Temperature Index in 0.01 degrees Celsius   base period: 1951-1980
-
-                    sources:  GHCN-v4 1880-11/2025 + SST: ERSST v5 1880-11/2025
-                    using elimination of outliers and homogeneity adjustment
-                    Notes: 1950 DJF = Dec 1949 - Feb 1950 ;  ***** = missing
-
-                                                                     AnnMean
 Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year
-1880   -19  -25  -10  -17  -11  -22  -19  -11  -15  -24  -23  -18    -18 *** **** -12  -17  -21  1880
-1950   -26  -27   -8  -21  -11   -5   -9  -16  -12  -21  -34  -22    -18 -17    -24  -13  -10  -22  1950
-2000    24   56   55   56   35   40   39   42   38   26   30   28     39  40     40   49   40   32  2000
-2001    45   43   55   50   57   52   59   49   51   50   72   55     53  51     39   54   53   58  2001
-2002    77   78   88   58   64   53   61   53   64   54   58   44     63  64     70   70   56   59  2002
-2003    74   58   60   55   60   47   58   64   62   72   53   74     61  59     59   58   56   62  2003
-2004    58   72   63   61   37   44   26   45   50   61   72   50     53  55     68   53   38   61  2004
-2005    74   60   74   67   62   64   61   60   71   76   74   67     67  66     61   68   62   74  2005
-2006    56   73   63   46   48   66   54   70   65   70   73   79     64  63     65   52   63   70  2006
-2007   101   70   71   76   68   61   59   60   60   58   59   49     66  69     83   72   60   59  2007
-2008    29   38   74   54   50   49   60   46   60   67   69   53     54  54     39   59   51   65  2008
-2009    65   53   53   61   65   64   74   69   72   65   79   67     65  64     57   60   69   72  2009
-2010    74   83   92   85   75   67   63   67   63   71   81   45     72  74     75   84   66   72  2010
-2011    52   47   65   64   53   63   70   75   55   65   59   59     61  59     48   61   69   60  2011
-2012    47   48   56   73   78   65   58   66   72   79   78   52     64  65     51   69   63   76  2012
-2013    71   62   67   53   60   70   60   70   76   69   83   70     68  66     62   60   67   76  2013
-2014    76   55   78   81   86   67   58   83   88   80   67   78     75  74     67   81   69   78  2014
-2015    87   91   96   75   80   81   73   79   83  108  106  117     90  86     85   83   78   99  2015
-2016   118  136  135  109   95   81   84  101   90   87   91   86    101 104    124  113   89   90  2016
-2017   102  113  116   94   91   71   82   87   74   88   87   93     91  91    100  100   80   83  2017
-2018    82   85   88   88   81   76   83   78   80  102   83   92     85  85     86   86   79   88  2018
-2019    93   95  117  100   86   90   93   95   93  100   99  111     98  96     93  101   93   97  2019
-2020   117  124  118  112   99   91   89   86   96   87  108   79    100 103    117  110   88   97  2020
-2021    81   64   89   76   79   84   92   81   92   98   92   87     85  84     75   81   86   94  2021
-2022    91   89  104   83   84   92   94   95   89   97   73   80     89  90     89   90   94   86  2022
-2023    87   97  123   99   94  108  119  119  148  134  142  137    117 112     88  105  115  141  2023
-2024   125  144  139  131  114  120  120  129  124  132  129  127    128 129    135  128  123  128  2024
-2025   137  125  136  123  107  105  102  115  124  119  122 **** **** 120    130  122  107  122  2025
+1880   -19  -25  -10  -17  -11  -22  -19  -11  -15  -24  -23  -18    -18 *** **** -13  -17  -21  1880
+1950   -26  -27   -8  -21  -11   -5   -9  -16  -11  -20  -34  -22    -18 -17    -24  -13  -10  -22  1950
+2025   138  126  136  123  108  105  102  116  125  119  121  105    119 121    130  122  108  122  2025
 `;
 
         // --- State ---
@@ -492,6 +459,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
         let currentMinAnomaly = 0; 
+        
+        // Reused color helper to prevent GC churn
+        const _colorHelper = new THREE.Color();
         
         let currentDataText = INITIAL_DATA_SOURCE; 
         let timelineData = []; 
@@ -513,8 +483,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // Initial Draw
         updateDataVisualization();
         
-        // Auto-fetch data on load
-        fetchLatestData();
+        // Try local data fetch on start
+        loadLocalData();
         
         // Start animation automatically
         toggleAnimation();
@@ -604,65 +574,116 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             onWindowResize();
         }
 
+        // Helper to recursively dispose of objects to prevent memory leaks
+        function disposeHierarchy(obj) {
+            if (!obj) return;
+            obj.traverse((child) => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => {
+                            if(m.map) m.map.dispose();
+                            m.dispose();
+                        });
+                    } else {
+                        if(child.material.map) child.material.map.dispose();
+                        child.material.dispose();
+                    }
+                }
+            });
+        }
+
         function handleFile(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentDataText = e.target.result; // Update source
                 updateDataVisualization();
-                
-                // Reset to start and PLAY
-                animationIndex = 0;
-                if(spiralMesh) {
-                    spiralMesh.geometry.setDrawRange(0, 0);
-                    animationIndex = 0;
-                    document.getElementById('timelineSlider').value = 0;
-                    updateTimelineState(0);
-                }
-                
-                // Ensure it's animating
-                if (!isAnimating) toggleAnimation();
+                resetAnimation();
             };
             reader.readAsText(file);
         }
         
-        function fetchLatestData() {
+        // Fetch Logic for Button Click (Remote -> Proxy -> Error)
+        function fetchRemoteData() {
             const statusEl = document.getElementById('fetchStatus');
             statusEl.style.display = 'block';
-            statusEl.innerText = "Fetching...";
+            statusEl.innerText = "Fetching NASA...";
             statusEl.style.color = "#f39c12";
 
-            const url = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt";
-            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+            const directUrl = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt";
+            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
+            
+            const onSuccess = (text) => {
+                currentDataText = text;
+                updateDataVisualization();
+                resetAnimation();
+                statusEl.innerText = "Success!";
+                statusEl.style.color = "#2ecc71";
+                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+            };
 
-            fetch(proxyUrl)
+            // 1. Try Direct
+            fetch(directUrl)
                 .then(response => {
-                    if(!response.ok) throw new Error("Network response was not ok");
+                    if(!response.ok) throw new Error("Direct fetch failed");
+                    return response.text();
+                })
+                .then(onSuccess)
+                .catch(err => {
+                    console.log("Direct fetch failed (likely CORS), trying proxy...", err);
+                    statusEl.innerText = "Trying Proxy...";
+                    
+                    // 2. Try Proxy
+                    fetch(proxyUrl)
+                        .then(response => {
+                            if(!response.ok) throw new Error("Proxy fetch failed");
+                            return response.text();
+                        })
+                        .then(onSuccess)
+                        .catch(finalErr => {
+                            console.warn("All fetches failed", finalErr);
+                            statusEl.innerText = "Fetch Failed";
+                            statusEl.style.color = "#e74c3c";
+                        });
+                });
+        }
+        
+        // Fetch Logic for Page Load (Local -> Embedded Fallback)
+        function loadLocalData() {
+            const statusEl = document.getElementById('fetchStatus');
+            statusEl.style.display = 'block';
+            statusEl.innerText = "Checking local...";
+            statusEl.style.color = "#f39c12";
+
+            fetch('data/GLB.Ts+dSST.txt')
+                .then(response => {
+                    if(!response.ok) throw new Error("Local data not found");
                     return response.text();
                 })
                 .then(text => {
                     currentDataText = text;
                     updateDataVisualization();
-                    
-                    // Reset to start and PLAY
-                    animationIndex = 0;
-                    if(spiralMesh) {
-                        spiralMesh.geometry.setDrawRange(0, 0);
-                        animationIndex = 0;
-                        document.getElementById('timelineSlider').value = 0;
-                        updateTimelineState(0);
-                    }
-                    
-                    if (!isAnimating) toggleAnimation();
-                    
-                    statusEl.innerText = "Success!";
+                    resetAnimation();
+                    statusEl.innerText = "Local Data";
                     statusEl.style.color = "#2ecc71";
                     setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
                 })
                 .catch(error => {
-                    console.warn("Auto-fetch failed (likely CORS or network). Using embedded data.", error);
-                    statusEl.innerText = "Offline Mode";
+                    console.log("Local fetch failed, using embedded data.", error);
+                    statusEl.innerText = "Embedded Data";
                     statusEl.style.color = "#aaa";
+                    // currentDataText is already initialized to INITIAL_DATA_SOURCE
                 });
+        }
+        
+        function resetAnimation() {
+            animationIndex = 0;
+            if(spiralMesh) {
+                spiralMesh.geometry.setDrawRange(0, 0);
+                document.getElementById('timelineSlider').value = 0;
+                updateTimelineState(0);
+            }
+            if (!isAnimating) toggleAnimation();
         }
 
         function createYearIndicator() {
@@ -707,9 +728,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
         
         function createTemperatureGrid() {
-            if(tempGridGroup) scene.remove(tempGridGroup);
-            if(tempLabelGroup) scene.remove(tempLabelGroup);
-            if(tempVerticalGroup) scene.remove(tempVerticalGroup); 
+            // Clean up old memory
+            if(tempGridGroup) { disposeHierarchy(tempGridGroup); scene.remove(tempGridGroup); }
+            if(tempLabelGroup) { disposeHierarchy(tempLabelGroup); scene.remove(tempLabelGroup); }
+            if(tempVerticalGroup) { disposeHierarchy(tempVerticalGroup); scene.remove(tempVerticalGroup); } 
             
             tempGridGroup = new THREE.Group();
             tempLabelGroup = new THREE.Group();
@@ -831,15 +853,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getInterpolatedColor(anomaly) {
-            let color = new THREE.Color();
             if (anomaly < 0) {
                 const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
-                color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
             } else {
                 const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
-                color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
             }
-            return "#" + color.getHexString();
+            return "#" + _colorHelper.getHexString();
         }
 
         function setupUI() {
@@ -908,7 +929,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 if(e.target.files.length > 0) handleFile(e.target.files[0]);
             });
             
-            fetchBtn.addEventListener('click', fetchLatestData);
+            // Changed listener to call the new remote fetch logic
+            fetchBtn.addEventListener('click', fetchRemoteData);
 
             // Auto-Collapse Logic for Timeline (always enabled logic now)
             const showTimeline = () => {
@@ -1045,14 +1067,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function createMonthRing(radius) {
-            if (monthLabelsGroup) scene.remove(monthLabelsGroup);
+            // Clean up old memory
+            if (monthLabelsGroup) { disposeHierarchy(monthLabelsGroup); scene.remove(monthLabelsGroup); }
+            
             monthLabelsGroup = new THREE.Group();
             
             const visible = document.getElementById('helpersToggle').checked;
             monthLabelsGroup.visible = visible;
 
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const loader = new FontLoader();
             
             // Calc initial state
             const azimuthAngle = controls.getAzimuthalAngle();
@@ -1181,8 +1204,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function createSpiral(data) {
-            if (spiralMesh) scene.remove(spiralMesh);
-            if (yearLabelsGroup) scene.remove(yearLabelsGroup);
+            // Clean up old memory
+            if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
+            if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
 
             const points = [];
             const colors = [];
@@ -1226,34 +1250,21 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
                     points.push(new THREE.Vector3(x, yPos, z));
 
-                    let color = new THREE.Color();
                     if (anomaly < 0) {
                         const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
-                        color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+                        _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
                     } else {
                         const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
-                        color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                        _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
                     }
-                    colors.push(color.r, color.g, color.b);
+                    colors.push(_colorHelper.r, _colorHelper.g, _colorHelper.b);
                 });
 
                 if (entry.year % 10 === 0) {
                     const yearOffset = entry.year - startYearData;
                     const y = (yearOffset) * CONFIG.heightPerYear;
                     
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 128;
-                    canvas.height = 64;
-                    ctx.fillStyle = '#eee';
-                    ctx.font = 'bold 32px Arial'; // Changed to 32px
-                    ctx.fillText(entry.year, 10, 50);
-
-                    const texture = new THREE.CanvasTexture(canvas);
-                    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
-                    const sprite = new THREE.Sprite(spriteMat);
-                    sprite.scale.set(6, 3, 1);
-                    sprite.position.set(CONFIG.radiusBase + 10, y, 0);
+                    const sprite = addYearLabel(entry.year, y);
                     
                     // Init opacity
                     sprite.material.opacity = opacityFade;
@@ -1348,13 +1359,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
         }
 
-        function addYearLabel(year, y, group) {
+        // Helper function for creating year labels, now reused correctly
+        function addYearLabel(year, y) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 128;
             canvas.height = 64;
             ctx.fillStyle = '#eee';
-            ctx.font = 'bold 32px Arial'; // Changed to 32px
+            ctx.font = 'bold 32px Arial'; 
             ctx.fillText(year, 10, 50);
 
             const texture = new THREE.CanvasTexture(canvas);
@@ -1363,7 +1375,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             sprite.scale.set(6, 3, 1);
             
             sprite.position.set(CONFIG.radiusBase + 10, y, 0);
-            group.add(sprite);
+            return sprite;
         }
 
         function onWindowResize() {
