@@ -49,7 +49,12 @@
             bottom: 20px;
             left: 20px;
             right: 20px;
+            display: flex;
+            flex-direction: row; 
+            justify-content: flex-end; 
+            align-items: center;
             pointer-events: none; 
+            gap: 15px;
             z-index: 20;
             height: 40px; /* Explicit height for alignment */
         }
@@ -778,6 +783,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 tempVerticalGroup.add(vLabel2);
             });
             
+            // Init rotations
+            const azimuth = controls.getAzimuthalAngle();
+            const polar = controls.getPolarAngle();
+            const opacity = Math.min(1, Math.max(0, polar / 1.2));
+            const inverseOpacity = 1 - opacity;
+
+            tempLabelGroup.rotation.y = azimuth;
+            tempVerticalGroup.rotation.y = azimuth;
+            
+            // Set initial opacities
+            tempLabelGroup.children.forEach(c => c.material.opacity = inverseOpacity * 0.6);
+            tempVerticalGroup.children.forEach(c => {
+                if(c.name === "vLabel") c.material.opacity = opacity * 0.9;
+                else c.material.opacity = opacity * 0.4;
+            });
+            tempGridGroup.children.forEach(c => {
+                 if(c.material) c.material.opacity = inverseOpacity * 0.3;
+            });
+
             scene.add(tempGridGroup);
             scene.add(tempLabelGroup);
             scene.add(tempVerticalGroup);
@@ -1029,6 +1053,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const loader = new FontLoader();
+            
+            // Calc initial state
+            const azimuthAngle = controls.getAzimuthalAngle();
+            const polarAngle = controls.getPolarAngle();
+            const topDownThreshold = 1.2;
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const inverseOpacity = 1 - opacityFade;
 
             months.forEach((month, index) => {
                 const angle = (index / 12) * Math.PI * 2 + CONFIG.angleOffset;
@@ -1064,6 +1095,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 mesh.rotation.x = -Math.PI / 2;
                 // Move down to floor
                 mesh.position.y = -2.0;
+                
+                // Init state
+                mesh.material.opacity = inverseOpacity;
+                mesh.rotation.z = azimuthAngle;
 
                 monthLabelsGroup.add(mesh);
             });
@@ -1172,8 +1207,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Update Legend
             document.getElementById('legendMin').innerText = currentMinAnomaly.toFixed(1) + "°C";
             document.getElementById('legendMax').innerText = "+" + currentMaxAnomaly.toFixed(1) + "°C";
+            
+            // Initial opacity/rotation vars
+            const azimuthAngle = controls.getAzimuthalAngle();
+            const polarAngle = controls.getPolarAngle();
+            const topDownThreshold = 1.2;
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
 
-            // Second Pass: Build Geometry
             data.forEach((entry, yearIdx) => {
                 entry.anomalies.forEach((anomaly, monthIdx) => {
                     const angle = (monthIdx / 12) * Math.PI * 2 + CONFIG.angleOffset;
@@ -1186,7 +1226,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
                     points.push(new THREE.Vector3(x, yPos, z));
 
-                    // Dynamic Color Mapping
                     let color = new THREE.Color();
                     if (anomaly < 0) {
                         const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
@@ -1200,9 +1239,31 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
                 if (entry.year % 10 === 0) {
                     const yearOffset = entry.year - startYearData;
-                    addYearLabel(entry.year, (yearOffset) * CONFIG.heightPerYear, yearLabels);
+                    const y = (yearOffset) * CONFIG.heightPerYear;
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 128;
+                    canvas.height = 64;
+                    ctx.fillStyle = '#eee';
+                    ctx.font = 'bold 32px Arial'; // Changed to 32px
+                    ctx.fillText(entry.year, 10, 50);
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                    const sprite = new THREE.Sprite(spriteMat);
+                    sprite.scale.set(6, 3, 1);
+                    sprite.position.set(CONFIG.radiusBase + 10, y, 0);
+                    
+                    // Init opacity
+                    sprite.material.opacity = opacityFade;
+                    
+                    yearLabels.add(sprite);
                 }
             });
+            
+            // Set initial rotation
+            yearLabels.rotation.y = azimuthAngle;
             
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
             
@@ -1354,7 +1415,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             requestAnimationFrame(animate);
             updateAnimation();
             controls.update();
-            renderer.render(scene, activeCamera);
             
             // Calculate opacity based on viewing angle
             const polarAngle = controls.getPolarAngle();
@@ -1413,6 +1473,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                      sprite.material.opacity = inverseOpacity * 0.6;
                  });
             }
+
+            renderer.render(scene, activeCamera);
         }
     </script>
 </body>
