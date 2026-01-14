@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Temperature Spiral 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Icons */
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            font-family: serif;
+            pointer-events: auto;
+            flex-shrink: 0; 
+        }
+        .icon-btn:hover { background: #555; }
+        .icon-btn.active { background: #555; border-color: #8b9be1; color: #8b9be1; }
+
+        /* Bottom Controls Wrapper */
+        #bottomWrapper {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: row; 
+            justify-content: flex-end; 
+            align-items: center;
+            pointer-events: none; 
+            gap: 15px;
+            z-index: 20;
+        }
+
+        /* Timeline Container */
+        #timelineContainer {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            pointer-events: auto;
+            
+            /* Animation properties */
+            transition: max-width 0.5s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        /* Collapsed State */
+        #timelineContainer.collapsed {
+            max-width: 0;
+            opacity: 0;
+            padding: 0 0; 
+            border-width: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+        
+        /* Hidden via Settings */
+        #timelineContainer.hidden-setting {
+            display: none !important;
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #555;
+            border-radius: 2px;
+        }
+        input[type=range]:focus { outline: none; }
+
+        /* Button Group */
+        #buttonGroup {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        /* Panels (Info & Settings) */
+        .panel {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 260px;
+            border: 1px solid #333;
+            display: none; 
+            z-index: 25;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .panel.visible { display: block; }
+
+        /* Typography */
+        h1, h2 { margin: 0 0 15px 0; font-size: 1.2rem; color: #ff9999; }
+        h2 { color: #8b9be1; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        p { font-size: 0.9rem; color: #ccc; margin-bottom: 8px; }
+        a { color: #8b9be1; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Legend */
+        .legend {
+            margin-top: 15px;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to right, #0000ff, #8888ff, #ffffff, #ff8888, #ff0000);
+            border-radius: 2px;
+        }
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Close Button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-btn:hover { color: white; }
+
+        /* Settings Toggle Rows */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+        
+        /* Toggle Switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            margin-left: 10px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-switch {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444;
+            transition: .3s;
+            border-radius: 20px;
+        }
+        .slider-switch:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #aaa;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-switch { background-color: #2196F3; }
+        input:checked + .slider-switch:before { 
+            transform: translateX(16px); 
+            background-color: white;
+        }
+        
+        /* Slider Labels */
+        .slider-label {
+            display:flex; 
+            justify-content:space-between; 
+            width:100%; 
+            margin-bottom:5px; 
+            font-size:0.9rem;
+        }
+        .slider-val {
+            color:#8b9be1; 
+            font-size:0.8rem;
+        }
+        
+        /* Upload Button */
+        .upload-label {
+            background: #444;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: 1px solid #555;
+            transition: background 0.2s;
+        }
+        .upload-label:hover { background: #555; }
+        
+        .loading-text {
+            color: #f39c12;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        /* Drag Overlay */
+        #dragOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            z-index: 1000;
+            pointer-events: none;
+            border: 4px dashed #8b9be1;
+        }
+
+    </style>
+    <!-- Load Three.js from CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="dragOverlay">Drop Data File Here</div>
+
+    <!-- Info Box -->
+    <div id="infoPanel" class="panel">
+        <button class="close-btn" data-target="infoPanel">×</button>
+        <h1>Climate Spiral</h1>
+        <p>1880 - Present</p>
+        <p>Radius = Temp Anomaly</p>
+        <p>Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a></p>
+        <div class="legend"></div>
+        <div class="legend-labels">
+            <span id="legendMin">-1.0°C</span>
+            <span>0°C</span>
+            <span id="legendMax">+1.0°C</span>
+        </div>
+    </div>
+
+    <!-- Settings Box -->
+    <div id="settingsPanel" class="panel">
+        <button class="close-btn" data-target="settingsPanel">×</button>
+        <h2>Settings</h2>
+        
+        <div class="setting-row">
+            <span>Orthographic View</span>
+            <label class="switch">
+                <input type="checkbox" id="orthoToggle" checked>
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+        
+        <div class="setting-row">
+            <span>Free Camera</span>
+            <label class="switch">
+                <input type="checkbox" id="freeCameraToggle">
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+        
+        <div class="setting-row">
+            <span>Show Helpers</span>
+            <label class="switch">
+                <input type="checkbox" id="helpersToggle" checked>
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <span>Interpolate Gaps</span>
+            <label class="switch">
+                <input type="checkbox" id="interpolationToggle" checked>
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <span>Smooth Spiral</span>
+            <label class="switch">
+                <input type="checkbox" id="smoothSpiralToggle" checked>
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+        
+        <!-- File Upload & Fetch -->
+        <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px; flex-direction:column; align-items:flex-start; gap:10px;">
+            <div style="display:flex; justify-content:space-between; width:100%;">
+                <span>Data Source</span>
+                <span id="fetchStatus" class="loading-text">Fetching...</span>
+            </div>
+            <div style="display:flex; gap:10px; width:100%;">
+                <button id="fetchBtn" class="upload-label" style="flex:1; border:1px solid #555; background:#3b4cc0;">Fetch Latest</button>
+                <label for="fileUpload" class="upload-label" style="flex:1; text-align:center;">
+                    Load .txt
+                </label>
+            </div>
+            <input type="file" id="fileUpload" accept=".txt" style="display:none;">
+            <p style="font-size:0.75rem; color:#888; margin:0;">"Fetch" uses a CORS proxy. For local use, drag & drop the file.</p>
+        </div>
+
+        <!-- Spacing Slider -->
+        <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+            <div class="slider-label">
+                <span>Coil Spacing</span>
+                <span id="spacingValue" class="slider-val">0.3</span>
+            </div>
+            <input type="range" id="spacingSlider" min="0.0" max="2.0" step="0.1" value="0.3" style="width:100%;">
+        </div>
+
+        <!-- Speed Slider -->
+        <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+            <div class="slider-label">
+                <span>Animation Speed</span>
+                <span id="speedValue" class="slider-val">1x</span>
+            </div>
+            <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1" style="width:100%;">
+        </div>
+    </div>
+
+    <!-- Bottom Wrapper -->
+    <div id="bottomWrapper">
+        
+        <!-- Timeline Slider (Collapsed by default) -->
+        <div id="timelineContainer" class="collapsed">
+            <span style="font-size:0.8rem; color:#aaa; min-width:35px;" id="timelineStart">1880</span>
+            <input type="range" id="timelineSlider" min="0" max="100" value="0" step="0.1">
+            <span style="font-size:0.8rem; color:#aaa; min-width:35px;" id="timelineEnd">2025</span>
+        </div>
+
+        <!-- Buttons -->
+        <div id="buttonGroup">
+            <button id="playBtn" class="icon-btn" title="Play Animation">▶</button>
+            <button id="settingsBtn" class="icon-btn">⚙</button>
+            <button id="infoBtn" class="icon-btn">i</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+
+        // --- Configuration ---
+        const CONFIG = {
+            radiusBase: 10,       
+            radiusScale: 5,       
+            heightPerYear: 0.3, 
+            tubeRadius: 0.15,
+            tubularSegments: 3000, 
+            radialSegments: 8,
+            frustumSize: 60,      
+            colors: {
+                cold: new THREE.Color(0x0000ff), // Vivid Blue
+                neutral: new THREE.Color(0xffffff), // Pure white
+                hot: new THREE.Color(0xff0000)   // Vivid Red
+            },
+            angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
+        };
+
+        const INITIAL_DATA_SOURCE = `
+        GLOBAL Land-Ocean Temperature Index in 0.01 degrees Celsius   base period: 1951-1980
+
+                    sources:  GHCN-v4 1880-11/2025 + SST: ERSST v5 1880-11/2025
+                    using elimination of outliers and homogeneity adjustment
+                    Notes: 1950 DJF = Dec 1949 - Feb 1950 ;  ***** = missing
+
+                                                                     AnnMean
+Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year
+1880   -19  -25  -10  -17  -11  -22  -19  -11  -15  -24  -23  -18    -18 *** **** -12  -17  -21  1880
+1950   -26  -27   -8  -21  -11   -5   -9  -16  -12  -21  -34  -22    -18 -17    -24  -13  -10  -22  1950
+2000    24   56   55   56   35   40   39   42   38   26   30   28     39  40     40   49   40   32  2000
+2001    45   43   55   50   57   52   59   49   51   50   72   55     53  51     39   54   53   58  2001
+2002    77   78   88   58   64   53   61   53   64   54   58   44     63  64     70   70   56   59  2002
+2003    74   58   60   55   60   47   58   64   62   72   53   74     61  59     59   58   56   62  2003
+2004    58   72   63   61   37   44   26   45   50   61   72   50     53  55     68   53   38   61  2004
+2005    74   60   74   67   62   64   61   60   71   76   74   67     67  66     61   68   62   74  2005
+2006    56   73   63   46   48   66   54   70   65   70   73   79     64  63     65   52   63   70  2006
+2007   101   70   71   76   68   61   59   60   60   58   59   49     66  69     83   72   60   59  2007
+2008    29   38   74   54   50   49   60   46   60   67   69   53     54  54     39   59   51   65  2008
+2009    65   53   53   61   65   64   74   69   72   65   79   67     65  64     57   60   69   72  2009
+2010    74   83   92   85   75   67   63   67   63   71   81   45     72  74     75   84   66   72  2010
+2011    52   47   65   64   53   63   70   75   55   65   59   59     61  59     48   61   69   60  2011
+2012    47   48   56   73   78   65   58   66   72   79   78   52     64  65     51   69   63   76  2012
+2013    71   62   67   53   60   70   60   70   76   69   83   70     68  66     62   60   67   76  2013
+2014    76   55   78   81   86   67   58   83   88   80   67   78     75  74     67   81   69   78  2014
+2015    87   91   96   75   80   81   73   79   83  108  106  117     90  86     85   83   78   99  2015
+2016   118  136  135  109   95   81   84  101   90   87   91   86    101 104    124  113   89   90  2016
+2017   102  113  116   94   91   71   82   87   74   88   87   93     91  91    100  100   80   83  2017
+2018    82   85   88   88   81   76   83   78   80  102   83   92     85  85     86   86   79   88  2018
+2019    93   95  117  100   86   90   93   95   93  100   99  111     98  96     93  101   93   97  2019
+2020   117  124  118  112   99   91   89   86   96   87  108   79    100 103    117  110   88   97  2020
+2021    81   64   89   76   79   84   92   81   92   98   92   87     85  84     75   81   86   94  2021
+2022    91   89  104   83   84   92   94   95   89   97   73   80     89  90     89   90   94   86  2022
+2023    87   97  123   99   94  108  119  119  148  134  142  137    117 112     88  105  115  141  2023
+2024   125  144  139  131  114  120  120  129  124  132  129  127    128 129    135  128  123  128  2024
+2025   137  125  136  123  107  105  102  115  124  119  122 **** **** 120    130  122  107  122  2025
+`;
+
+        // --- State ---
+        let scene, renderer, controls;
+        let perspectiveCamera, orthographicCamera, activeCamera;
+        let spiralMesh, yearLabelsGroup, monthLabelsGroup; 
+        let tempGridGroup, tempLabelGroup, tempVerticalGroup; 
+        let yearIndicatorMesh, yearIndicatorTexture, yearIndicatorContext;
+        let spiralHeight = 0; 
+        let currentMaxAnomaly = 0;
+        let currentMinAnomaly = 0; 
+        
+        let currentDataText = INITIAL_DATA_SOURCE; 
+        let timelineData = []; 
+        
+        // Animation State
+        let isAnimating = false;
+        let animationIndex = 0;
+        let totalIndices = 0;
+        let startYear = 1880;
+        let endYear = 2025; 
+        let animationSpeed = 1;
+        
+        // UI State
+        let timelineTimeout;
+
+        // --- Initialization ---
+        init();
+        
+        // Initial Draw
+        updateDataVisualization();
+        
+        // Auto-fetch data on load
+        fetchLatestData();
+        
+        animate();
+
+        // --- Functions ---
+
+        function init() {
+            scene = new THREE.Scene();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            // Cameras
+            const aspect = window.innerWidth / window.innerHeight;
+            perspectiveCamera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
+            
+            const frustumSize = CONFIG.frustumSize;
+            orthographicCamera = new THREE.OrthographicCamera(
+                frustumSize * aspect / -2,
+                frustumSize * aspect / 2,
+                frustumSize / 2,
+                frustumSize / -2,
+                1,
+                2000
+            );
+            
+            // Set initial position for Ortho (Top Down)
+            orthographicCamera.position.set(0, 200, 0);
+            orthographicCamera.lookAt(0, 0, 0);
+            
+            // Sync perspective start pos
+            perspectiveCamera.position.copy(orthographicCamera.position);
+
+            activeCamera = orthographicCamera;
+
+            // Controls
+            controls = new OrbitControls(activeCamera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = false;
+            // Lock camera to prevent looking from below ground
+            controls.maxPolarAngle = Math.PI / 2; 
+            controls.target.set(0, 0, 0); 
+            controls.enablePan = false; // Restricted by default
+
+            // Lights - Increased intensity for "White" look
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); 
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 1.2);
+            pointLight.position.set(0, 50, 0);
+            scene.add(pointLight);
+
+            // Year Indicator (3D Mesh)
+            createYearIndicator();
+            
+            // Temp Grid (Static Circles)
+            createTemperatureGrid();
+
+            // Drag and Drop
+            const dragOverlay = document.getElementById('dragOverlay');
+            document.body.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dragOverlay.style.display = 'flex';
+            });
+            document.body.addEventListener('dragleave', (e) => {
+                // simple check to avoid flicker when dragging over children
+                if(e.clientX === 0 && e.clientY === 0) {
+                    dragOverlay.style.display = 'none';
+                }
+            });
+            document.body.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dragOverlay.style.display = 'none';
+                const file = e.dataTransfer.files[0];
+                if (file) handleFile(file);
+            });
+
+            // Listeners
+            window.addEventListener('resize', onWindowResize);
+            setupUI();
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentDataText = e.target.result; // Update source
+                updateDataVisualization();
+                
+                // Reset animation & sliders
+                isAnimating = false;
+                animationIndex = 0;
+                if(spiralMesh) {
+                    // Force full redraw
+                    spiralMesh.geometry.setDrawRange(0, Infinity);
+                    animationIndex = totalIndices;
+                    document.getElementById('timelineSlider').value = 100;
+                    updateTimelineState(totalIndices);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function fetchLatestData() {
+            const statusEl = document.getElementById('fetchStatus');
+            statusEl.style.display = 'block';
+            statusEl.innerText = "Fetching...";
+            statusEl.style.color = "#f39c12";
+
+            const url = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt";
+            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+
+            fetch(proxyUrl)
+                .then(response => {
+                    if(!response.ok) throw new Error("Network response was not ok");
+                    return response.text();
+                })
+                .then(text => {
+                    currentDataText = text;
+                    updateDataVisualization();
+                    
+                    // Reset
+                    isAnimating = false;
+                    animationIndex = 0;
+                    if(spiralMesh) {
+                        spiralMesh.geometry.setDrawRange(0, Infinity);
+                        animationIndex = totalIndices;
+                        document.getElementById('timelineSlider').value = 100;
+                        updateTimelineState(totalIndices);
+                    }
+                    
+                    statusEl.innerText = "Success!";
+                    statusEl.style.color = "#2ecc71";
+                    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+                })
+                .catch(error => {
+                    console.warn("Auto-fetch failed (likely CORS or network). Using embedded data.", error);
+                    statusEl.innerText = "Offline Mode";
+                    statusEl.style.color = "#aaa";
+                });
+        }
+
+        function createYearIndicator() {
+            // Create a canvas for the text
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            yearIndicatorContext = canvas.getContext('2d');
+            
+            yearIndicatorTexture = new THREE.CanvasTexture(canvas);
+            
+            // Use MeshBasicMaterial for a flat plane look
+            const material = new THREE.MeshBasicMaterial({ 
+                map: yearIndicatorTexture, 
+                transparent: true,
+                opacity: 0.9,
+                side: THREE.DoubleSide
+            });
+            
+            // Plane geometry instead of Sprite
+            const geometry = new THREE.PlaneGeometry(10, 5); // further reduced
+            yearIndicatorMesh = new THREE.Mesh(geometry, material);
+            
+            // Lay flat on XZ plane
+            yearIndicatorMesh.rotation.x = -Math.PI / 2;
+            yearIndicatorMesh.position.set(0, 0.1, 0);
+            
+            scene.add(yearIndicatorMesh);
+            updateYearIndicatorText("1880", "#444444");
+        }
+
+        function updateYearIndicatorText(text, color = "#444444") {
+            if (!yearIndicatorContext) return;
+            const ctx = yearIndicatorContext;
+            ctx.clearRect(0, 0, 512, 256);
+            ctx.fillStyle = color; 
+            ctx.font = 'bold 180px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 256, 128);
+            yearIndicatorTexture.needsUpdate = true;
+        }
+        
+        function createTemperatureGrid() {
+            if(tempGridGroup) scene.remove(tempGridGroup);
+            if(tempLabelGroup) scene.remove(tempLabelGroup);
+            if(tempVerticalGroup) scene.remove(tempVerticalGroup); 
+            
+            tempGridGroup = new THREE.Group();
+            tempLabelGroup = new THREE.Group();
+            tempVerticalGroup = new THREE.Group();
+            
+            const temps = [0, 1, -1];
+            
+            temps.forEach(temp => {
+                const r = CONFIG.radiusBase + (temp * CONFIG.radiusScale);
+                const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
+                const points = curve.getPoints(64);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({ color: 0x666666, transparent:true, opacity:0.3 });
+                
+                const ring = new THREE.LineLoop(geometry, material);
+                ring.rotation.x = -Math.PI / 2;
+                ring.position.y = -2.0; // Lowered to floor
+                tempGridGroup.add(ring);
+                
+                // Label (Flat on ground)
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 128; 
+                canvas.height = 64;
+                ctx.fillStyle = '#888';
+                ctx.font = 'bold 30px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const labelText = temp > 0 ? `+${temp}°C` : `${temp}°C`;
+                ctx.fillText(labelText, 64, 32);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                // FLAT MESH for ground label
+                const meshMat = new THREE.MeshBasicMaterial({ map: texture, transparent:true, opacity:0.6, side: THREE.DoubleSide });
+                const geometryPlane = new THREE.PlaneGeometry(4, 2);
+                const mesh = new THREE.Mesh(geometryPlane, meshMat);
+                
+                // Position on ring
+                const labelAngle = Math.PI / 4; 
+                mesh.position.set(Math.cos(labelAngle)*r, -1.9, Math.sin(labelAngle)*r); // Just above floor
+                mesh.rotation.x = -Math.PI / 2; // Flat on ground
+                
+                tempLabelGroup.add(mesh);
+
+                // --- Vertical Line (Helper) ---
+                const vertGeo = new THREE.CylinderGeometry(0.03, 0.03, 1, 8); // height 1, scaled later
+                const vertMat = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0 }); // Start hidden
+                
+                // Right side (+X)
+                const v1 = new THREE.Mesh(vertGeo, vertMat.clone());
+                v1.position.set(r, 0.5, 0);
+                tempVerticalGroup.add(v1);
+                
+                // Labels for verticals (Top) - Changed to SPRITES
+                const vSpriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
+                const vLabel = new THREE.Sprite(vSpriteMat);
+                vLabel.scale.set(4, 2, 1);
+                vLabel.position.set(r, 1, 0);
+                vLabel.name = "vLabel";
+                tempVerticalGroup.add(vLabel);
+
+                // Left side (-X)
+                const v2 = new THREE.Mesh(vertGeo, vertMat.clone());
+                v2.position.set(-r, 0.5, 0);
+                tempVerticalGroup.add(v2);
+                
+                const vLabel2 = new THREE.Sprite(vSpriteMat.clone());
+                vLabel2.scale.set(4, 2, 1);
+                vLabel2.position.set(-r, 1, 0);
+                vLabel2.name = "vLabel";
+                tempVerticalGroup.add(vLabel2);
+            });
+            
+            scene.add(tempGridGroup);
+            scene.add(tempLabelGroup);
+            scene.add(tempVerticalGroup);
+        }
+
+        function updateTemperatureVerticals(height) {
+            if(!tempVerticalGroup) return;
+            
+            // We want vertical lines to start at grid level (-2.0) and go up to height
+            // Let's add a small buffer at top
+            const gridLevel = -2.0;
+            const topLevel = height + 2.0;
+            const totalLength = topLevel - gridLevel; // e.g. (30 + 2) - (-2) = 34
+            
+            const centerY = gridLevel + (totalLength / 2);
+
+            tempVerticalGroup.children.forEach(child => {
+                if (child.name === "vLabel") {
+                    // Place label at the top of the line
+                    child.position.y = topLevel + 1.0; 
+                } else {
+                    // It's a line cylinder
+                    child.scale.y = totalLength;
+                    child.position.y = centerY;
+                }
+            });
+        }
+
+        function getInterpolatedColor(anomaly) {
+            let color = new THREE.Color();
+            if (anomaly < 0) {
+                const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
+                color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+            } else {
+                const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
+                color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+            }
+            return "#" + color.getHexString();
+        }
+
+        function setupUI() {
+            const toggleBtn = document.getElementById('infoBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const playBtn = document.getElementById('playBtn');
+            const infoPanel = document.getElementById('infoPanel');
+            const settingsPanel = document.getElementById('settingsPanel');
+            
+            const orthoSwitch = document.getElementById('orthoToggle');
+            const helpersSwitch = document.getElementById('helpersToggle'); // Consolidated Toggle
+            const interpSwitch = document.getElementById('interpolationToggle');
+            const smoothSpiralSwitch = document.getElementById('smoothSpiralToggle');
+            const freeCamSwitch = document.getElementById('freeCameraToggle'); // New
+            const fileInput = document.getElementById('fileUpload');
+            const fetchBtn = document.getElementById('fetchBtn');
+            
+            const speedSlider = document.getElementById('speedSlider');
+            const timelineSlider = document.getElementById('timelineSlider');
+            const spacingSlider = document.getElementById('spacingSlider');
+            
+            const timelineContainer = document.getElementById('timelineContainer');
+            const buttonGroup = document.getElementById('buttonGroup');
+
+            toggleBtn.addEventListener('click', () => {
+                infoPanel.classList.toggle('visible');
+                settingsPanel.classList.remove('visible');
+            });
+            settingsBtn.addEventListener('click', () => {
+                settingsPanel.classList.toggle('visible');
+                infoPanel.classList.remove('visible');
+            });
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.getElementById(e.target.dataset.target).classList.remove('visible');
+                });
+            });
+
+            orthoSwitch.addEventListener('change', (e) => switchCamera(e.target.checked));
+            
+            // Unified Toggle Logic
+            helpersSwitch.addEventListener('change', (e) => {
+                const visible = e.target.checked;
+                // Removed gridHelper toggle because it's deleted
+                if(yearLabelsGroup) yearLabelsGroup.visible = visible;
+                if(monthLabelsGroup) monthLabelsGroup.visible = visible;
+                if(yearIndicatorMesh) yearIndicatorMesh.visible = visible;
+                if(tempGridGroup) tempGridGroup.visible = visible;
+                if(tempLabelGroup) tempLabelGroup.visible = visible;
+                if(tempVerticalGroup) tempVerticalGroup.visible = visible;
+            });
+            
+            interpSwitch.addEventListener('change', updateDataVisualization);
+            smoothSpiralSwitch.addEventListener('change', updateDataVisualization);
+            
+            freeCamSwitch.addEventListener('change', (e) => {
+                const isFree = e.target.checked;
+                controls.enablePan = isFree;
+                controls.maxPolarAngle = isFree ? Math.PI : Math.PI / 2;
+                if (!isFree) {
+                    controls.target.set(0, spiralHeight / 2, 0); // Snap back to center
+                    controls.update();
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if(e.target.files.length > 0) handleFile(e.target.files[0]);
+            });
+            
+            fetchBtn.addEventListener('click', fetchLatestData);
+
+            // Auto-Collapse Logic for Timeline (always enabled logic now)
+            const showTimeline = () => {
+                clearTimeout(timelineTimeout);
+                const containerEl = document.getElementById('timelineContainer');
+                if(containerEl) containerEl.classList.remove('collapsed');
+            };
+            
+            const hideTimeline = () => {
+                clearTimeout(timelineTimeout);
+                timelineTimeout = setTimeout(() => {
+                    const containerEl = document.getElementById('timelineContainer');
+                    if(containerEl) containerEl.classList.add('collapsed');
+                }, 2000);
+            };
+            
+            const timelineContainerEl = document.getElementById('timelineContainer');
+
+            buttonGroup.addEventListener('mouseenter', showTimeline);
+            timelineContainerEl.addEventListener('mouseenter', showTimeline);
+            buttonGroup.addEventListener('mouseleave', hideTimeline);
+            timelineContainerEl.addEventListener('mouseleave', hideTimeline);
+            hideTimeline();
+
+            playBtn.addEventListener('click', toggleAnimation);
+            
+            speedSlider.addEventListener('input', (e) => {
+                animationSpeed = parseFloat(e.target.value);
+                document.getElementById('speedValue').innerText = animationSpeed + 'x';
+            });
+
+            timelineSlider.addEventListener('input', (e) => {
+                showTimeline(); 
+                if (isAnimating) toggleAnimation(); 
+                
+                const percent = parseFloat(e.target.value);
+                animationIndex = Math.floor((percent / 100) * totalIndices);
+                if(spiralMesh) spiralMesh.geometry.setDrawRange(0, animationIndex);
+                
+                updateTimelineState(animationIndex);
+            });
+            
+            spacingSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                CONFIG.heightPerYear = val;
+                document.getElementById('spacingValue').innerText = val.toFixed(1);
+                updateDataVisualization(); 
+            });
+        }
+
+        function updateTimelineState(index) {
+            const progress = index / totalIndices;
+            const currentYear = Math.floor(startYear + progress * (endYear - startYear));
+            
+            let color = "#444444";
+            const yearData = timelineData.find(d => d.year === currentYear);
+            if(yearData) {
+                const avg = yearData.anomalies.reduce((a,b)=>a+b,0) / yearData.anomalies.length;
+                color = getInterpolatedColor(avg);
+            }
+            updateYearIndicatorText(currentYear, color);
+            
+            // Move Year Indicator up with spiral
+            const yearOffset = currentYear - startYear;
+            if (yearIndicatorMesh) {
+                yearIndicatorMesh.position.y = (yearOffset * CONFIG.heightPerYear) + 2; 
+            }
+        }
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            const playBtn = document.getElementById('playBtn');
+            
+            if (isAnimating) {
+                playBtn.innerHTML = '❚❚';
+                playBtn.classList.add('active');
+                playBtn.title = "Pause Animation";
+                
+                if (animationIndex >= totalIndices) {
+                    animationIndex = 0;
+                    if (spiralMesh) spiralMesh.geometry.setDrawRange(0, 0);
+                }
+            } else {
+                playBtn.innerHTML = '▶';
+                playBtn.classList.remove('active');
+                playBtn.title = "Play Animation";
+            }
+        }
+
+        function switchCamera(isOrtho) {
+            const target = controls.target.clone();
+            const prevPos = activeCamera.position.clone();
+            const prevRot = activeCamera.rotation.clone();
+
+            activeCamera = isOrtho ? orthographicCamera : perspectiveCamera;
+            
+            activeCamera.position.copy(prevPos);
+            activeCamera.rotation.copy(prevRot);
+            
+            controls.object = activeCamera;
+            controls.target.copy(target); 
+            controls.update();
+        }
+
+        function updateDataVisualization() {
+            const shouldInterpolate = document.getElementById('interpolationToggle').checked;
+            const processedData = parseGISSData(currentDataText, shouldInterpolate);
+            timelineData = processedData; 
+            
+            if (processedData.length > 0) {
+                startYear = processedData[0].year;
+                endYear = processedData[processedData.length - 1].year;
+                document.getElementById('timelineStart').innerText = startYear;
+                document.getElementById('timelineEnd').innerText = endYear;
+            }
+
+            createSpiral(processedData);
+            // Reduced buffer to +1
+            createMonthRing(CONFIG.radiusBase + (currentMaxAnomaly * CONFIG.radiusScale) + 1); 
+        }
+
+        function createMonthRing(radius) {
+            if (monthLabelsGroup) scene.remove(monthLabelsGroup);
+            monthLabelsGroup = new THREE.Group();
+            
+            const visible = document.getElementById('helpersToggle').checked;
+            monthLabelsGroup.visible = visible;
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const loader = new FontLoader();
+            
+            // Calc initial state
+            const azimuthAngle = controls.getAzimuthalAngle();
+            const polarAngle = controls.getPolarAngle();
+            const topDownThreshold = 1.2;
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const inverseOpacity = 1 - opacityFade;
+
+            months.forEach((month, index) => {
+                const angle = (index / 12) * Math.PI * 2 + CONFIG.angleOffset;
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 128; 
+                canvas.height = 64;
+                ctx.fillStyle = '#666';
+                ctx.font = 'bold 32px Arial'; 
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(month, 64, 32);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                
+                // Use MeshBasicMaterial for a flat plane look
+                const material = new THREE.MeshBasicMaterial({ 
+                    map: texture, 
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
+                
+                const geometry = new THREE.PlaneGeometry(8, 4);
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // Position at radius location on XZ plane
+                mesh.position.set(x, 0, z);
+                
+                // Start flat on ground
+                mesh.rotation.x = -Math.PI / 2;
+                // Move down to floor
+                mesh.position.y = -2.0;
+                
+                // Init state
+                mesh.material.opacity = inverseOpacity;
+                mesh.rotation.z = azimuthAngle;
+
+                monthLabelsGroup.add(mesh);
+            });
+            scene.add(monthLabelsGroup);
+            
+            // Sync with current toggle state
+            const visibleState = document.getElementById('helpersToggle').checked;
+            monthLabelsGroup.visible = visibleState;
+        }
+
+        function parseGISSData(text, shouldInterpolate) {
+            const lines = text.trim().split('\n');
+            const data = [];
+            const yearRegex = /^\s*(\d{4})/;
+            
+            let scaleFactor = 1.0;
+            let checkedScale = false;
+
+            lines.forEach(line => {
+                if (yearRegex.test(line)) {
+                    const parts = line.trim().split(/\s+/);
+                    
+                    if (parts.length >= 13) {
+                        if (!checkedScale) {
+                             const valTest = parseFloat(parts[1]);
+                             if (!isNaN(valTest) && Math.abs(valTest) > 10) {
+                                 scaleFactor = 0.01;
+                             }
+                             checkedScale = true;
+                        }
+
+                        const year = parseInt(parts[0]);
+                        const anomalies = [];
+                        
+                        for (let i = 1; i <= 12; i++) {
+                            if (parts[i].includes('*')) break;
+                            let val = parseFloat(parts[i]);
+                            if (isNaN(val)) break; 
+                            anomalies.push(val * scaleFactor);
+                        }
+                        
+                        if (anomalies.length > 0) {
+                            data.push({ year, anomalies });
+                        }
+                    }
+                }
+            });
+
+            if(shouldInterpolate && data.length > 0 && data.length < (data[data.length-1].year - data[0].year)) {
+               return interpolateSparseData(data);
+            }
+
+            return data;
+        }
+
+        function interpolateSparseData(sparseData) {
+            const fullData = [];
+            for (let i = 0; i < sparseData.length - 1; i++) {
+                const start = sparseData[i];
+                const end = sparseData[i+1];
+                fullData.push(start);
+
+                const yearsDiff = end.year - start.year;
+                if (yearsDiff > 1) {
+                    for (let y = 1; y < yearsDiff; y++) {
+                        const year = start.year + y;
+                        const factor = y / yearsDiff;
+                        
+                        if(start.anomalies.length === 12 && end.anomalies.length === 12) {
+                            const interpolatedAnomalies = start.anomalies.map((val, idx) => {
+                                return val + (end.anomalies[idx] - val) * factor;
+                            });
+                            fullData.push({ year, anomalies: interpolatedAnomalies });
+                        }
+                    }
+                }
+            }
+            fullData.push(sparseData[sparseData.length - 1]);
+            return fullData;
+        }
+
+        function createSpiral(data) {
+            if (spiralMesh) scene.remove(spiralMesh);
+            if (yearLabelsGroup) scene.remove(yearLabelsGroup);
+
+            const points = [];
+            const colors = [];
+            const yearLabels = new THREE.Group();
+            
+            // Sync initial visibility
+            const visible = document.getElementById('helpersToggle').checked;
+            yearLabels.visible = visible;
+
+            const startYearData = data[0].year;
+            currentMaxAnomaly = -Infinity;
+            currentMinAnomaly = Infinity;
+
+            // First Pass: Find Min/Max for correct color scaling
+            data.forEach((entry) => {
+                entry.anomalies.forEach((val) => {
+                    if (val > currentMaxAnomaly) currentMaxAnomaly = val;
+                    if (val < currentMinAnomaly) currentMinAnomaly = val;
+                });
+            });
+            
+            // Update Legend
+            document.getElementById('legendMin').innerText = currentMinAnomaly.toFixed(1) + "°C";
+            document.getElementById('legendMax').innerText = "+" + currentMaxAnomaly.toFixed(1) + "°C";
+            
+            // Initial opacity/rotation vars
+            const azimuthAngle = controls.getAzimuthalAngle();
+            const polarAngle = controls.getPolarAngle();
+            const topDownThreshold = 1.2;
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+
+            // Second Pass: Build Geometry
+            data.forEach((entry, yearIdx) => {
+                entry.anomalies.forEach((anomaly, monthIdx) => {
+                    const angle = (monthIdx / 12) * Math.PI * 2 + CONFIG.angleOffset;
+                    const r = CONFIG.radiusBase + (anomaly * CONFIG.radiusScale);
+                    const yearOffset = entry.year - startYearData;
+                    const yPos = (yearOffset + (monthIdx / 12)) * CONFIG.heightPerYear;
+
+                    const x = Math.cos(angle) * r;
+                    const z = Math.sin(angle) * r;
+
+                    points.push(new THREE.Vector3(x, yPos, z));
+
+                    // Dynamic Color Mapping
+                    let color = new THREE.Color();
+                    if (anomaly < 0) {
+                        const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
+                        color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+                    } else {
+                        const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
+                        color.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                    }
+                    colors.push(color.r, color.g, color.b);
+                });
+
+                if (entry.year % 10 === 0) {
+                    const yearOffset = entry.year - startYearData;
+                    const y = (yearOffset) * CONFIG.heightPerYear;
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 128;
+                    canvas.height = 64;
+                    ctx.fillStyle = '#eee';
+                    ctx.font = 'bold 40px Arial';
+                    ctx.fillText(entry.year, 10, 50);
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                    const sprite = new THREE.Sprite(spriteMat);
+                    sprite.scale.set(6, 3, 1);
+                    sprite.position.set(CONFIG.radiusBase + 10, y, 0);
+                    
+                    // Init opacity
+                    sprite.material.opacity = opacityFade;
+                    
+                    yearLabels.add(sprite);
+                }
+            });
+            
+            // Set initial rotation
+            yearLabels.rotation.y = azimuthAngle;
+            
+            spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
+            
+            // Update vertical lines height
+            updateTemperatureVerticals(spiralHeight);
+
+            if (points.length < 2) return;
+
+            const curve = new THREE.CatmullRomCurve3(points);
+            curve.tension = 0.5; 
+
+            const isSmooth = document.getElementById('smoothSpiralToggle').checked;
+            const segments = isSmooth ? points.length * 10 : points.length;
+
+            const geometry = new THREE.TubeGeometry(curve, segments, CONFIG.tubeRadius, CONFIG.radialSegments, false);
+            
+            const count = geometry.attributes.position.count;
+            const colorAttribute = new Float32Array(count * 3);
+            
+            for (let i = 0; i < count; i++) {
+                const u = i / count; 
+                
+                const totalColorPoints = colors.length / 3;
+                const floatIdx = u * (totalColorPoints - 1);
+                const idx1 = Math.floor(floatIdx);
+                const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
+                const alpha = floatIdx - idx1;
+                
+                if (isSmooth) {
+                    const r1 = colors[idx1 * 3];
+                    const g1 = colors[idx1 * 3 + 1];
+                    const b1 = colors[idx1 * 3 + 2];
+                    
+                    const r2 = colors[idx2 * 3];
+                    const g2 = colors[idx2 * 3 + 1];
+                    const b2 = colors[idx2 * 3 + 2];
+                    
+                    colorAttribute[i * 3]     = r1 + (r2 - r1) * alpha;
+                    colorAttribute[i * 3 + 1] = g1 + (g2 - g1) * alpha;
+                    colorAttribute[i * 3 + 2] = b1 + (b2 - b1) * alpha;
+                } else {
+                    const segmentIndex = Math.floor((i / count) * totalColorPoints);
+                    const cIdx = Math.min(segmentIndex * 3, colors.length - 3);
+                    colorAttribute[i * 3] = colors[cIdx];
+                    colorAttribute[i * 3 + 1] = colors[cIdx + 1];
+                    colorAttribute[i * 3 + 2] = colors[cIdx + 2];
+                }
+            }
+            geometry.setAttribute('color', new THREE.BufferAttribute(colorAttribute, 3));
+
+            const material = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                roughness: 0.3,
+                metalness: 0.0, 
+            });
+
+            spiralMesh = new THREE.Mesh(geometry, material);
+            scene.add(spiralMesh);
+
+            scene.add(yearLabels);
+            yearLabelsGroup = yearLabels;
+
+            // Updated Rotation Center: Middle of the spiral (Default snap point)
+            // But 'free camera' toggle controls behavior in setupUI
+            controls.target.set(0, spiralHeight / 2, 0);
+            
+            if (geometry.index) {
+                totalIndices = geometry.index.count;
+            } else {
+                totalIndices = count;
+            }
+            
+            if (!isAnimating) {
+                geometry.setDrawRange(0, Infinity);
+                animationIndex = totalIndices;
+                document.getElementById('timelineSlider').value = 100;
+                
+                // Initial year text color update
+                const lastYear = data[data.length - 1];
+                const avg = lastYear.anomalies.reduce((a,b)=>a+b,0) / lastYear.anomalies.length;
+                updateYearIndicatorText(endYear, getInterpolatedColor(avg));
+            }
+        }
+
+        function addYearLabel(year, y, group) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 128;
+            canvas.height = 64;
+            ctx.fillStyle = '#eee';
+            ctx.font = 'bold 40px Arial';
+            ctx.fillText(year, 10, 50);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(6, 3, 1);
+            
+            sprite.position.set(CONFIG.radiusBase + 10, y, 0);
+            group.add(sprite);
+        }
+
+        function onWindowResize() {
+            const aspect = window.innerWidth / window.innerHeight;
+            const frustumSize = CONFIG.frustumSize;
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            perspectiveCamera.aspect = aspect;
+            perspectiveCamera.updateProjectionMatrix();
+
+            orthographicCamera.left = -frustumSize * aspect / 2;
+            orthographicCamera.right = frustumSize * aspect / 2;
+            orthographicCamera.top = frustumSize / 2;
+            orthographicCamera.bottom = -frustumSize / 2;
+            orthographicCamera.updateProjectionMatrix();
+        }
+        
+        function updateAnimation() {
+            if (!isAnimating || !spiralMesh) return;
+            
+            // Speed: indices per frame
+            const baseSpeed = Math.ceil(totalIndices / 600); 
+            const speed = baseSpeed * animationSpeed;
+            
+            animationIndex += speed;
+            
+            if (animationIndex >= totalIndices) {
+                animationIndex = totalIndices;
+                toggleAnimation(); 
+            }
+            
+            spiralMesh.geometry.setDrawRange(0, animationIndex);
+            document.getElementById('timelineSlider').value = (animationIndex / totalIndices) * 100;
+            
+            updateTimelineState(animationIndex);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateAnimation();
+            controls.update();
+            
+            // Calculate opacity based on viewing angle
+            const polarAngle = controls.getPolarAngle();
+            const topDownThreshold = 1.2; 
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const inverseOpacity = 1 - opacityFade; 
+            const azimuthAngle = controls.getAzimuthalAngle();
+
+            // 1. Vertical Year Labels (Sprites): Fade OUT when top-down
+            if (yearLabelsGroup) {
+                yearLabelsGroup.children.forEach(sprite => {
+                    sprite.material.opacity = opacityFade;
+                });
+                yearLabelsGroup.rotation.y = azimuthAngle;
+            }
+            
+            // 2. Vertical Temp Lines (Cylinders): Fade IN when side view (opacityFade)
+            if (tempVerticalGroup) {
+                tempVerticalGroup.rotation.y = azimuthAngle;
+                
+                tempVerticalGroup.children.forEach(child => {
+                    if (child.name === "vLabel") {
+                         // Sprites auto-face camera; just handle opacity
+                         child.material.opacity = opacityFade * 0.9;
+                    } else {
+                         child.material.opacity = opacityFade * 0.4;
+                    }
+                });
+            }
+            
+            // 3. Center Year Indicator (Mesh): Fade IN when top-down
+            if (yearIndicatorMesh) {
+                yearIndicatorMesh.material.opacity = inverseOpacity;
+                yearIndicatorMesh.rotation.z = azimuthAngle;
+            }
+            
+            // 4. Month Labels (Meshes): Fade IN when top-down, rotate to face camera
+            if (monthLabelsGroup) {
+                monthLabelsGroup.children.forEach(mesh => {
+                    mesh.material.opacity = inverseOpacity;
+                    mesh.rotation.z = azimuthAngle;
+                });
+            }
+            
+            // 5. Temp Circles Fade with Month Labels
+            if(tempGridGroup) {
+                tempGridGroup.children.forEach(child => {
+                     if(child.material) child.material.opacity = inverseOpacity * 0.3;
+                });
+            }
+            
+            // 6. Temp Labels Group Rotation and Fading
+            if(tempLabelGroup) {
+                 tempLabelGroup.rotation.y = azimuthAngle;
+                 tempLabelGroup.children.forEach(sprite => {
+                     sprite.material.opacity = inverseOpacity * 0.6;
+                 });
+            }
+
+            renderer.render(scene, activeCamera);
+        }
+    </script>
+</body>
+</html>
