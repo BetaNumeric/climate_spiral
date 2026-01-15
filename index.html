@@ -344,7 +344,7 @@
             </label>
         </div>
 
-        <div class="setting-row">
+        <div class="setting-row" id="interpolationRow" style="display:none;">
             <span>Interpolate Gaps</span>
             <label class="switch">
                 <input type="checkbox" id="interpolationToggle">
@@ -389,9 +389,10 @@
         <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
             <div class="slider-label">
                 <span>Animation Speed</span>
-                <span id="speedValue" class="slider-val">1x</span>
+                <span id="speedValue" class="slider-val">0.1x</span>
             </div>
-            <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1" style="width:100%;">
+            <!-- Updated speed slider: min 0.01, max 1.0, step 0.01 -->
+            <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.1" style="width:100%;">
         </div>
     </div>
 
@@ -445,15 +446,29 @@
 
         const INITIAL_DATA_SOURCE = `
 Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year
-1880   -19  -25  -10  -17  -11  -22  -19  -11  -15  -24  -23  -18    -18 *** **** -13  -17  -21  1880
+1880   -19  -25  -10  -17  -11  -22  -19  -11  -15  -24  -23  -18    -18 ***   ****  -13  -17  -21  1880
+1890   -43  -45  -41  -30  -40  -25  -28  -39  -37  -25  -44  -32    -36 -36    -39  -37  -31  -35  1890
+1900   -37   -6    0  -10   -9  -11  -14   -9   -6    9   -8   -8     -9 -11    -24   -7  -11   -2  1900
+1910   -43  -42  -52  -44  -35  -39  -35  -37  -39  -42  -57  -68    -44 -43    -47  -43  -37  -46  1910
+1920   -25  -27  -12  -25  -27  -36  -30  -26  -22  -26  -27  -47    -28 -27    -32  -21  -31  -25  1920
+1930   -31  -27  -11  -25  -24  -22  -22  -15  -16  -12   17   -6    -16 -20    -38  -20  -20   -4  1930
+1940    -1    8    9   17   10   11   12    6   15   10   16   31     12  13     16   12   10   14  1940
 1950   -26  -27   -8  -21  -11   -5   -9  -16  -11  -20  -34  -22    -18 -17    -24  -13  -10  -22  1950
+1960     0   13  -35  -15   -8   -4   -4    2    7    6  -11   19     -3  -4      4  -19   -2    0  1960
+1970     8   22    6    5   -3   -2    2  -10   12    3    2  -12      3   6     18    3   -4    6  1970
+1980    29   39   29   30   35   20   22   18   20   13   29   21     26  28     39   31   20   21  1980
+1990    41   44   80   56   45   37   46   34   23   45   46   41     45  45     41   61   39   38  1990
+2000    25   56   55   56   36   40   39   42   39   27   30   28     39  40     40   49   40   32  2000
+2010    75   84   92   85   76   68   63   67   63   71   82   45     73  74     75   84   66   72  2010
+2020   118  124  118  112   99   91   89   86   97   87  109   80    101 103    118  110   89   97  2020
 2025   138  126  136  123  108  105  102  116  125  119  121  105    119 121    130  122  108  122  2025
 `;
 
         // --- State ---
         let scene, renderer, controls;
         let perspectiveCamera, orthographicCamera, activeCamera;
-        let spiralMesh, yearLabelsGroup, monthLabelsGroup; 
+        let spiralMesh, startCapMesh, endCapMesh; 
+        let yearLabelsGroup, monthLabelsGroup; 
         let tempGridGroup, tempLabelGroup, tempVerticalGroup; 
         let yearIndicatorMesh, yearIndicatorTexture, yearIndicatorContext;
         let spiralHeight = 0; 
@@ -472,7 +487,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let totalIndices = 0;
         let startYear = 1880;
         let endYear = 2025; 
-        let animationSpeed = 1;
+        let animationSpeed = 0.1; // Default to match slider
         
         // UI State
         let timelineTimeout;
@@ -554,7 +569,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 dragOverlay.style.display = 'flex';
             });
             document.body.addEventListener('dragleave', (e) => {
-                // simple check to avoid flicker when dragging over children
                 if(e.clientX === 0 && e.clientY === 0) {
                     dragOverlay.style.display = 'none';
                 }
@@ -593,12 +607,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
         }
         
-        // Helper to update the Data Source Label
         function updateSourceLabel(text) {
             const el = document.getElementById('dataOrigin');
             if(el) {
                 el.innerText = `(${text})`;
-                el.style.color = "#8b9be1"; // Highlight color
+                el.style.color = "#8b9be1"; 
             }
         }
 
@@ -613,7 +626,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             reader.readAsText(file);
         }
         
-        // Fetch Logic for Button Click (Remote -> Proxy -> Error)
         function fetchRemoteData() {
             const statusEl = document.getElementById('fetchStatus');
             statusEl.style.display = 'block';
@@ -650,7 +662,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                             if(!response.ok) throw new Error("Proxy fetch failed");
                             return response.text();
                         })
-                        .then(text => onSuccess(text, "Via Proxy"))
+                        .then(text => onSuccess(text, "NASA via Proxy"))
                         .catch(finalErr => {
                             console.warn("All fetches failed", finalErr);
                             statusEl.innerText = "Fetch Failed";
@@ -659,7 +671,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
         }
         
-        // Fetch Logic for Page Load (Local -> Embedded Fallback)
         function loadLocalData() {
             const statusEl = document.getElementById('fetchStatus');
             statusEl.style.display = 'block';
@@ -690,7 +701,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function resetAnimation() {
             animationIndex = 0;
             if(spiralMesh) {
-                spiralMesh.geometry.setDrawRange(0, 0);
+                updateSpiralVisuals(); 
                 document.getElementById('timelineSlider').value = 0;
                 updateTimelineState(0);
             }
@@ -698,7 +709,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function createYearIndicator() {
-            // Create a canvas for the text
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 256;
@@ -706,7 +716,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             yearIndicatorTexture = new THREE.CanvasTexture(canvas);
             
-            // Use MeshBasicMaterial for a flat plane look
             const material = new THREE.MeshBasicMaterial({ 
                 map: yearIndicatorTexture, 
                 transparent: true,
@@ -714,11 +723,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 side: THREE.DoubleSide
             });
             
-            // Plane geometry instead of Sprite
-            const geometry = new THREE.PlaneGeometry(10, 5); // further reduced
+            const geometry = new THREE.PlaneGeometry(10, 5); 
             yearIndicatorMesh = new THREE.Mesh(geometry, material);
             
-            // Lay flat on XZ plane
             yearIndicatorMesh.rotation.x = -Math.PI / 2;
             yearIndicatorMesh.position.set(0, 0.1, 0);
             
@@ -739,7 +746,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
         
         function createTemperatureGrid() {
-            // Clean up old memory
             if(tempGridGroup) { disposeHierarchy(tempGridGroup); scene.remove(tempGridGroup); }
             if(tempLabelGroup) { disposeHierarchy(tempLabelGroup); scene.remove(tempLabelGroup); }
             if(tempVerticalGroup) { disposeHierarchy(tempVerticalGroup); scene.remove(tempVerticalGroup); } 
@@ -759,10 +765,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 const ring = new THREE.LineLoop(geometry, material);
                 ring.rotation.x = -Math.PI / 2;
-                ring.position.y = -2.0; // Lowered to floor
+                ring.position.y = -2.0; 
                 tempGridGroup.add(ring);
                 
-                // Label (Flat on ground)
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 canvas.width = 128; 
@@ -775,28 +780,23 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 ctx.fillText(labelText, 64, 32);
                 
                 const texture = new THREE.CanvasTexture(canvas);
-                // FLAT MESH for ground label
                 const meshMat = new THREE.MeshBasicMaterial({ map: texture, transparent:true, opacity:0.6, side: THREE.DoubleSide });
                 const geometryPlane = new THREE.PlaneGeometry(4, 2);
                 const mesh = new THREE.Mesh(geometryPlane, meshMat);
                 
-                // Position on ring
                 const labelAngle = Math.PI / 4; 
-                mesh.position.set(Math.cos(labelAngle)*r, -1.9, Math.sin(labelAngle)*r); // Just above floor
-                mesh.rotation.x = -Math.PI / 2; // Flat on ground
+                mesh.position.set(Math.cos(labelAngle)*r, -1.9, Math.sin(labelAngle)*r);
+                mesh.rotation.x = -Math.PI / 2;
                 
                 tempLabelGroup.add(mesh);
 
-                // --- Vertical Line (Helper) ---
-                const vertGeo = new THREE.CylinderGeometry(0.03, 0.03, 1, 8); // height 1, scaled later
-                const vertMat = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0 }); // Start hidden
+                const vertGeo = new THREE.CylinderGeometry(0.03, 0.03, 1, 8);
+                const vertMat = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0 });
                 
-                // Right side (+X)
                 const v1 = new THREE.Mesh(vertGeo, vertMat.clone());
                 v1.position.set(r, 0.5, 0);
                 tempVerticalGroup.add(v1);
                 
-                // Labels for verticals (Top) - Changed to SPRITES
                 const vSpriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
                 const vLabel = new THREE.Sprite(vSpriteMat);
                 vLabel.scale.set(4, 2, 1);
@@ -804,7 +804,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 vLabel.name = "vLabel";
                 tempVerticalGroup.add(vLabel);
 
-                // Left side (-X)
                 const v2 = new THREE.Mesh(vertGeo, vertMat.clone());
                 v2.position.set(-r, 0.5, 0);
                 tempVerticalGroup.add(v2);
@@ -816,7 +815,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 tempVerticalGroup.add(vLabel2);
             });
             
-            // Init rotations
             const azimuth = controls.getAzimuthalAngle();
             const polar = controls.getPolarAngle();
             const opacity = Math.min(1, Math.max(0, polar / 1.2));
@@ -825,7 +823,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempLabelGroup.rotation.y = azimuth;
             tempVerticalGroup.rotation.y = azimuth;
             
-            // Set initial opacities
             tempLabelGroup.children.forEach(c => c.material.opacity = inverseOpacity * 0.6);
             tempVerticalGroup.children.forEach(c => {
                 if(c.name === "vLabel") c.material.opacity = opacity * 0.9;
@@ -843,20 +840,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateTemperatureVerticals(height) {
             if(!tempVerticalGroup) return;
             
-            // We want vertical lines to start at grid level (-2.0) and go up to height
-            // Let's add a small buffer at top
             const gridLevel = -2.0;
             const topLevel = height + 2.0;
-            const totalLength = topLevel - gridLevel; // e.g. (30 + 2) - (-2) = 34
+            const totalLength = topLevel - gridLevel;
             
             const centerY = gridLevel + (totalLength / 2);
 
             tempVerticalGroup.children.forEach(child => {
                 if (child.name === "vLabel") {
-                    // Place label at the top of the line
                     child.position.y = topLevel + 1.0; 
                 } else {
-                    // It's a line cylinder
                     child.scale.y = totalLength;
                     child.position.y = centerY;
                 }
@@ -873,6 +866,29 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             return "#" + _colorHelper.getHexString();
         }
+        
+        function getSpiralColorAtU(u, rawColors) {
+            const totalColorPoints = rawColors.length / 3;
+            const floatIdx = u * (totalColorPoints - 1);
+            const idx1 = Math.floor(floatIdx);
+            const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
+            const alpha = floatIdx - idx1;
+
+            const r1 = rawColors[idx1 * 3];
+            const g1 = rawColors[idx1 * 3 + 1];
+            const b1 = rawColors[idx1 * 3 + 2];
+            
+            const r2 = rawColors[idx2 * 3];
+            const g2 = rawColors[idx2 * 3 + 1];
+            const b2 = rawColors[idx2 * 3 + 2];
+            
+            _colorHelper.setRGB(
+                r1 + (r2 - r1) * alpha,
+                g1 + (g2 - g1) * alpha,
+                b1 + (b2 - b1) * alpha
+            );
+            return _colorHelper;
+        }
 
         function setupUI() {
             const toggleBtn = document.getElementById('infoBtn');
@@ -882,10 +898,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const settingsPanel = document.getElementById('settingsPanel');
             
             const orthoSwitch = document.getElementById('orthoToggle');
-            const helpersSwitch = document.getElementById('helpersToggle'); // Consolidated Toggle
+            const helpersSwitch = document.getElementById('helpersToggle'); 
             const interpSwitch = document.getElementById('interpolationToggle');
             const smoothSpiralSwitch = document.getElementById('smoothSpiralToggle');
-            const freeCamSwitch = document.getElementById('freeCameraToggle'); // New
+            const freeCamSwitch = document.getElementById('freeCameraToggle'); 
             const fileInput = document.getElementById('fileUpload');
             const fetchBtn = document.getElementById('fetchBtn');
             
@@ -912,7 +928,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             orthoSwitch.addEventListener('change', (e) => switchCamera(e.target.checked));
             
-            // Unified Toggle Logic
             helpersSwitch.addEventListener('change', (e) => {
                 const visible = e.target.checked;
                 if(yearLabelsGroup) yearLabelsGroup.visible = visible;
@@ -921,6 +936,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 if(tempGridGroup) tempGridGroup.visible = visible;
                 if(tempLabelGroup) tempLabelGroup.visible = visible;
                 if(tempVerticalGroup) tempVerticalGroup.visible = visible;
+                if(startCapMesh) startCapMesh.visible = visible;
+                if(endCapMesh) endCapMesh.visible = visible;
             });
             
             interpSwitch.addEventListener('change', updateDataVisualization);
@@ -931,7 +948,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 controls.enablePan = isFree;
                 controls.maxPolarAngle = isFree ? Math.PI : Math.PI / 2;
                 if (!isFree) {
-                    controls.target.set(0, spiralHeight / 2, 0); // Snap back to center
+                    controls.target.set(0, spiralHeight / 2, 0); 
                     controls.update();
                 }
             });
@@ -940,10 +957,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 if(e.target.files.length > 0) handleFile(e.target.files[0]);
             });
             
-            // Changed listener to call the new remote fetch logic
             fetchBtn.addEventListener('click', fetchRemoteData);
 
-            // Auto-Collapse Logic for Timeline (always enabled logic now)
             const showTimeline = () => {
                 clearTimeout(timelineTimeout);
                 const containerEl = document.getElementById('timelineContainer');
@@ -979,8 +994,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 const percent = parseFloat(e.target.value);
                 animationIndex = Math.floor((percent / 100) * totalIndices);
-                if(spiralMesh) spiralMesh.geometry.setDrawRange(0, animationIndex);
                 
+                updateSpiralVisuals();
                 updateTimelineState(animationIndex);
             });
             
@@ -1004,7 +1019,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             updateYearIndicatorText(currentYear, color);
             
-            // Move Year Indicator up with spiral
             const yearOffset = currentYear - startYear;
             if (yearIndicatorMesh) {
                 yearIndicatorMesh.position.y = (yearOffset * CONFIG.heightPerYear) + 2; 
@@ -1014,11 +1028,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function toggleAnimation() {
             isAnimating = !isAnimating;
             const playBtn = document.getElementById('playBtn');
-            const playIcon = document.getElementById('playIconImg'); // img inside button
+            const playIcon = document.getElementById('playIconImg'); 
             const playText = playBtn.querySelector('.btn-text');
 
             if (isAnimating) {
-                // Switch to Pause
                 if(playIcon) {
                     playIcon.src = 'icons/pause.png';
                     playIcon.alt = 'Pause';
@@ -1033,7 +1046,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     if (spiralMesh) spiralMesh.geometry.setDrawRange(0, 0);
                 }
             } else {
-                // Switch to Play
                 if(playIcon) {
                     playIcon.src = 'icons/play.png';
                     playIcon.alt = 'Play';
@@ -1047,22 +1059,73 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function switchCamera(isOrtho) {
             const target = controls.target.clone();
-            const prevPos = activeCamera.position.clone();
-            const prevRot = activeCamera.rotation.clone();
+            
+            // Seamless zoom transition logic
+            if (isOrtho) {
+                // Switching Perspective -> Ortho
+                // Calculate size visible at target distance in perspective
+                const dist = perspectiveCamera.position.distanceTo(target);
+                const fov = perspectiveCamera.fov; // degrees
+                const visibleHeight = 2 * dist * Math.tan(THREE.MathUtils.degToRad(fov / 2));
+                
+                // orthographicCamera.zoom = frustumHeight / visibleHeight
+                // frustumHeight (unzoomed) is essentially CONFIG.frustumSize in this setup 
+                // because top-bottom is set to frustumSize (+ adjustments for aspect)
+                // We use CONFIG.frustumSize as a baseline reference for 1:1 match
+                const frustumHeight = CONFIG.frustumSize; 
+                orthographicCamera.zoom = frustumHeight / visibleHeight;
+                orthographicCamera.updateProjectionMatrix();
+                
+                // Copy transform direction
+                orthographicCamera.position.copy(perspectiveCamera.position);
+                orthographicCamera.rotation.copy(perspectiveCamera.rotation);
+                
+                activeCamera = orthographicCamera;
+            } else {
+                // Switching Ortho -> Perspective
+                const zoom = orthographicCamera.zoom;
+                const frustumHeight = CONFIG.frustumSize;
+                const visibleHeight = frustumHeight / zoom;
+                
+                const fov = perspectiveCamera.fov;
+                // dist = visibleHeight / (2 * tan(fov/2))
+                const dist = visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
+                
+                // Move perspective camera along vector (Cam -> Target) to new distance
+                const direction = new THREE.Vector3().subVectors(orthographicCamera.position, target).normalize();
+                perspectiveCamera.position.copy(target).add(direction.multiplyScalar(dist));
+                perspectiveCamera.rotation.copy(orthographicCamera.rotation);
+                
+                activeCamera = perspectiveCamera;
+            }
 
-            activeCamera = isOrtho ? orthographicCamera : perspectiveCamera;
-            
-            activeCamera.position.copy(prevPos);
-            activeCamera.rotation.copy(prevRot);
-            
             controls.object = activeCamera;
             controls.target.copy(target); 
             controls.update();
         }
 
+        function checkForGaps(data) {
+            for (let i = 0; i < data.length - 1; i++) {
+                if (data[i+1].year - data[i].year > 1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function updateDataVisualization() {
+            // 1. Parse Raw Data (no interpolation yet)
+            const rawData = parseGISSData(currentDataText);
+            
+            // 2. Check for Gaps
+            const hasGaps = checkForGaps(rawData);
+            const interpRow = document.getElementById('interpolationRow');
+            if(interpRow) interpRow.style.display = hasGaps ? 'flex' : 'none';
+
+            // 3. Interpolate if enabled
             const shouldInterpolate = document.getElementById('interpolationToggle').checked;
-            const processedData = parseGISSData(currentDataText, shouldInterpolate);
+            const processedData = (hasGaps && shouldInterpolate) ? interpolateSparseData(rawData) : rawData;
+            
             timelineData = processedData; 
             
             if (processedData.length > 0) {
@@ -1073,12 +1136,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             createSpiral(processedData);
-            // Reduced buffer to +1
             createMonthRing(CONFIG.radiusBase + (currentMaxAnomaly * CONFIG.radiusScale) + 1); 
         }
 
         function createMonthRing(radius) {
-            // Clean up old memory
             if (monthLabelsGroup) { disposeHierarchy(monthLabelsGroup); scene.remove(monthLabelsGroup); }
             
             monthLabelsGroup = new THREE.Group();
@@ -1088,7 +1149,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             
-            // Calc initial state
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
             const topDownThreshold = 1.2;
@@ -1105,14 +1165,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.width = 128; 
                 canvas.height = 64;
                 ctx.fillStyle = '#666';
-                ctx.font = 'bold 20px Arial'; // Changed to 20px
+                ctx.font = 'bold 20px Arial'; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(month, 64, 32);
 
                 const texture = new THREE.CanvasTexture(canvas);
                 
-                // Use MeshBasicMaterial for a flat plane look
                 const material = new THREE.MeshBasicMaterial({ 
                     map: texture, 
                     transparent: true,
@@ -1122,15 +1181,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const geometry = new THREE.PlaneGeometry(8, 4);
                 const mesh = new THREE.Mesh(geometry, material);
                 
-                // Position at radius location on XZ plane
                 mesh.position.set(x, 0, z);
-                
-                // Start flat on ground
                 mesh.rotation.x = -Math.PI / 2;
-                // Move down to floor
                 mesh.position.y = -2.0;
                 
-                // Init state
                 mesh.material.opacity = inverseOpacity;
                 mesh.rotation.z = azimuthAngle;
 
@@ -1138,12 +1192,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
             scene.add(monthLabelsGroup);
             
-            // Sync with current toggle state
             const visibleState = document.getElementById('helpersToggle').checked;
             monthLabelsGroup.visible = visibleState;
         }
 
-        function parseGISSData(text, shouldInterpolate) {
+        function parseGISSData(text) {
             const lines = text.trim().split('\n');
             const data = [];
             const yearRegex = /^\s*(\d{4})/;
@@ -1181,10 +1234,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
             });
 
-            if(shouldInterpolate && data.length > 0 && data.length < (data[data.length-1].year - data[0].year)) {
-               return interpolateSparseData(data);
-            }
-
             return data;
         }
 
@@ -1215,15 +1264,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function createSpiral(data) {
-            // Clean up old memory
             if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
+            if (startCapMesh) { disposeHierarchy(startCapMesh); scene.remove(startCapMesh); }
+            if (endCapMesh) { disposeHierarchy(endCapMesh); scene.remove(endCapMesh); }
             if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
 
             const points = [];
             const colors = [];
             const yearLabels = new THREE.Group();
             
-            // Sync initial visibility
             const visible = document.getElementById('helpersToggle').checked;
             yearLabels.visible = visible;
 
@@ -1231,7 +1280,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             currentMaxAnomaly = -Infinity;
             currentMinAnomaly = Infinity;
 
-            // First Pass: Find Min/Max for correct color scaling
             data.forEach((entry) => {
                 entry.anomalies.forEach((val) => {
                     if (val > currentMaxAnomaly) currentMaxAnomaly = val;
@@ -1239,11 +1287,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
             });
             
-            // Update Legend
             document.getElementById('legendMin').innerText = currentMinAnomaly.toFixed(1) + "°C";
             document.getElementById('legendMax').innerText = "+" + currentMaxAnomaly.toFixed(1) + "°C";
             
-            // Initial opacity/rotation vars
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
             const topDownThreshold = 1.2;
@@ -1277,19 +1323,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     
                     const sprite = addYearLabel(entry.year, y);
                     
-                    // Init opacity
                     sprite.material.opacity = opacityFade;
                     
                     yearLabels.add(sprite);
                 }
             });
             
-            // Set initial rotation
             yearLabels.rotation.y = azimuthAngle;
             
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
             
-            // Update vertical lines height
             updateTemperatureVerticals(spiralHeight);
 
             if (points.length < 2) return;
@@ -1343,13 +1386,34 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
 
             spiralMesh = new THREE.Mesh(geometry, material);
+            
+            spiralMesh.userData.curve = curve;
+            spiralMesh.userData.rawColors = colors;
+            spiralMesh.userData.radialSegments = CONFIG.radialSegments;
+
             scene.add(spiralMesh);
 
             scene.add(yearLabels);
             yearLabelsGroup = yearLabels;
+            
+            const capGeo = new THREE.SphereGeometry(CONFIG.tubeRadius, 16, 16);
+            const capMat = new THREE.MeshStandardMaterial({
+                roughness: 0.3,
+                metalness: 0.0,
+                color: new THREE.Color(colors[0], colors[1], colors[2]) // Start Color
+            });
+            
+            startCapMesh = new THREE.Mesh(capGeo, capMat);
+            startCapMesh.position.copy(points[0]);
+            scene.add(startCapMesh);
+            
+            endCapMesh = new THREE.Mesh(capGeo, capMat.clone());
+            endCapMesh.position.copy(points[0]);
+            scene.add(endCapMesh);
+            
+            startCapMesh.visible = visible;
+            endCapMesh.visible = visible;
 
-            // Updated Rotation Center: Middle of the spiral (Default snap point)
-            // But 'free camera' toggle controls behavior in setupUI
             controls.target.set(0, spiralHeight / 2, 0);
             
             if (geometry.index) {
@@ -1363,14 +1427,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 animationIndex = totalIndices;
                 document.getElementById('timelineSlider').value = 100;
                 
-                // Initial year text color update
+                endCapMesh.position.copy(points[points.length-1]);
+                const lastColor = getSpiralColorAtU(1.0, colors);
+                endCapMesh.material.color.set(lastColor);
+                
                 const lastYear = data[data.length - 1];
                 const avg = lastYear.anomalies.reduce((a,b)=>a+b,0) / lastYear.anomalies.length;
                 updateYearIndicatorText(endYear, getInterpolatedColor(avg));
             }
         }
 
-        // Helper function for creating year labels, now reused correctly
         function addYearLabel(year, y) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -1398,11 +1464,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             perspectiveCamera.aspect = aspect;
             perspectiveCamera.updateProjectionMatrix();
 
-            // Mobile optimization: adjust zoom/frustum for portrait mode
             let adjustedFrustum = frustumSize;
             if (aspect < 1) {
-                // If portrait, increase view size to fit width
-                // Target width is ~45 units to fit spiral (diam ~35) + labels
                 const targetWidth = 45; 
                 adjustedFrustum = targetWidth / aspect; 
             }
@@ -1414,10 +1477,30 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             orthographicCamera.updateProjectionMatrix();
         }
         
+        function updateSpiralVisuals() {
+            if (!spiralMesh) return;
+
+            const stride = CONFIG.radialSegments * 6;
+            const snappedIndex = Math.floor(animationIndex / stride) * stride;
+            
+            spiralMesh.geometry.setDrawRange(0, snappedIndex);
+            
+            if (endCapMesh && spiralMesh.userData.curve) {
+                let u = snappedIndex / totalIndices;
+                if(u > 1) u = 1;
+                if(u < 0) u = 0;
+                
+                const point = spiralMesh.userData.curve.getPointAt(u);
+                if(point) endCapMesh.position.copy(point);
+                
+                const color = getSpiralColorAtU(u, spiralMesh.userData.rawColors);
+                endCapMesh.material.color.set(color);
+            }
+        }
+        
         function updateAnimation() {
             if (!isAnimating || !spiralMesh) return;
             
-            // Speed: indices per frame
             const baseSpeed = Math.ceil(totalIndices / 600); 
             const speed = baseSpeed * animationSpeed;
             
@@ -1428,7 +1511,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 toggleAnimation(); 
             }
             
-            spiralMesh.geometry.setDrawRange(0, animationIndex);
+            updateSpiralVisuals();
+            
             document.getElementById('timelineSlider').value = (animationIndex / totalIndices) * 100;
             
             updateTimelineState(animationIndex);
@@ -1439,14 +1523,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             updateAnimation();
             controls.update();
             
-            // Calculate opacity based on viewing angle
             const polarAngle = controls.getPolarAngle();
             const topDownThreshold = 1.2; 
             const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
             const inverseOpacity = 1 - opacityFade; 
             const azimuthAngle = controls.getAzimuthalAngle();
 
-            // 1. Vertical Year Labels (Sprites): Fade OUT when top-down
             if (yearLabelsGroup) {
                 yearLabelsGroup.children.forEach(sprite => {
                     sprite.material.opacity = opacityFade;
@@ -1454,13 +1536,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 yearLabelsGroup.rotation.y = azimuthAngle;
             }
             
-            // 2. Vertical Temp Lines (Cylinders): Fade IN when side view (opacityFade)
             if (tempVerticalGroup) {
                 tempVerticalGroup.rotation.y = azimuthAngle;
                 
                 tempVerticalGroup.children.forEach(child => {
                     if (child.name === "vLabel") {
-                         // Sprites auto-face camera; just handle opacity
                          child.material.opacity = opacityFade * 0.9;
                     } else {
                          child.material.opacity = opacityFade * 0.4;
@@ -1468,13 +1548,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
             }
             
-            // 3. Center Year Indicator (Mesh): Fade IN when top-down
             if (yearIndicatorMesh) {
                 yearIndicatorMesh.material.opacity = inverseOpacity;
                 yearIndicatorMesh.rotation.z = azimuthAngle;
             }
             
-            // 4. Month Labels (Meshes): Fade IN when top-down, rotate to face camera
             if (monthLabelsGroup) {
                 monthLabelsGroup.children.forEach(mesh => {
                     mesh.material.opacity = inverseOpacity;
@@ -1482,14 +1560,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
             }
             
-            // 5. Temp Circles Fade with Month Labels
             if(tempGridGroup) {
                 tempGridGroup.children.forEach(child => {
                      if(child.material) child.material.opacity = inverseOpacity * 0.3;
                 });
             }
             
-            // 6. Temp Labels Group Rotation and Fading
             if(tempLabelGroup) {
                  tempLabelGroup.rotation.y = azimuthAngle;
                  tempLabelGroup.children.forEach(sprite => {
