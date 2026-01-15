@@ -1535,10 +1535,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
             });
             
-            // Update Legend (FIXED RANGE)
-            // Removed redundant dynamic label updates as labels are now static
-            // document.getElementById('legendMin').innerText = "-1.0°C";
-            // document.getElementById('legendMax').innerText = "+1.0°C";
+            // REMOVED LEGEND UPDATE HERE (Static HTML now)
             
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
@@ -1643,6 +1640,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // 3. Generate Custom Geometry with Caps
             const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments);
             
+            // --- NEW: Store original colors for highlight effect ---
+            const colorAttr = geometry.attributes.color;
+            // Store as a Float32Array in userData
+            geometry.userData.originalColorArray = new Float32Array(colorAttr.array);
+            geometry.userData.lastTailRange = { start: 0, end: -1 }; // Empty start
+
             // Store data for animation mapping
             generatedGeometryData = finalPoints.map((p, i) => ({
                 point: p,
@@ -1744,14 +1747,73 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
 
-            // Snap to full rings to prevent spikes
-            // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
             const startCapIndices = CONFIG.radialSegments * 3;
             
             // Draw Start Cap + Current Body
             spiralMesh.geometry.setDrawRange(0, startCapIndices + snappedIndex);
+
+            // --- Highlight Logic ---
+            const currentRingIndex = Math.floor(snappedIndex / stride);
+            const radial = CONFIG.radialSegments;
+            const colorAttr = spiralMesh.geometry.attributes.color;
+            const originals = spiralMesh.geometry.userData.originalColorArray;
+            const lastRange = spiralMesh.geometry.userData.lastTailRange;
+
+            // 1. Restore previous tail to original colors
+            // Optimization: Only restore if valid range
+            if (lastRange.end >= lastRange.start) {
+                for (let r = lastRange.start; r <= lastRange.end; r++) {
+                    const ringStartIdx = r * radial * 3;
+                    const ringEndIdx = (r + 1) * radial * 3;
+                    for (let k = ringStartIdx; k < ringEndIdx; k++) {
+                        colorAttr.array[k] = originals[k];
+                    }
+                }
+            }
+
+            // Check if we are at the end of the animation
+            if (animationIndex >= totalIndices) {
+                 colorAttr.needsUpdate = true;
+                 spiralMesh.geometry.userData.lastTailRange = { start: 0, end: -1 };
+                 if(endCapMesh) endCapMesh.visible = false;
+                 // Show full geometry including baked end cap
+                 spiralMesh.geometry.setDrawRange(0, Infinity);
+                 return; 
+            }
+
+            // 2. Apply new tail gradient
+            // Tail length in rings (1 month approx 6 rings)
+            const tailLen = 24; // ~4 months trail
+            const startRing = Math.max(0, currentRingIndex - tailLen);
+            const endRing = currentRingIndex; // Highlight up to the current tip
+            
+            const white = new THREE.Color(1, 1, 1);
+            const tempColor = new THREE.Color();
+
+            for (let r = startRing; r <= endRing; r++) {
+                // Safety check
+                if ((r + 1) * radial * 3 > colorAttr.array.length) continue;
+
+                let alpha = (r - startRing) / (endRing - startRing || 1);
+                // Non-linear for "hot" tip
+                alpha = Math.pow(alpha, 5); 
+
+                for (let j = 0; j < radial; j++) {
+                    const idx = (r * radial + j) * 3;
+                    
+                    tempColor.setRGB(originals[idx], originals[idx+1], originals[idx+2]);
+                    tempColor.lerp(white, alpha);
+                    
+                    colorAttr.array[idx] = tempColor.r;
+                    colorAttr.array[idx+1] = tempColor.g;
+                    colorAttr.array[idx+2] = tempColor.b;
+                }
+            }
+            
+            colorAttr.needsUpdate = true;
+            spiralMesh.geometry.userData.lastTailRange = { start: startRing, end: endRing };
             
             // Moving Lid Logic
             if (endCapMesh && generatedGeometryData) {
@@ -1760,9 +1822,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const data = generatedGeometryData[ptIndex];
                 
                 if (data) {
-                    endCapMesh.visible = document.getElementById('helpersToggle').checked;
+                    endCapMesh.visible = true; // Always visible during animation
                     endCapMesh.position.copy(data.point);
-                    endCapMesh.material.color.set(data.color);
+                    endCapMesh.material.color.setHex(0xffffff); // Highlight tip white
                     
                     // Align Lid Rotation
                     // We need the tangent. Let's compute it on the fly or store it.
@@ -1799,6 +1861,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 // Show baked end cap, hide moving lid
                 spiralMesh.geometry.setDrawRange(0, Infinity);
                 if(endCapMesh) endCapMesh.visible = false;
+
+                // Remove highlight (restores original colors)
+                updateSpiralVisuals(); 
+                
             } else {
                 updateSpiralVisuals();
             }
