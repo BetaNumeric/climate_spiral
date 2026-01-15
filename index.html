@@ -427,6 +427,12 @@
             <!-- Updated speed slider: min 0.01, max 1.0, step 0.01 -->
             <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8" style="width:100%;">
         </div>
+
+        <!-- Export -->
+        <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px;">
+            <span>Export 3D Model</span>
+            <button id="exportBtn" class="upload-label" style="border:1px solid #555; background:#444;">Export .glb</button>
+        </div>
     </div>
 
     <!-- Bottom Wrapper -->
@@ -459,6 +465,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 
         // --- Configuration ---
         const CONFIG = {
@@ -502,15 +509,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // --- State ---
         let scene, renderer, controls;
         let perspectiveCamera, orthographicCamera, activeCamera;
-        let spiralMesh, startCapMesh, endCapMesh; 
+        let spiralMesh, endCapMesh; 
         let yearLabelsGroup, monthLabelsGroup; 
         let tempGridGroup, tempLabelGroup, tempVerticalGroup; 
         let yearIndicatorMesh, yearIndicatorTexture, yearIndicatorContext;
-        let lastDrawnYear = -1; // Track last drawn year to minimize canvas calls
+        let lastDrawnYear = -1; 
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
         let currentMinAnomaly = 0; 
-        // Note: totalDurationYears logic is replaced by geometry mapping, so this var is less critical now
+        let totalDurationYears = 0; 
         
         // Reused color helper to prevent GC churn
         const _colorHelper = new THREE.Color();
@@ -752,6 +759,41 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (!isAnimating) toggleAnimation();
         }
 
+        // --- Export Function ---
+        function exportGLTF() {
+            if (!spiralMesh) return;
+
+            const exporter = new GLTFExporter();
+            
+            // Clone Spiral with full draw range
+            // NOTE: The geometry now INCLUDES the start and end caps natively.
+            // So we don't need to add separate sphere meshes.
+            const spiralClone = spiralMesh.clone();
+            spiralClone.geometry = spiralMesh.geometry.clone();
+            spiralClone.geometry.setDrawRange(0, Infinity); // Full range (inc. both caps)
+            
+            // Execute Export
+            exporter.parse(
+                spiralClone,
+                function ( gltf ) {
+                    const blob = new Blob( [ gltf ], { type: 'application/octet-stream' } );
+                    const url = URL.createObjectURL( blob );
+                    const link = document.createElement( 'a' );
+                    link.style.display = 'none';
+                    link.href = url;
+                    link.download = 'climate-spiral.glb';
+                    document.body.appendChild( link );
+                    link.click();
+                    document.body.removeChild( link );
+                    URL.revokeObjectURL( url );
+                },
+                function ( error ) {
+                    console.error( 'An error happened during export:', error );
+                },
+                { binary: true }
+            );
+        }
+
         function createYearIndicator() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -927,6 +969,29 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return new THREE.Color().lerpColors(c1, c2, alpha);
         }
 
+        function getSpiralColorAtU(u, rawColors) {
+            const totalColorPoints = rawColors.length / 3;
+            const floatIdx = u * (totalColorPoints - 1);
+            const idx1 = Math.floor(floatIdx);
+            const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
+            const alpha = floatIdx - idx1;
+
+            const r1 = rawColors[idx1 * 3];
+            const g1 = rawColors[idx1 * 3 + 1];
+            const b1 = rawColors[idx1 * 3 + 2];
+            
+            const r2 = rawColors[idx2 * 3];
+            const g2 = rawColors[idx2 * 3 + 1];
+            const b2 = rawColors[idx2 * 3 + 2];
+            
+            _colorHelper.setRGB(
+                r1 + (r2 - r1) * alpha,
+                g1 + (g2 - g1) * alpha,
+                b1 + (b2 - b1) * alpha
+            );
+            return _colorHelper;
+        }
+
         function setupUI() {
             const toggleBtn = document.getElementById('infoBtn');
             const settingsBtn = document.getElementById('settingsBtn');
@@ -941,6 +1006,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const freeCamSwitch = document.getElementById('freeCameraToggle'); 
             const fileInput = document.getElementById('fileUpload');
             const fetchBtn = document.getElementById('fetchBtn');
+            const exportBtn = document.getElementById('exportBtn');
             
             const speedSlider = document.getElementById('speedSlider');
             const timelineSlider = document.getElementById('timelineSlider');
@@ -973,7 +1039,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 if(tempGridGroup) tempGridGroup.visible = visible;
                 if(tempLabelGroup) tempLabelGroup.visible = visible;
                 if(tempVerticalGroup) tempVerticalGroup.visible = visible;
-                if(startCapMesh) startCapMesh.visible = visible;
                 if(endCapMesh) endCapMesh.visible = visible;
             });
             
@@ -995,6 +1060,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
             
             fetchBtn.addEventListener('click', fetchRemoteData);
+            exportBtn.addEventListener('click', exportGLTF);
 
             const showTimeline = () => {
                 clearTimeout(timelineTimeout);
@@ -1176,6 +1242,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const lastEntry = processedData[processedData.length - 1];
                 endYear = lastEntry.year;
                 
+                const yearsDiff = endYear - startYear;
+                const monthsInLastYear = lastEntry.anomalies.length;
+                
+                totalDurationYears = yearsDiff + ((monthsInLastYear - 1) / 12);
+
                 document.getElementById('timelineStart').innerText = startYear;
                 document.getElementById('timelineEnd').innerText = endYear;
             }
@@ -1304,72 +1375,54 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return fullData;
         }
 
-        // --- Custom Geometry Generator ---
-        // Creates a tube that visits every point in 'points' EXACTLY.
-        // Used for both Rough (straight segments) and Smooth (curved but constrained) modes.
+        // --- Custom Geometry Generator (with Caps) ---
         function createDataTubeGeometry(points, colors, radius, radialSegments) {
             const numPoints = points.length;
             const numSegments = numPoints - 1;
-            const vertexCount = numPoints * radialSegments;
-            const indexCount = numSegments * radialSegments * 6; // 2 triangles per face
-
+            
+            // Vertices for the tube: numPoints * radialSegments
+            // Extra vertices for caps: 2 (start center, end center)
+            const vertexCount = (numPoints * radialSegments) + 2;
+            
             const geometry = new THREE.BufferGeometry();
             const positionArray = new Float32Array(vertexCount * 3);
             const colorArray = new Float32Array(vertexCount * 3);
             const indexArray = [];
 
-            // Helper to get basis vectors
             const P = new THREE.Vector3();
             const T = new THREE.Vector3();
             const N = new THREE.Vector3();
             const B = new THREE.Vector3();
             
-            // To minimize twist, we use a reference "Up" based on the spiral nature.
-            // The spiral goes around Y. So the "Normal" to the cylinder surface roughly points outward radially.
-            // N = (x, 0, z) normalized.
-            // T = Tangent along curve.
-            // B = T x N.
-            
+            // --- 1. Generate Tube Vertices ---
             for (let i = 0; i < numPoints; i++) {
                 P.copy(points[i]);
                 
-                // Calculate Tangent T
                 if (i === 0) {
                     T.subVectors(points[1], points[0]).normalize();
                 } else if (i === numPoints - 1) {
                     T.subVectors(points[i], points[i-1]).normalize();
                 } else {
-                    // Average tangent
                     const T1 = new THREE.Vector3().subVectors(points[i], points[i-1]);
                     const T2 = new THREE.Vector3().subVectors(points[i+1], points[i]);
                     T.addVectors(T1, T2).normalize();
                 }
 
-                // Calculate Normal N (Radially outward from Y axis)
-                // Use slightly offset Y to avoid gimbal lock if T is vertical (unlikely in this graph)
                 N.set(P.x, 0, P.z);
-                if (N.lengthSq() < 0.001) {
-                    // Fallback if point is exactly on axis (rare)
-                    N.set(1, 0, 0); 
-                }
+                if (N.lengthSq() < 0.001) N.set(1, 0, 0); 
                 N.normalize();
 
-                // Calculate Binormal B
                 B.crossVectors(T, N).normalize();
-                
-                // Re-orthogonalize N to ensure T,N,B are perpendicular
                 N.crossVectors(B, T).normalize();
 
-                // Generate Ring
                 const baseIndex = i * radialSegments;
-                const c = colors[i]; // THREE.Color object
+                const c = colors[i]; 
 
                 for (let j = 0; j < radialSegments; j++) {
                     const theta = (j / radialSegments) * Math.PI * 2;
                     const sin = Math.sin(theta);
                     const cos = Math.cos(theta);
 
-                    // Vertex pos: P + radius * (cos*N + sin*B)
                     const px = P.x + radius * (cos * N.x + sin * B.x);
                     const py = P.y + radius * (cos * N.y + sin * B.y);
                     const pz = P.z + radius * (cos * N.z + sin * B.z);
@@ -1378,14 +1431,43 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     positionArray[baseIndex*3 + j*3 + 1] = py;
                     positionArray[baseIndex*3 + j*3 + 2] = pz;
 
-                    // Color
                     colorArray[baseIndex*3 + j*3]     = c.r;
                     colorArray[baseIndex*3 + j*3 + 1] = c.g;
                     colorArray[baseIndex*3 + j*3 + 2] = c.b;
                 }
             }
+            
+            // --- 2. Add Cap Center Vertices ---
+            const startCenterIdx = vertexCount - 2;
+            positionArray[startCenterIdx*3]     = points[0].x;
+            positionArray[startCenterIdx*3 + 1] = points[0].y;
+            positionArray[startCenterIdx*3 + 2] = points[0].z;
+            colorArray[startCenterIdx*3]     = colors[0].r;
+            colorArray[startCenterIdx*3 + 1] = colors[0].g;
+            colorArray[startCenterIdx*3 + 2] = colors[0].b;
+            
+            const endCenterIdx = vertexCount - 1;
+            positionArray[endCenterIdx*3]     = points[numPoints-1].x;
+            positionArray[endCenterIdx*3 + 1] = points[numPoints-1].y;
+            positionArray[endCenterIdx*3 + 2] = points[numPoints-1].z;
+            colorArray[endCenterIdx*3]     = colors[numPoints-1].r;
+            colorArray[endCenterIdx*3 + 1] = colors[numPoints-1].g;
+            colorArray[endCenterIdx*3 + 2] = colors[numPoints-1].b;
 
-            // Generate Indices
+            // --- 3. Generate Indices (Fixed Winding for Outward Normals) ---
+            
+            // Start Cap Indices (Triangle Fan) - Need Backward Normal
+            // Center -> nextI -> i produces Backward Normal (Out of tube start)
+            for (let j = 0; j < radialSegments; j++) {
+                const i = j;
+                const nextI = (j + 1) % radialSegments;
+                indexArray.push(startCenterIdx, nextI, i);
+            }
+
+            // Tube Body Indices - Need CCW Winding for Outward Normal
+            // Standard quad (i,j) -> (i,j+1) -> (i+1,j+1) -> (i+1,j)
+            // Triangles: (i,j)-(i,j+1)-(i+1,j) and (i,j+1)-(i+1,j+1)-(i+1,j)
+            // Indices: a-b-d and b-c-d
             for (let i = 0; i < numSegments; i++) {
                 for (let j = 0; j < radialSegments; j++) {
                     const nextJ = (j + 1) % radialSegments;
@@ -1395,12 +1477,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const c = (i + 1) * radialSegments + nextJ;
                     const d = (i + 1) * radialSegments + j;
 
-                    // Two triangles: a-b-d and b-c-d
-                    // Actually standard is a-d-b and b-d-c or similar winding
-                    // Counter-clockwise
-                    indexArray.push(a, d, b);
-                    indexArray.push(b, d, c);
+                    indexArray.push(a, b, d);
+                    indexArray.push(b, c, d);
                 }
+            }
+            
+            // End Cap Indices (Triangle Fan) - Need Forward Normal
+            // Center -> i -> nextI produces Forward Normal (Out of tube end)
+            const lastRingStart = (numPoints - 1) * radialSegments;
+            for (let j = 0; j < radialSegments; j++) {
+                const i = lastRingStart + j;
+                const nextI = lastRingStart + ((j + 1) % radialSegments);
+                indexArray.push(endCenterIdx, i, nextI);
             }
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
@@ -1413,7 +1501,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function createSpiral(data) {
             if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
-            if (startCapMesh) { disposeHierarchy(startCapMesh); scene.remove(startCapMesh); }
             if (endCapMesh) { disposeHierarchy(endCapMesh); scene.remove(endCapMesh); }
             if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
 
@@ -1460,7 +1547,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     // Metadata for timeline
                     rawMetaData.push({
                         decimalYear: entry.year + (monthIdx / 12),
-                        anomaly: anomaly
+                        anomaly: anomaly,
+                        // Store tangent basis later if needed, but we calculate it in geometry gen now
+                        // For endCapMesh alignment, we still need tangent
                     });
 
                     // Color calculation
@@ -1504,13 +1593,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const pointsPerSeg = 6; 
                 const totalPoints = (rawPoints.length - 1) * pointsPerSeg + 1;
                 
-                // Use getPoints for index alignment
                 finalPoints = curve.getPoints(totalPoints); 
                 
-                // Re-calculate colors AND years for these new points
                 for (let i = 0; i < finalPoints.length; i++) {
                     const u = i / (finalPoints.length - 1);
-                    // Map u back to raw indices to interp
                     const floatIdx = u * (rawPoints.length - 1);
                     const idxA = Math.floor(floatIdx);
                     const idxB = Math.min(idxA + 1, rawPoints.length - 1);
@@ -1518,12 +1604,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     
                     finalColors.push(lerpColor(rawColors[idxA], rawColors[idxB], alpha));
                     
-                    // Interpolate Year
                     const yearA = rawMetaData[idxA].decimalYear;
                     const yearB = rawMetaData[idxB].decimalYear;
                     const interpYear = yearA + (yearB - yearA) * alpha;
                     
-                    // Interpolate Anomaly (for info panel)
                     const valA = rawMetaData[idxA].anomaly;
                     const valB = rawMetaData[idxB].anomaly;
                     const interpVal = valA + (valB - valA) * alpha;
@@ -1535,13 +1619,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
                 
             } else {
-                // Rough mode: Use exact points.
                 finalPoints = rawPoints;
                 finalColors = rawColors;
                 finalMetaData = rawMetaData;
             }
 
-            // 3. Generate Custom Geometry
+            // 3. Generate Custom Geometry with Caps
             const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments);
             
             // Store data for animation mapping
@@ -1564,37 +1647,39 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             scene.add(yearLabels);
             yearLabelsGroup = yearLabels;
             
-            // Caps
-            const capGeo = new THREE.SphereGeometry(CONFIG.tubeRadius, 16, 16);
-            const capMat = new THREE.MeshStandardMaterial({
+            // Moving End Cap (Lid) - Separate Mesh for Animation
+            // CircleGeometry(radius, 8) creates an octagon
+            const endCapGeo = new THREE.CircleGeometry(CONFIG.tubeRadius, 8);
+            const endCapMat = new THREE.MeshStandardMaterial({
                 roughness: 0.3,
                 metalness: 0.0,
-                color: finalColors[0]
+                color: finalColors[0],
+                side: THREE.DoubleSide
             });
             
-            startCapMesh = new THREE.Mesh(capGeo, capMat);
-            startCapMesh.position.copy(finalPoints[0]);
-            scene.add(startCapMesh);
-            
-            endCapMesh = new THREE.Mesh(capGeo, capMat.clone());
-            endCapMesh.position.copy(finalPoints[0]);
-            scene.add(endCapMesh);
-            
-            startCapMesh.visible = visible;
+            endCapMesh = new THREE.Mesh(endCapGeo, endCapMat);
             endCapMesh.visible = visible;
+            scene.add(endCapMesh);
 
             controls.target.set(0, spiralHeight / 2, 0);
             
-            // Reset totals for animation
-            totalIndices = (finalPoints.length - 1) * CONFIG.radialSegments * 6;
+            // Total indices needed for FULL draw (Body + Start Cap + End Cap)
+            // However, animation only grows the body.
+            // Start cap indices = radialSegments * 3
+            const startCapIndices = CONFIG.radialSegments * 3;
+            // Body indices = (numPoints-1) * radialSegments * 6
+            const bodyIndices = (finalPoints.length - 1) * CONFIG.radialSegments * 6;
+            
+            totalIndices = bodyIndices; // For animation progress calculation
             
             if (!isAnimating) {
+                // Show full geometry including end cap
                 geometry.setDrawRange(0, Infinity);
                 animationIndex = totalIndices;
                 document.getElementById('timelineSlider').value = 100;
                 
-                endCapMesh.position.copy(finalPoints[finalPoints.length-1]);
-                endCapMesh.material.color.set(finalColors[finalColors.length-1]);
+                // Hide moving lid at end, rely on baked geometry
+                endCapMesh.visible = false;
                 
                 updateYearIndicatorText(endYear);
             }
@@ -1643,26 +1728,40 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
 
-            // Snap to full rings to prevent spikes
-            // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
+            const startCapIndices = CONFIG.radialSegments * 3;
             
-            spiralMesh.geometry.setDrawRange(0, snappedIndex);
+            // Draw Start Cap + Current Body
+            spiralMesh.geometry.setDrawRange(0, startCapIndices + snappedIndex);
             
+            // Moving Lid Logic
             if (endCapMesh && generatedGeometryData) {
-                // Map snappedIndex back to the point index
-                // snappedIndex / (6 * radial) = segment index
                 const segmentIdx = snappedIndex / stride;
-                
-                // Ideally interpolate between segmentIdx and segmentIdx+1 based on remainder, 
-                // but since we snap, we just grab the point at segmentIdx
                 const ptIndex = Math.min(segmentIdx, generatedGeometryData.length - 1);
                 const data = generatedGeometryData[ptIndex];
                 
                 if (data) {
+                    endCapMesh.visible = document.getElementById('helpersToggle').checked;
                     endCapMesh.position.copy(data.point);
                     endCapMesh.material.color.set(data.color);
+                    
+                    // Align Lid Rotation
+                    // We need the tangent. Let's compute it on the fly or store it.
+                    // Simple hack: Look at next point (or previous if at end)
+                    let targetPoint;
+                    if (ptIndex < generatedGeometryData.length - 1) {
+                        targetPoint = generatedGeometryData[ptIndex + 1].point;
+                    } else if (ptIndex > 0) {
+                        // Extrapolate direction
+                        const prev = generatedGeometryData[ptIndex - 1].point;
+                        const dir = new THREE.Vector3().subVectors(data.point, prev);
+                        targetPoint = new THREE.Vector3().addVectors(data.point, dir);
+                    }
+                    
+                    if (targetPoint) {
+                        endCapMesh.lookAt(targetPoint);
+                    }
                 }
             }
         }
@@ -1678,12 +1777,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (animationIndex >= totalIndices) {
                 animationIndex = totalIndices;
                 toggleAnimation(); 
+                
+                // Show baked end cap, hide moving lid
+                spiralMesh.geometry.setDrawRange(0, Infinity);
+                if(endCapMesh) endCapMesh.visible = false;
+            } else {
+                updateSpiralVisuals();
             }
             
-            updateSpiralVisuals();
-            
             document.getElementById('timelineSlider').value = (animationIndex / totalIndices) * 100;
-            
             updateTimelineState(animationIndex);
         }
 
