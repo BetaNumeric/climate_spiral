@@ -172,7 +172,21 @@
             height: 10px;
             background: linear-gradient(to right, #0000ff, #8888ff, #ffffff, #ff8888, #ff0000);
             border-radius: 2px;
+            position: relative; /* For marker positioning */
         }
+        
+        #legendMarker {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 2px;
+            background-color: #fff;
+            box-shadow: 0 0 4px rgba(0,0,0,0.8);
+            left: 50%; /* Default center */
+            transition: left 0.1s linear;
+            pointer-events: none;
+        }
+
         .legend-labels {
             display: flex;
             justify-content: space-between;
@@ -307,7 +321,26 @@
         <p>1880 - Present</p>
         <p>Radius = Temp Anomaly</p>
         <p>Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a></p>
-        <div class="legend"></div>
+        
+        <!-- Live Data Display -->
+        <div id="currentDataDisplay" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #333;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div>
+                    <div style="font-size: 0.8rem; color: #aaa;">Date</div>
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #fff;">
+                        <span id="infoMonth">Jan</span> <span id="infoYear">1880</span>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size: 0.8rem; color: #aaa;">Anomaly</div>
+                    <div style="font-size: 1.2rem; color: #8b9be1; font-family: monospace;" id="infoTemp">-- °C</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div id="legendMarker"></div>
+        </div>
         <div class="legend-labels">
             <span id="legendMin">-1.0°C</span>
             <span>0°C</span>
@@ -389,10 +422,10 @@
         <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
             <div class="slider-label">
                 <span>Animation Speed</span>
-                <span id="speedValue" class="slider-val">0.1x</span>
+                <span id="speedValue" class="slider-val">0.8x</span>
             </div>
             <!-- Updated speed slider: min 0.01, max 1.0, step 0.01 -->
-            <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.1" style="width:100%;">
+            <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8" style="width:100%;">
         </div>
     </div>
 
@@ -432,7 +465,7 @@
             radiusBase: 10,       
             radiusScale: 5,       
             heightPerYear: 0.3, 
-            tubeRadius: 0.15,
+            tubeRadius: 0.12, // Reduced from 0.15 to create gap
             tubularSegments: 3000, 
             radialSegments: 8,
             frustumSize: 60,      
@@ -443,6 +476,8 @@
             },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
+        
+        const MONTHS_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         const INITIAL_DATA_SOURCE = `
 Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year
@@ -471,15 +506,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let yearLabelsGroup, monthLabelsGroup; 
         let tempGridGroup, tempLabelGroup, tempVerticalGroup; 
         let yearIndicatorMesh, yearIndicatorTexture, yearIndicatorContext;
+        let lastDrawnYear = -1; // Track last drawn year to minimize canvas calls
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
         let currentMinAnomaly = 0; 
+        // Note: totalDurationYears logic is replaced by geometry mapping, so this var is less critical now
         
         // Reused color helper to prevent GC churn
         const _colorHelper = new THREE.Color();
         
         let currentDataText = INITIAL_DATA_SOURCE; 
         let timelineData = []; 
+        let generatedGeometryData = null; // Store data for animation mapping
         
         // Animation State
         let isAnimating = false;
@@ -487,7 +525,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let totalIndices = 0;
         let startYear = 1880;
         let endYear = 2025; 
-        let animationSpeed = 0.1; // Default to match slider
+        let animationSpeed = 0.8; 
         
         // UI State
         let timelineTimeout;
@@ -549,11 +587,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             controls.target.set(0, 0, 0); 
             controls.enablePan = false; // Restricted by default
 
-            // Lights - Increased intensity for "White" look
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); 
+            // Lights - Improved for 3D look
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
             scene.add(ambientLight);
-            const pointLight = new THREE.PointLight(0xffffff, 1.2);
-            pointLight.position.set(0, 50, 0);
+            
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            dirLight.position.set(50, 100, 50);
+            scene.add(dirLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.5);
+            pointLight.position.set(0, 20, 0);
             scene.add(pointLight);
 
             // Year Indicator (3D Mesh)
@@ -662,7 +705,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                             if(!response.ok) throw new Error("Proxy fetch failed");
                             return response.text();
                         })
-                        .then(text => onSuccess(text, "NASA via Proxy"))
+                        .then(text => onSuccess(text, "NASA via proxy"))
                         .catch(finalErr => {
                             console.warn("All fetches failed", finalErr);
                             statusEl.innerText = "Fetch Failed";
@@ -700,6 +743,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         
         function resetAnimation() {
             animationIndex = 0;
+            lastDrawnYear = -1; // Force redraw of year
             if(spiralMesh) {
                 updateSpiralVisuals(); 
                 document.getElementById('timelineSlider').value = 0;
@@ -716,11 +760,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             yearIndicatorTexture = new THREE.CanvasTexture(canvas);
             
+            // Material supports tinting with .color
             const material = new THREE.MeshBasicMaterial({ 
                 map: yearIndicatorTexture, 
                 transparent: true,
                 opacity: 0.9,
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
+                color: 0xffffff // Start white
             });
             
             const geometry = new THREE.PlaneGeometry(10, 5); 
@@ -730,15 +776,24 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             yearIndicatorMesh.position.set(0, 0.1, 0);
             
             scene.add(yearIndicatorMesh);
-            updateYearIndicatorText("1880", "#444444");
+            updateYearIndicatorText("1880");
         }
 
-        function updateYearIndicatorText(text, color = "#444444") {
+        function updateYearIndicatorText(text) {
+            // Only update text content if changed (optimization)
+            if (text === lastDrawnYear) return;
+            lastDrawnYear = text;
+
             if (!yearIndicatorContext) return;
             const ctx = yearIndicatorContext;
             ctx.clearRect(0, 0, 512, 256);
-            ctx.fillStyle = color; 
-            ctx.font = 'bold 180px Arial';
+            
+            // Draw in WHITE so we can tint it with material.color
+            ctx.fillStyle = "#ffffff"; 
+            
+            // Use Monospace font to prevent jitter/wobble in centering
+            ctx.font = 'bold 180px "Courier New", monospace';
+            
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(text, 256, 128);
@@ -867,27 +922,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return "#" + _colorHelper.getHexString();
         }
         
-        function getSpiralColorAtU(u, rawColors) {
-            const totalColorPoints = rawColors.length / 3;
-            const floatIdx = u * (totalColorPoints - 1);
-            const idx1 = Math.floor(floatIdx);
-            const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
-            const alpha = floatIdx - idx1;
-
-            const r1 = rawColors[idx1 * 3];
-            const g1 = rawColors[idx1 * 3 + 1];
-            const b1 = rawColors[idx1 * 3 + 2];
-            
-            const r2 = rawColors[idx2 * 3];
-            const g2 = rawColors[idx2 * 3 + 1];
-            const b2 = rawColors[idx2 * 3 + 2];
-            
-            _colorHelper.setRGB(
-                r1 + (r2 - r1) * alpha,
-                g1 + (g2 - g1) * alpha,
-                b1 + (b2 - b1) * alpha
-            );
-            return _colorHelper;
+        // Helper to mix colors directly
+        function lerpColor(c1, c2, alpha) {
+            return new THREE.Color().lerpColors(c1, c2, alpha);
         }
 
         function setupUI() {
@@ -1009,19 +1046,48 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function updateTimelineState(index) {
             const progress = index / totalIndices;
-            const currentYear = Math.floor(startYear + progress * (endYear - startYear));
             
-            let color = "#444444";
-            const yearData = timelineData.find(d => d.year === currentYear);
-            if(yearData) {
-                const avg = yearData.anomalies.reduce((a,b)=>a+b,0) / yearData.anomalies.length;
-                color = getInterpolatedColor(avg);
-            }
-            updateYearIndicatorText(currentYear, color);
-            
-            const yearOffset = currentYear - startYear;
-            if (yearIndicatorMesh) {
-                yearIndicatorMesh.position.y = (yearOffset * CONFIG.heightPerYear) + 2; 
+            if(yearIndicatorMesh && generatedGeometryData) {
+                // Find geometry data at current progress
+                const pointCount = generatedGeometryData.length;
+                const idx = Math.min(Math.floor(progress * (pointCount - 1)), pointCount - 1);
+                
+                const ptData = generatedGeometryData[idx];
+                
+                if (ptData) {
+                    const exactYear = ptData.decimalYear;
+                    const displayYear = Math.floor(exactYear);
+                    const currentAnomaly = ptData.anomaly || 0;
+                    
+                    // Update Text
+                    updateYearIndicatorText(displayYear);
+                    
+                    // Update Position (based on actual spiral year position, not linear time)
+                    const yearOffset = exactYear - startYear;
+                    yearIndicatorMesh.position.y = (yearOffset * CONFIG.heightPerYear) + 2; 
+                    
+                    // Update Panel Info
+                    document.getElementById('infoYear').innerText = displayYear;
+                    // Calc month from decimal
+                    const monthIndex = Math.min(11, Math.floor((exactYear % 1) * 12));
+                    document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
+                    
+                    const tempSign = currentAnomaly > 0 ? "+" : "";
+                    document.getElementById('infoTemp').innerText = tempSign + currentAnomaly.toFixed(2) + " °C";
+                    
+                    // Update Legend
+                    if (currentMaxAnomaly !== currentMinAnomaly) {
+                        let percent = (currentAnomaly - currentMinAnomaly) / (currentMaxAnomaly - currentMinAnomaly) * 100;
+                        percent = Math.max(0, Math.min(100, percent)); 
+                        document.getElementById('legendMarker').style.left = percent + "%";
+                    }
+                    
+                    // Update Color
+                    if (ptData.color) {
+                        yearIndicatorMesh.material.color.set(ptData.color);
+                        document.getElementById('infoTemp').style.color = "#" + ptData.color.getHexString();
+                    }
+                }
             }
         }
 
@@ -1059,46 +1125,27 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function switchCamera(isOrtho) {
             const target = controls.target.clone();
-            
-            // Seamless zoom transition logic
             if (isOrtho) {
-                // Switching Perspective -> Ortho
-                // Calculate size visible at target distance in perspective
                 const dist = perspectiveCamera.position.distanceTo(target);
-                const fov = perspectiveCamera.fov; // degrees
+                const fov = perspectiveCamera.fov; 
                 const visibleHeight = 2 * dist * Math.tan(THREE.MathUtils.degToRad(fov / 2));
-                
-                // orthographicCamera.zoom = frustumHeight / visibleHeight
-                // frustumHeight (unzoomed) is essentially CONFIG.frustumSize in this setup 
-                // because top-bottom is set to frustumSize (+ adjustments for aspect)
-                // We use CONFIG.frustumSize as a baseline reference for 1:1 match
                 const frustumHeight = CONFIG.frustumSize; 
                 orthographicCamera.zoom = frustumHeight / visibleHeight;
                 orthographicCamera.updateProjectionMatrix();
-                
-                // Copy transform direction
                 orthographicCamera.position.copy(perspectiveCamera.position);
                 orthographicCamera.rotation.copy(perspectiveCamera.rotation);
-                
                 activeCamera = orthographicCamera;
             } else {
-                // Switching Ortho -> Perspective
                 const zoom = orthographicCamera.zoom;
                 const frustumHeight = CONFIG.frustumSize;
                 const visibleHeight = frustumHeight / zoom;
-                
                 const fov = perspectiveCamera.fov;
-                // dist = visibleHeight / (2 * tan(fov/2))
                 const dist = visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
-                
-                // Move perspective camera along vector (Cam -> Target) to new distance
                 const direction = new THREE.Vector3().subVectors(orthographicCamera.position, target).normalize();
                 perspectiveCamera.position.copy(target).add(direction.multiplyScalar(dist));
                 perspectiveCamera.rotation.copy(orthographicCamera.rotation);
-                
                 activeCamera = perspectiveCamera;
             }
-
             controls.object = activeCamera;
             controls.target.copy(target); 
             controls.update();
@@ -1114,15 +1161,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateDataVisualization() {
-            // 1. Parse Raw Data (no interpolation yet)
             const rawData = parseGISSData(currentDataText);
-            
-            // 2. Check for Gaps
             const hasGaps = checkForGaps(rawData);
             const interpRow = document.getElementById('interpolationRow');
             if(interpRow) interpRow.style.display = hasGaps ? 'flex' : 'none';
 
-            // 3. Interpolate if enabled
             const shouldInterpolate = document.getElementById('interpolationToggle').checked;
             const processedData = (hasGaps && shouldInterpolate) ? interpolateSparseData(rawData) : rawData;
             
@@ -1130,7 +1173,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             if (processedData.length > 0) {
                 startYear = processedData[0].year;
-                endYear = processedData[processedData.length - 1].year;
+                const lastEntry = processedData[processedData.length - 1];
+                endYear = lastEntry.year;
+                
                 document.getElementById('timelineStart').innerText = startYear;
                 document.getElementById('timelineEnd').innerText = endYear;
             }
@@ -1200,40 +1245,38 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const lines = text.trim().split('\n');
             const data = [];
             const yearRegex = /^\s*(\d{4})/;
-            
             let scaleFactor = 1.0;
             let checkedScale = false;
 
             lines.forEach(line => {
                 if (yearRegex.test(line)) {
                     const parts = line.trim().split(/\s+/);
-                    
-                    if (parts.length >= 13) {
+                    if (parts.length >= 2) {
                         if (!checkedScale) {
-                             const valTest = parseFloat(parts[1]);
+                             const rawVal = parts[1].replace(/\*/g, '');
+                             const valTest = parseFloat(rawVal);
                              if (!isNaN(valTest) && Math.abs(valTest) > 10) {
                                  scaleFactor = 0.01;
                              }
                              checkedScale = true;
                         }
-
                         const year = parseInt(parts[0]);
                         const anomalies = [];
-                        
                         for (let i = 1; i <= 12; i++) {
-                            if (parts[i].includes('*')) break;
-                            let val = parseFloat(parts[i]);
+                            if (i >= parts.length) break;
+                            let raw = parts[i];
+                            let clean = raw.replace(/\*/g, '');
+                            if (clean === '') break; 
+                            let val = parseFloat(clean);
                             if (isNaN(val)) break; 
                             anomalies.push(val * scaleFactor);
                         }
-                        
                         if (anomalies.length > 0) {
                             data.push({ year, anomalies });
                         }
                     }
                 }
             });
-
             return data;
         }
 
@@ -1243,13 +1286,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const start = sparseData[i];
                 const end = sparseData[i+1];
                 fullData.push(start);
-
                 const yearsDiff = end.year - start.year;
                 if (yearsDiff > 1) {
                     for (let y = 1; y < yearsDiff; y++) {
                         const year = start.year + y;
                         const factor = y / yearsDiff;
-                        
                         if(start.anomalies.length === 12 && end.anomalies.length === 12) {
                             const interpolatedAnomalies = start.anomalies.map((val, idx) => {
                                 return val + (end.anomalies[idx] - val) * factor;
@@ -1263,14 +1304,122 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return fullData;
         }
 
+        // --- Custom Geometry Generator ---
+        // Creates a tube that visits every point in 'points' EXACTLY.
+        // Used for both Rough (straight segments) and Smooth (curved but constrained) modes.
+        function createDataTubeGeometry(points, colors, radius, radialSegments) {
+            const numPoints = points.length;
+            const numSegments = numPoints - 1;
+            const vertexCount = numPoints * radialSegments;
+            const indexCount = numSegments * radialSegments * 6; // 2 triangles per face
+
+            const geometry = new THREE.BufferGeometry();
+            const positionArray = new Float32Array(vertexCount * 3);
+            const colorArray = new Float32Array(vertexCount * 3);
+            const indexArray = [];
+
+            // Helper to get basis vectors
+            const P = new THREE.Vector3();
+            const T = new THREE.Vector3();
+            const N = new THREE.Vector3();
+            const B = new THREE.Vector3();
+            
+            // To minimize twist, we use a reference "Up" based on the spiral nature.
+            // The spiral goes around Y. So the "Normal" to the cylinder surface roughly points outward radially.
+            // N = (x, 0, z) normalized.
+            // T = Tangent along curve.
+            // B = T x N.
+            
+            for (let i = 0; i < numPoints; i++) {
+                P.copy(points[i]);
+                
+                // Calculate Tangent T
+                if (i === 0) {
+                    T.subVectors(points[1], points[0]).normalize();
+                } else if (i === numPoints - 1) {
+                    T.subVectors(points[i], points[i-1]).normalize();
+                } else {
+                    // Average tangent
+                    const T1 = new THREE.Vector3().subVectors(points[i], points[i-1]);
+                    const T2 = new THREE.Vector3().subVectors(points[i+1], points[i]);
+                    T.addVectors(T1, T2).normalize();
+                }
+
+                // Calculate Normal N (Radially outward from Y axis)
+                // Use slightly offset Y to avoid gimbal lock if T is vertical (unlikely in this graph)
+                N.set(P.x, 0, P.z);
+                if (N.lengthSq() < 0.001) {
+                    // Fallback if point is exactly on axis (rare)
+                    N.set(1, 0, 0); 
+                }
+                N.normalize();
+
+                // Calculate Binormal B
+                B.crossVectors(T, N).normalize();
+                
+                // Re-orthogonalize N to ensure T,N,B are perpendicular
+                N.crossVectors(B, T).normalize();
+
+                // Generate Ring
+                const baseIndex = i * radialSegments;
+                const c = colors[i]; // THREE.Color object
+
+                for (let j = 0; j < radialSegments; j++) {
+                    const theta = (j / radialSegments) * Math.PI * 2;
+                    const sin = Math.sin(theta);
+                    const cos = Math.cos(theta);
+
+                    // Vertex pos: P + radius * (cos*N + sin*B)
+                    const px = P.x + radius * (cos * N.x + sin * B.x);
+                    const py = P.y + radius * (cos * N.y + sin * B.y);
+                    const pz = P.z + radius * (cos * N.z + sin * B.z);
+
+                    positionArray[baseIndex*3 + j*3]     = px;
+                    positionArray[baseIndex*3 + j*3 + 1] = py;
+                    positionArray[baseIndex*3 + j*3 + 2] = pz;
+
+                    // Color
+                    colorArray[baseIndex*3 + j*3]     = c.r;
+                    colorArray[baseIndex*3 + j*3 + 1] = c.g;
+                    colorArray[baseIndex*3 + j*3 + 2] = c.b;
+                }
+            }
+
+            // Generate Indices
+            for (let i = 0; i < numSegments; i++) {
+                for (let j = 0; j < radialSegments; j++) {
+                    const nextJ = (j + 1) % radialSegments;
+                    
+                    const a = i * radialSegments + j;
+                    const b = i * radialSegments + nextJ;
+                    const c = (i + 1) * radialSegments + nextJ;
+                    const d = (i + 1) * radialSegments + j;
+
+                    // Two triangles: a-b-d and b-c-d
+                    // Actually standard is a-d-b and b-d-c or similar winding
+                    // Counter-clockwise
+                    indexArray.push(a, d, b);
+                    indexArray.push(b, d, c);
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            geometry.setIndex(indexArray);
+            geometry.computeVertexNormals();
+            
+            return geometry;
+        }
+
         function createSpiral(data) {
             if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
             if (startCapMesh) { disposeHierarchy(startCapMesh); scene.remove(startCapMesh); }
             if (endCapMesh) { disposeHierarchy(endCapMesh); scene.remove(endCapMesh); }
             if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
 
-            const points = [];
-            const colors = [];
+            const rawPoints = [];
+            const rawColors = [];
+            const rawMetaData = []; // To store year info per point
             const yearLabels = new THREE.Group();
             
             const visible = document.getElementById('helpersToggle').checked;
@@ -1295,6 +1444,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const topDownThreshold = 1.2;
             const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
 
+            // 1. Generate Raw Data Points (One per month)
             data.forEach((entry, yearIdx) => {
                 entry.anomalies.forEach((anomaly, monthIdx) => {
                     const angle = (monthIdx / 12) * Math.PI * 2 + CONFIG.angleOffset;
@@ -1305,79 +1455,102 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const x = Math.cos(angle) * r;
                     const z = Math.sin(angle) * r;
 
-                    points.push(new THREE.Vector3(x, yPos, z));
+                    rawPoints.push(new THREE.Vector3(x, yPos, z));
+                    
+                    // Metadata for timeline
+                    rawMetaData.push({
+                        decimalYear: entry.year + (monthIdx / 12),
+                        anomaly: anomaly
+                    });
 
+                    // Color calculation
+                    let c = new THREE.Color();
                     if (anomaly < 0) {
                         const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
-                        _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
                     } else {
                         const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
-                        _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
                     }
-                    colors.push(_colorHelper.r, _colorHelper.g, _colorHelper.b);
+                    rawColors.push(c);
                 });
 
                 if (entry.year % 10 === 0) {
                     const yearOffset = entry.year - startYearData;
                     const y = (yearOffset) * CONFIG.heightPerYear;
-                    
                     const sprite = addYearLabel(entry.year, y);
-                    
                     sprite.material.opacity = opacityFade;
-                    
                     yearLabels.add(sprite);
                 }
             });
             
             yearLabels.rotation.y = azimuthAngle;
-            
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
-            
             updateTemperatureVerticals(spiralHeight);
 
-            if (points.length < 2) return;
+            if (rawPoints.length < 2) return;
 
-            const curve = new THREE.CatmullRomCurve3(points);
-            curve.tension = 0.5; 
-
+            // 2. Smooth vs Rough Generation
             const isSmooth = document.getElementById('smoothSpiralToggle').checked;
-            const segments = isSmooth ? points.length * 10 : points.length;
-
-            const geometry = new THREE.TubeGeometry(curve, segments, CONFIG.tubeRadius, CONFIG.radialSegments, false);
             
-            const count = geometry.attributes.position.count;
-            const colorAttribute = new Float32Array(count * 3);
+            let finalPoints = [];
+            let finalColors = [];
+            let finalMetaData = []; // To store interpolated year info
             
-            for (let i = 0; i < count; i++) {
-                const u = i / count; 
+            if (isSmooth) {
+                const curve = new THREE.CatmullRomCurve3(rawPoints);
+                curve.curveType = 'centripetal'; 
                 
-                const totalColorPoints = colors.length / 3;
-                const floatIdx = u * (totalColorPoints - 1);
-                const idx1 = Math.floor(floatIdx);
-                const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
-                const alpha = floatIdx - idx1;
+                const pointsPerSeg = 6; 
+                const totalPoints = (rawPoints.length - 1) * pointsPerSeg + 1;
                 
-                if (isSmooth) {
-                    const r1 = colors[idx1 * 3];
-                    const g1 = colors[idx1 * 3 + 1];
-                    const b1 = colors[idx1 * 3 + 2];
+                // Use getPoints for index alignment
+                finalPoints = curve.getPoints(totalPoints); 
+                
+                // Re-calculate colors AND years for these new points
+                for (let i = 0; i < finalPoints.length; i++) {
+                    const u = i / (finalPoints.length - 1);
+                    // Map u back to raw indices to interp
+                    const floatIdx = u * (rawPoints.length - 1);
+                    const idxA = Math.floor(floatIdx);
+                    const idxB = Math.min(idxA + 1, rawPoints.length - 1);
+                    const alpha = floatIdx - idxA;
                     
-                    const r2 = colors[idx2 * 3];
-                    const g2 = colors[idx2 * 3 + 1];
-                    const b2 = colors[idx2 * 3 + 2];
+                    finalColors.push(lerpColor(rawColors[idxA], rawColors[idxB], alpha));
                     
-                    colorAttribute[i * 3]     = r1 + (r2 - r1) * alpha;
-                    colorAttribute[i * 3 + 1] = g1 + (g2 - g1) * alpha;
-                    colorAttribute[i * 3 + 2] = b1 + (b2 - b1) * alpha;
-                } else {
-                    const segmentIndex = Math.floor((i / count) * totalColorPoints);
-                    const cIdx = Math.min(segmentIndex * 3, colors.length - 3);
-                    colorAttribute[i * 3] = colors[cIdx];
-                    colorAttribute[i * 3 + 1] = colors[cIdx + 1];
-                    colorAttribute[i * 3 + 2] = colors[cIdx + 2];
+                    // Interpolate Year
+                    const yearA = rawMetaData[idxA].decimalYear;
+                    const yearB = rawMetaData[idxB].decimalYear;
+                    const interpYear = yearA + (yearB - yearA) * alpha;
+                    
+                    // Interpolate Anomaly (for info panel)
+                    const valA = rawMetaData[idxA].anomaly;
+                    const valB = rawMetaData[idxB].anomaly;
+                    const interpVal = valA + (valB - valA) * alpha;
+                    
+                    finalMetaData.push({
+                        decimalYear: interpYear,
+                        anomaly: interpVal
+                    });
                 }
+                
+            } else {
+                // Rough mode: Use exact points.
+                finalPoints = rawPoints;
+                finalColors = rawColors;
+                finalMetaData = rawMetaData;
             }
-            geometry.setAttribute('color', new THREE.BufferAttribute(colorAttribute, 3));
+
+            // 3. Generate Custom Geometry
+            const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments);
+            
+            // Store data for animation mapping
+            generatedGeometryData = finalPoints.map((p, i) => ({
+                point: p,
+                color: finalColors[i],
+                decimalYear: finalMetaData[i].decimalYear,
+                anomaly: finalMetaData[i].anomaly
+            }));
 
             const material = new THREE.MeshStandardMaterial({
                 vertexColors: true,
@@ -1386,29 +1559,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
 
             spiralMesh = new THREE.Mesh(geometry, material);
-            
-            spiralMesh.userData.curve = curve;
-            spiralMesh.userData.rawColors = colors;
-            spiralMesh.userData.radialSegments = CONFIG.radialSegments;
-
             scene.add(spiralMesh);
 
             scene.add(yearLabels);
             yearLabelsGroup = yearLabels;
             
+            // Caps
             const capGeo = new THREE.SphereGeometry(CONFIG.tubeRadius, 16, 16);
             const capMat = new THREE.MeshStandardMaterial({
                 roughness: 0.3,
                 metalness: 0.0,
-                color: new THREE.Color(colors[0], colors[1], colors[2]) // Start Color
+                color: finalColors[0]
             });
             
             startCapMesh = new THREE.Mesh(capGeo, capMat);
-            startCapMesh.position.copy(points[0]);
+            startCapMesh.position.copy(finalPoints[0]);
             scene.add(startCapMesh);
             
             endCapMesh = new THREE.Mesh(capGeo, capMat.clone());
-            endCapMesh.position.copy(points[0]);
+            endCapMesh.position.copy(finalPoints[0]);
             scene.add(endCapMesh);
             
             startCapMesh.visible = visible;
@@ -1416,24 +1585,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             controls.target.set(0, spiralHeight / 2, 0);
             
-            if (geometry.index) {
-                totalIndices = geometry.index.count;
-            } else {
-                totalIndices = count;
-            }
+            // Reset totals for animation
+            totalIndices = (finalPoints.length - 1) * CONFIG.radialSegments * 6;
             
             if (!isAnimating) {
                 geometry.setDrawRange(0, Infinity);
                 animationIndex = totalIndices;
                 document.getElementById('timelineSlider').value = 100;
                 
-                endCapMesh.position.copy(points[points.length-1]);
-                const lastColor = getSpiralColorAtU(1.0, colors);
-                endCapMesh.material.color.set(lastColor);
+                endCapMesh.position.copy(finalPoints[finalPoints.length-1]);
+                endCapMesh.material.color.set(finalColors[finalColors.length-1]);
                 
-                const lastYear = data[data.length - 1];
-                const avg = lastYear.anomalies.reduce((a,b)=>a+b,0) / lastYear.anomalies.length;
-                updateYearIndicatorText(endYear, getInterpolatedColor(avg));
+                updateYearIndicatorText(endYear);
             }
         }
 
@@ -1480,21 +1643,27 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
 
+            // Snap to full rings to prevent spikes
+            // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
             
             spiralMesh.geometry.setDrawRange(0, snappedIndex);
             
-            if (endCapMesh && spiralMesh.userData.curve) {
-                let u = snappedIndex / totalIndices;
-                if(u > 1) u = 1;
-                if(u < 0) u = 0;
+            if (endCapMesh && generatedGeometryData) {
+                // Map snappedIndex back to the point index
+                // snappedIndex / (6 * radial) = segment index
+                const segmentIdx = snappedIndex / stride;
                 
-                const point = spiralMesh.userData.curve.getPointAt(u);
-                if(point) endCapMesh.position.copy(point);
+                // Ideally interpolate between segmentIdx and segmentIdx+1 based on remainder, 
+                // but since we snap, we just grab the point at segmentIdx
+                const ptIndex = Math.min(segmentIdx, generatedGeometryData.length - 1);
+                const data = generatedGeometryData[ptIndex];
                 
-                const color = getSpiralColorAtU(u, spiralMesh.userData.rawColors);
-                endCapMesh.material.color.set(color);
+                if (data) {
+                    endCapMesh.position.copy(data.point);
+                    endCapMesh.material.color.set(data.color);
+                }
             }
         }
         
