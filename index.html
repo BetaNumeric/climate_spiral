@@ -148,6 +148,7 @@
             padding: 20px;
             border-radius: 8px;
             min-width: 260px;
+            max-width: 320px; /* Added max-width constraint */
             border: 1px solid #333;
             display: none; 
             z-index: 30;
@@ -318,9 +319,11 @@
     <div id="infoPanel" class="panel">
         <button class="close-btn" data-target="infoPanel">×</button>
         <h1>Climate Spiral</h1>
-        <p>1880 - Present</p>
-        <p>Radius = Temp Anomaly</p>
-        <p>Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a></p>
+        <p>Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents one orbit of earth.</p>
+        <p>
+            Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
+            Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
+        </p>
         
         <!-- Live Data Display -->
         <div id="currentDataDisplay" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #333;">
@@ -354,6 +357,14 @@
         <h2>Settings</h2>
         
         <div class="setting-row">
+            <span>Show Annotations</span>
+            <label class="switch">
+                <input type="checkbox" id="helpersToggle" checked>
+                <span class="slider-switch"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
             <span>Orthographic View</span>
             <label class="switch">
                 <input type="checkbox" id="orthoToggle" checked>
@@ -365,14 +376,6 @@
             <span>Free Camera</span>
             <label class="switch">
                 <input type="checkbox" id="freeCameraToggle">
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-        
-        <div class="setting-row">
-            <span>Show Helpers</span>
-            <label class="switch">
-                <input type="checkbox" id="helpersToggle" checked>
                 <span class="slider-switch"></span>
             </label>
         </div>
