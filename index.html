@@ -171,7 +171,13 @@
             margin-top: 15px;
             width: 100%;
             height: 10px;
-            background: linear-gradient(to right, #0000ff, #8888ff, #ffffff, #ff8888, #ff0000);
+            /* Updated gradient: Blue(-1) -> White(0) -> Red(1) -> Purple(2) */
+            /* Scale: -1 to 2 is range of 3. 0 is at 33.3%, 1 is at 66.6% */
+            background: linear-gradient(to right, 
+                #0000ff 0%, 
+                #ffffff 33.33%, 
+                #ff0000 66.66%, 
+                #800080 100%);
             border-radius: 2px;
             position: relative; /* For marker positioning */
         }
@@ -183,7 +189,7 @@
             width: 2px;
             background-color: #fff;
             box-shadow: 0 0 4px rgba(0,0,0,0.8);
-            left: 50%; /* Default center */
+            left: 33.33%; /* Default center at 0 */
             transition: left 0.1s linear;
             pointer-events: none;
         }
@@ -319,7 +325,7 @@
     <div id="infoPanel" class="panel">
         <button class="close-btn" data-target="infoPanel">×</button>
         <h1>Climate Spiral</h1>
-        <p>Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents one orbit of earth.</p>
+        <p>Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
         <p>
             Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
             Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
@@ -345,9 +351,10 @@
             <div id="legendMarker"></div>
         </div>
         <div class="legend-labels">
-            <span id="legendMin">-1.0°C</span>
+            <span>-1.0</span>
             <span>0°C</span>
-            <span id="legendMax">+1.0°C</span>
+            <span>+1.0</span>
+            <span>+2.0</span>
         </div>
     </div>
 
@@ -482,7 +489,8 @@
             colors: {
                 cold: new THREE.Color(0x0000ff), // Vivid Blue
                 neutral: new THREE.Color(0xffffff), // Pure white
-                hot: new THREE.Color(0xff0000)   // Vivid Red
+                hot: new THREE.Color(0xff0000),   // Vivid Red
+                extreme: new THREE.Color(0x800080) // Purple for > 1.0C
             },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
@@ -958,11 +966,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function getInterpolatedColor(anomaly) {
             if (anomaly < 0) {
-                const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
+                const t = Math.min(1, Math.abs(anomaly));
                 _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+            } else if (anomaly <= 1) {
+                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, anomaly);
             } else {
-                const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
-                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                const t = Math.min(1, anomaly - 1);
+                _colorHelper.lerpColors(CONFIG.colors.hot, CONFIG.colors.extreme, t);
             }
             return "#" + _colorHelper.getHexString();
         }
@@ -1144,12 +1154,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const tempSign = currentAnomaly > 0 ? "+" : "";
                     document.getElementById('infoTemp').innerText = tempSign + currentAnomaly.toFixed(2) + " °C";
                     
-                    // Update Legend
-                    if (currentMaxAnomaly !== currentMinAnomaly) {
-                        let percent = (currentAnomaly - currentMinAnomaly) / (currentMaxAnomaly - currentMinAnomaly) * 100;
-                        percent = Math.max(0, Math.min(100, percent)); 
-                        document.getElementById('legendMarker').style.left = percent + "%";
-                    }
+                    // Update Legend (FIXED RANGE -1 to 2)
+                    // Percent = (val - (-1)) / 3 * 100
+                    let percent = (currentAnomaly + 1) / 3 * 100;
+                    percent = Math.max(0, Math.min(100, percent)); 
+                    document.getElementById('legendMarker').style.left = percent + "%";
                     
                     // Update Color
                     if (ptData.color) {
@@ -1526,8 +1535,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 });
             });
             
-            document.getElementById('legendMin').innerText = currentMinAnomaly.toFixed(1) + "°C";
-            document.getElementById('legendMax').innerText = "+" + currentMaxAnomaly.toFixed(1) + "°C";
+            // Update Legend (FIXED RANGE)
+            // Removed redundant dynamic label updates as labels are now static
+            // document.getElementById('legendMin').innerText = "-1.0°C";
+            // document.getElementById('legendMax').innerText = "+1.0°C";
             
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
@@ -1555,14 +1566,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                         // For endCapMesh alignment, we still need tangent
                     });
 
-                    // Color calculation
+                    // Color calculation (FIXED SPECTRUM)
                     let c = new THREE.Color();
                     if (anomaly < 0) {
-                        const t = (currentMinAnomaly === 0) ? 0 : (anomaly / currentMinAnomaly);
+                        const t = Math.min(1, Math.abs(anomaly));
                         c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
+                    } else if (anomaly <= 1) {
+                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, anomaly);
                     } else {
-                        const t = (currentMaxAnomaly === 0) ? 0 : (anomaly / currentMaxAnomaly);
-                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, t);
+                        const t = Math.min(1, anomaly - 1);
+                        c.lerpColors(CONFIG.colors.hot, CONFIG.colors.extreme, t);
                     }
                     rawColors.push(c);
                 });
@@ -1731,6 +1744,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
 
+            // Snap to full rings to prevent spikes
+            // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
             const startCapIndices = CONFIG.radialSegments * 3;
