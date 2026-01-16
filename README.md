@@ -2,7 +2,11 @@
 
 An interactive 3D web visualization of global temperature anomalies from 1880 to the present. This project creates a spiraling "time-volume" where each volution represents one orbit of the earth and the radius represents the temperature deviation from the 1951-1980 baseline, helping to visualize the accelerating trend of global warming.
 
+
 **Live Demo:** https://betanumeric.github.io/climate_spiral/
+
+
+![spiral annotated](images/spiral_annotated.mp4)
 
 ## **Controls and Usage**
 
@@ -23,6 +27,10 @@ This project is a 3D implementation of the "Climate Spiral" concept originally v
 * Original Concept: [Wikipedia: Climate Spiral](https://en.wikipedia.org/wiki/Climate_spiral)  
 * NASA Visualization: [Scientific Visualization Studio](https://svs.gsfc.nasa.gov/5190/)
 
+
+
+![spiral side view](images/spiral_side_view.mp4)
+
 ## **Data Source**
 
 The data used in this visualization is the GISTEMP v4 (Global Surface Temperature Analysis) provided by the NASA Goddard Institute for Space Studies (GISS).
@@ -37,3 +45,7 @@ This project is built using HTML5, CSS3, and JavaScript (ES6). The 3D rendering 
 ## **License**
 
 This project is open source. Feel free to modify and share.
+
+
+
+![spiral](images/spiral.mp4)
