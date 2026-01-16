@@ -5,9 +5,7 @@ An interactive 3D web visualization of global temperature anomalies from 1880 to
 
 **Live Demo:** https://betanumeric.github.io/climate_spiral/
 
-https://github.com/BetaNumeric/climate_spiral/raw/refs/heads/main/images/spiral_annotated.mp4
-
-![spiral annotated](images/spiral_annotated.mp4)
+https://github.com/user-attachments/assets/2dd18308-13d1-4a4d-b62e-f5a46cf8c919
 
 ## **Controls and Usage**
 
@@ -30,7 +28,9 @@ This project is a 3D implementation of the "Climate Spiral" concept originally v
 
 
 
-![spiral side view](images/spiral_side_view.mp4)
+https://github.com/user-attachments/assets/ddeb0c82-955b-4864-ba1e-6e742c941f19
+
+
 
 ## **Data Source**
 
