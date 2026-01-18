@@ -1,6 +1,11 @@
 # **Climate Spiral**
 
 
+**Live Demo:** https://betanumeric.github.io/climate_spiral/
+
+
+
+
 
 https://github.com/user-attachments/assets/2af01e91-3973-4a29-9aaf-4759380e9e9d
 
@@ -10,7 +15,6 @@ https://github.com/user-attachments/assets/2af01e91-3973-4a29-9aaf-4759380e9e9d
 An interactive 3D web visualization of global temperature anomalies from 1880 to the present. This project creates a spiraling "time-volume" where each volution represents one orbit of the earth and the radius represents the temperature deviation from the 1951-1980 baseline, helping to visualize the accelerating trend of global warming.
 
 
-**Live Demo:** https://betanumeric.github.io/climate_spiral/
 
 
 ## **Controls and Usage**
