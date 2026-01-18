@@ -5,10 +5,7 @@
 
 
 
-
-
-https://github.com/user-attachments/assets/2af01e91-3973-4a29-9aaf-4759380e9e9d
-
+https://github.com/user-attachments/assets/f61a9301-b601-4c8d-9414-a020f49d6792
 
 
 
@@ -38,7 +35,7 @@ This project is a 3D implementation of the "Climate Spiral" concept originally v
 
 
 
-https://github.com/user-attachments/assets/2fc8f368-d09c-4ecf-ac36-8f89a3fb9a5d
+https://github.com/user-attachments/assets/5eb3508c-af42-4f4c-8416-544912cfbda7
 
 
 
