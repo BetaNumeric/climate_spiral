@@ -855,8 +855,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Draw in WHITE so we can tint it with material.color
             ctx.fillStyle = "#ffffff"; 
             
-            // Use FONT_FAMILY constant, increased size
-            ctx.font = '380px ' + FONT_FAMILY;
+            ctx.font = '400px ' + FONT_FAMILY;
             
             // Manual "Tabular figures" logic to prevent jitter
             // We draw each character individually at a fixed pitch
@@ -908,7 +907,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.width = 512; 
                 canvas.height = 256;
                 ctx.fillStyle = '#888';
-                ctx.font = '80px ' + FONT_FAMILY; // Use FONT_FAMILY constant
+                ctx.font = '80px ' + FONT_FAMILY; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 const labelText = temp > 0 ? `+${temp}°C` : `${temp}°C`;
@@ -938,7 +937,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 const vSpriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
                 const vLabel = new THREE.Sprite(vSpriteMat);
-                vLabel.scale.set(4, 2, 1);
+                vLabel.scale.set(6, 3, 1);
                 vLabel.position.set(r, 1, 0);
                 vLabel.name = "vLabel";
                 tempVerticalGroup.add(vLabel);
@@ -948,7 +947,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 tempVerticalGroup.add(v2);
                 
                 const vLabel2 = new THREE.Sprite(vSpriteMat.clone());
-                vLabel2.scale.set(4, 2, 1);
+                vLabel2.scale.set(6, 3, 1);
                 vLabel2.position.set(-r, 1, 0);
                 vLabel2.name = "vLabel";
                 tempVerticalGroup.add(vLabel2);
@@ -1295,7 +1294,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             createSpiral(processedData);
-            createMonthRing(CONFIG.radiusBase + (currentMaxAnomaly * CONFIG.radiusScale) + 1); 
+            createMonthRing(CONFIG.radiusBase + (currentMaxAnomaly * CONFIG.radiusScale) + .5); 
         }
 
         function createMonthRing(radius) {
@@ -1325,7 +1324,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.height = 256;
                 
                 ctx.fillStyle = '#888'; 
-                ctx.font = '80px ' + FONT_FAMILY; 
+                // Use global font constant
+                ctx.font = '100px ' + FONT_FAMILY; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(month, 256, 128);
@@ -1754,7 +1754,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             canvas.width = 512;
             canvas.height = 256;
             ctx.fillStyle = '#eee';
-            // Use global font constant
             ctx.font = '120px ' + FONT_FAMILY; 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1954,7 +1953,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 tempVerticalGroup.children.forEach(child => {
                     if (child.name === "vLabel") {
-                         child.material.opacity = opacityFade * 0.9;
+                         child.material.opacity = opacityFade * 0.6; // Change to 0.6
                     } else {
                          child.material.opacity = opacityFade * 0.4;
                     }
@@ -1968,7 +1967,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             if (monthLabelsGroup) {
                 monthLabelsGroup.children.forEach(mesh => {
-                    mesh.material.opacity = inverseOpacity;
+                    mesh.material.opacity = inverseOpacity * 0.6; // Change to inverseOpacity * 0.6
                     mesh.rotation.z = azimuthAngle;
                 });
             }
@@ -1982,7 +1981,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if(tempLabelGroup) {
                  tempLabelGroup.rotation.y = azimuthAngle;
                  tempLabelGroup.children.forEach(sprite => {
-                     sprite.material.opacity = inverseOpacity * 0.6;
+                     sprite.material.opacity = inverseOpacity * 0.6; // Reference value
                  });
             }
 
