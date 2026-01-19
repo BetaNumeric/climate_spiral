@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Climate Spiral</title>
+    
+    <!-- Load Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Updated font-family to prioritize Inter */
+        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         /* Icons */
         .icon-btn {
@@ -425,7 +432,7 @@
                 <span>Coil Spacing</span>
                 <span id="spacingValue" class="slider-val">0.3</span>
             </div>
-            <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.3" style="width:100%;">
+            <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.25" style="width:100%;">
         </div>
 
         <!-- Speed Slider -->
@@ -481,11 +488,11 @@
         const CONFIG = {
             radiusBase: 10,       
             radiusScale: 5,       
-            heightPerYear: 0.3, 
-            tubeRadius: 0.12, // Reduced from 0.15 to create gap
+            heightPerYear: 0.25, // Updated default spacing
+            tubeRadius: 0.12, 
             tubularSegments: 3000, 
             radialSegments: 8,
-            frustumSize: 60,      
+            frustumSize: 45, // Updated default zoom (smaller frustum = more zoom)    
             colors: {
                 cold: new THREE.Color(0x0000ff), // Vivid Blue
                 neutral: new THREE.Color(0xffffff), // Pure white
@@ -495,6 +502,8 @@
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
         
+        // Updated font to match CSS exactly
+        const FONT_FAMILY = '"Inter", sans-serif';
         const MONTHS_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         const INITIAL_DATA_SOURCE = `
@@ -809,8 +818,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function createYearIndicator() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 256;
+            canvas.width = 1024; // Increased resolution
+            canvas.height = 512; // Increased resolution
             yearIndicatorContext = canvas.getContext('2d');
             
             yearIndicatorTexture = new THREE.CanvasTexture(canvas);
@@ -841,17 +850,33 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (!yearIndicatorContext) return;
             const ctx = yearIndicatorContext;
-            ctx.clearRect(0, 0, 512, 256);
+            ctx.clearRect(0, 0, 1024, 512);
             
             // Draw in WHITE so we can tint it with material.color
             ctx.fillStyle = "#ffffff"; 
             
-            // Use Monospace font to prevent jitter/wobble in centering
-            ctx.font = 'bold 180px "Courier New", monospace';
+            // Use FONT_FAMILY constant, increased size
+            ctx.font = '380px ' + FONT_FAMILY;
+            
+            // Manual "Tabular figures" logic to prevent jitter
+            // We draw each character individually at a fixed pitch
+            const str = text.toString();
+            
+            // Measure a standard wide digit '0' to determine the fixed cell width
+            const digitWidth = ctx.measureText("0").width;
+            const step = digitWidth; // Fixed distance between character centers
+            
+            // Calculate starting X so the whole string is centered at 512
+            // (length-1) * step is the distance from center of first char to center of last char
+            const startX = 512 - ((str.length - 1) * step / 2);
             
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(text, 256, 128);
+            
+            for (let i = 0; i < str.length; i++) {
+                ctx.fillText(str[i], startX + (i * step), 256);
+            }
+            
             yearIndicatorTexture.needsUpdate = true;
         }
         
@@ -880,18 +905,22 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                canvas.width = 128; 
-                canvas.height = 64;
+                canvas.width = 512; 
+                canvas.height = 256;
                 ctx.fillStyle = '#888';
-                ctx.font = 'bold 30px Arial';
+                ctx.font = '80px ' + FONT_FAMILY; // Use FONT_FAMILY constant
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 const labelText = temp > 0 ? `+${temp}°C` : `${temp}°C`;
-                ctx.fillText(labelText, 64, 32);
+                ctx.fillText(labelText, 256, 128);
                 
                 const texture = new THREE.CanvasTexture(canvas);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
                 const meshMat = new THREE.MeshBasicMaterial({ map: texture, transparent:true, opacity:0.6, side: THREE.DoubleSide });
-                const geometryPlane = new THREE.PlaneGeometry(4, 2);
+                const geometryPlane = new THREE.PlaneGeometry(6, 3); // Updated scale to match
                 const mesh = new THREE.Mesh(geometryPlane, meshMat);
                 
                 const labelAngle = Math.PI / 4; 
@@ -1292,15 +1321,19 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                canvas.width = 128; 
-                canvas.height = 64;
-                ctx.fillStyle = '#666';
-                ctx.font = 'bold 20px Arial'; 
+                canvas.width = 512; 
+                canvas.height = 256;
+                
+                ctx.fillStyle = '#888'; 
+                ctx.font = '80px ' + FONT_FAMILY; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(month, 64, 32);
+                ctx.fillText(month, 256, 128);
 
                 const texture = new THREE.CanvasTexture(canvas);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
                 
                 const material = new THREE.MeshBasicMaterial({ 
                     map: texture, 
@@ -1308,7 +1341,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     side: THREE.DoubleSide
                 });
                 
-                const geometry = new THREE.PlaneGeometry(8, 4);
+                const geometry = new THREE.PlaneGeometry(6, 3);
                 const mesh = new THREE.Mesh(geometry, material);
                 
                 mesh.position.set(x, 0, z);
@@ -1586,6 +1619,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
             });
             
+            // Add next decade label
+            const lastEntry = data[data.length - 1];
+            const lastYear = lastEntry.year;
+            // E.g. if lastYear is 2025 -> 2030. If 2030 -> 2040.
+            const nextDecade = Math.floor(lastYear / 10) * 10 + 10;
+            const yearOffset = nextDecade - startYearData;
+            const y = yearOffset * CONFIG.heightPerYear;
+            const sprite = addYearLabel(nextDecade, y);
+            sprite.material.opacity = opacityFade;
+            yearLabels.add(sprite);
+            
             yearLabels.rotation.y = azimuthAngle;
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
             updateTemperatureVerticals(spiralHeight);
@@ -1707,13 +1751,20 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function addYearLabel(year, y) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 128;
-            canvas.height = 64;
+            canvas.width = 512;
+            canvas.height = 256;
             ctx.fillStyle = '#eee';
-            ctx.font = 'bold 32px Arial'; 
-            ctx.fillText(year, 10, 50);
+            // Use global font constant
+            ctx.font = '120px ' + FONT_FAMILY; 
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(year, 256, 128);
 
             const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            
             const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
             const sprite = new THREE.Sprite(spriteMat);
             sprite.scale.set(6, 3, 1);
@@ -1747,6 +1798,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
 
+            // Snap to full rings to prevent spikes
+            // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
             const startCapIndices = CONFIG.radialSegments * 3;
