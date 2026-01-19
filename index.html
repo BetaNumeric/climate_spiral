@@ -788,11 +788,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const exporter = new GLTFExporter();
             
             // Clone Spiral with full draw range
-            // NOTE: The geometry now INCLUDES the start and end caps natively.
-            // So we don't need to add separate sphere meshes.
             const spiralClone = spiralMesh.clone();
             spiralClone.geometry = spiralMesh.geometry.clone();
-            spiralClone.geometry.setDrawRange(0, Infinity); // Full range (inc. both caps)
+            spiralClone.geometry.setDrawRange(0, Infinity);
             
             // Execute Export
             exporter.parse(
@@ -818,8 +816,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function createYearIndicator() {
             const canvas = document.createElement('canvas');
-            canvas.width = 1024; // Increased resolution
-            canvas.height = 512; // Increased resolution
+            canvas.width = 1024;
+            canvas.height = 512;
             yearIndicatorContext = canvas.getContext('2d');
             
             yearIndicatorTexture = new THREE.CanvasTexture(canvas);
@@ -844,7 +842,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateYearIndicatorText(text) {
-            // Only update text content if changed (optimization)
+            // Only update text content if changed
             if (text === lastDrawnYear) return;
             lastDrawnYear = text;
 
@@ -858,7 +856,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             ctx.font = '360px ' + FONT_FAMILY;
             
             // Manual "Tabular figures" logic to prevent jitter
-            // We draw each character individually at a fixed pitch
             const str = text.toString();
             
             // Measure a standard wide digit '0' to determine the fixed cell width
@@ -1422,13 +1419,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return fullData;
         }
 
-        // --- Custom Geometry Generator (with Caps) ---
+        // --- Custom Geometry Generator ---
         function createDataTubeGeometry(points, colors, radius, radialSegments) {
             const numPoints = points.length;
             const numSegments = numPoints - 1;
             
             // Vertices for the tube: numPoints * radialSegments
-            // Extra vertices for caps: 2 (start center, end center)
             const vertexCount = (numPoints * radialSegments) + 2;
             
             const geometry = new THREE.BufferGeometry();
@@ -1501,10 +1497,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             colorArray[endCenterIdx*3 + 1] = colors[numPoints-1].g;
             colorArray[endCenterIdx*3 + 2] = colors[numPoints-1].b;
 
-            // --- 3. Generate Indices (Fixed Winding for Outward Normals) ---
+            // --- 3. Generate Indices ---
             
-            // Start Cap Indices (Triangle Fan) - Need Backward Normal
-            // Center -> nextI -> i produces Backward Normal (Out of tube start)
+            // Start Cap Indices
             for (let j = 0; j < radialSegments; j++) {
                 const i = j;
                 const nextI = (j + 1) % radialSegments;
@@ -1529,7 +1524,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
             }
             
-            // End Cap Indices (Triangle Fan) - Need Forward Normal
+            // End Cap Indices (Triangle Fan)
             // Center -> i -> nextI produces Forward Normal (Out of tube end)
             const lastRingStart = (numPoints - 1) * radialSegments;
             for (let j = 0; j < radialSegments; j++) {
@@ -1953,7 +1948,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 tempVerticalGroup.children.forEach(child => {
                     if (child.name === "vLabel") {
-                         child.material.opacity = opacityFade * 0.6; // Change to 0.6
+                         child.material.opacity = opacityFade * 0.6;
                     } else {
                          child.material.opacity = opacityFade * 0.4;
                     }
@@ -1967,7 +1962,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             if (monthLabelsGroup) {
                 monthLabelsGroup.children.forEach(mesh => {
-                    mesh.material.opacity = inverseOpacity * 0.6; // Change to inverseOpacity * 0.6
+                    mesh.material.opacity = inverseOpacity * 0.6;
                     mesh.rotation.z = azimuthAngle;
                 });
             }
@@ -1981,7 +1976,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if(tempLabelGroup) {
                  tempLabelGroup.rotation.y = azimuthAngle;
                  tempLabelGroup.children.forEach(sprite => {
-                     sprite.material.opacity = inverseOpacity * 0.6; // Reference value
+                     sprite.material.opacity = inverseOpacity * 0.6;
                  });
             }
 
