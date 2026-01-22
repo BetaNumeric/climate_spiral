@@ -20,15 +20,15 @@ The animation plays automatically upon loading. You can control the playback usi
 
 * **Rotate:** Left-click and drag to rotate the spiral.  
 * **Zoom:** Use the mouse scroll wheel.  
-* **Pan:** Right-click and drag (requires "Free Camera" to be enabled in the settings).
+* **Move:** Right-click and drag (requires "Free Camera" to be enabled in the settings).
 
-Click the gear icon to access settings. Here you can toggle between a 3D perspective and an orthographic view, adjust the animation speed, or toggle visual helpers like the grid and labels.
+Click the gear icon to access settings. Here you can toggle between an orthographic and 3D perspective view, adjust the animation speed, or toggle visual helpers like the grid and labels.
 
 To update the data, you can either click "Fetch Latest" in the settings menu (which uses a proxy) or drag and drop the raw GLB.Ts+dSST.txt file directly into the browser window.
 
 ## **Background and Inspiration**
 
-This project is a 3D implementation of the "Climate Spiral" concept originally visualized by climate scientist Ed Hawkins from the University of Reading in 2016\. The visualization went viral for its simple yet powerful demonstration of global temperature change.
+This project is a 3D implementation of the "Climate Spiral" concept originally visualized by climate scientist Ed Hawkins from the University of Reading in 2016\.
 
 * Original Concept: [Wikipedia: Climate Spiral](https://en.wikipedia.org/wiki/Climate_spiral)  
 * NASA Visualization: [Scientific Visualization Studio](https://svs.gsfc.nasa.gov/5190/)
