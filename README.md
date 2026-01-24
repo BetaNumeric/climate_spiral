@@ -1,8 +1,7 @@
 # **Climate Spiral**
 
-
-**Live Demo:** https://betanumeric.github.io/climate_spiral/
-
+ 
+[**Live Demo**](https://betanumeric.github.io/climate_spiral/)
 
 
 https://github.com/user-attachments/assets/4862e111-25a3-417e-994f-fd50bbe4f3ba
