@@ -51,4 +51,4 @@ This project is built using HTML5, CSS3, and JavaScript (ES6). The 3D rendering 
 
 ## **License**
 
-This project is open source. Feel free to modify and share.
+This project is licensed under the MIT License. Feel free to modify and share.
