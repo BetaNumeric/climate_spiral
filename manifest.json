@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "Climate Spiral",
+  "short_name": "Spiral",
+  "description": "Interactive 3D climate spiral of global temperature anomalies.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "./icons/icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

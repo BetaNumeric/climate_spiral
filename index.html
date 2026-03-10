@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Climate Spiral</title>
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Climate Spiral">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon_32.png">
+    <link rel="apple-touch-icon" href="./icons/icon_192.png">
     
     <!-- Load Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1981,6 +1988,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             renderer.render(scene, activeCamera);
+        }
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+                    console.error("Service worker registration failed:", error);
+                });
+            });
         }
     </script>
 </body>
