@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Climate Spiral",
   "short_name": "Spiral",
-  "description": "Interactive 3D climate spiral of global temperature anomalies.",
+  "description": "Interactive 3D climate spirals.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

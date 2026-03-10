@@ -28,7 +28,7 @@ To update the data, you can click "Fetch Latest" in the settings menu (which use
 
 ## **Mobile / PWA**
 
-This app includes a web app manifest and service worker, so it can be installed to iPhone and Android home screens and run in **standalone** mode (in settings click "Add to Home Screen").
+This app includes a web app manifest and service worker, so it can be installed to iPhone and Android home screens and run in **standalone** mode (click "Add to Home Screen" in Settings).
 
 ## **Background and Inspiration**
 

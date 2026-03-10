@@ -18,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Updated font-family to prioritize Inter */
         body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         /* Icons */
@@ -186,8 +185,8 @@
             margin-top: 15px;
             width: 100%;
             height: 10px;
-            /* Updated gradient: Blue(-1) -> White(0) -> Red(1) -> Purple(2) */
-            /* Scale: -1 to 2 is range of 3. 0 is at 33.3%, 1 is at 66.6% */
+            /* Gradient: Blue(-1) -> White(0) -> Red(1) -> Purple(2) */
+            /* Scale: -1 to 2 is range 3. 0 is at 33.3%, 1 is at 66.6% */
             background: linear-gradient(to right, 
                 #0000ff 0%, 
                 #ffffff 33.33%, 
@@ -457,7 +456,6 @@
                 <span>Animation Speed</span>
                 <span id="speedValue" class="slider-val">0.8x</span>
             </div>
-            <!-- Updated speed slider: min 0.01, max 1.0, step 0.01 -->
             <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8" style="width:100%;">
         </div>
 
@@ -504,22 +502,21 @@
         const CONFIG = {
             radiusBase: 10,       
             radiusScale: 5,       
-            heightPerYear: 0.25, // Updated default spacing
+            heightPerYear: 0.25,
             tubeRadius: 0.12, 
-            tubularSegments: 3000, 
             radialSegments: 8,
-            frustumSize: 45, // Updated default zoom (smaller frustum = more zoom)    
+            frustumSize: 45,
             colors: {
-                cold: new THREE.Color(0x0000ff), // Vivid Blue
-                neutral: new THREE.Color(0xffffff), // Pure white
-                hot: new THREE.Color(0xff0000),   // Vivid Red
-                extreme: new THREE.Color(0x800080) // Purple for > 1.0C
+                cold: new THREE.Color(0x0000ff),
+                neutral: new THREE.Color(0xffffff),
+                hot: new THREE.Color(0xff0000),
+                extreme: new THREE.Color(0x800080)
             },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
         
-        // Updated font to match CSS exactly
         const FONT_FAMILY = '"Inter", sans-serif';
+        const OPACITY_FADE_THRESHOLD = 1.2;
         const MONTHS_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         const INITIAL_DATA_SOURCE = `
@@ -582,8 +579,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let lastDrawnYear = -1; 
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
-        let currentMinAnomaly = 0; 
-        let totalDurationYears = 0; 
         
         let dirLight; // Global ref for update
 
@@ -592,7 +587,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         
         let currentDatasetKey = "temperature";
         let currentDataText = INITIAL_DATA_SOURCE; 
-        let timelineData = []; 
         let generatedGeometryData = null; // Store data for animation mapping
         const datasetPlaybackState = {
             temperature: { initialized: false, progress: 0, completed: false, wasAnimating: false },
@@ -1122,7 +1116,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
                 const meshMat = new THREE.MeshBasicMaterial({ map: texture, transparent:true, opacity:0.6, side: THREE.DoubleSide });
-                const geometryPlane = new THREE.PlaneGeometry(6, 3); // Updated scale to match
+                const geometryPlane = new THREE.PlaneGeometry(6, 3);
                 const mesh = new THREE.Mesh(geometryPlane, meshMat);
                 
                 const labelAngle = Math.PI / 4; 
@@ -1158,7 +1152,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             const azimuth = controls.getAzimuthalAngle();
             const polar = controls.getPolarAngle();
-            const opacity = Math.min(1, Math.max(0, polar / 1.2));
+            const opacity = Math.min(1, Math.max(0, polar / OPACITY_FADE_THRESHOLD));
             const inverseOpacity = 1 - opacity;
 
             tempLabelGroup.rotation.y = azimuth;
@@ -1198,45 +1192,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
         }
 
-        function getInterpolatedColor(anomaly) {
-            if (anomaly < 0) {
-                const t = Math.min(1, Math.abs(anomaly));
-                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
-            } else if (anomaly <= 1) {
-                _colorHelper.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, anomaly);
-            } else {
-                const t = Math.min(1, anomaly - 1);
-                _colorHelper.lerpColors(CONFIG.colors.hot, CONFIG.colors.extreme, t);
-            }
-            return "#" + _colorHelper.getHexString();
-        }
-        
         // Helper to mix colors directly
         function lerpColor(c1, c2, alpha) {
             return new THREE.Color().lerpColors(c1, c2, alpha);
-        }
-
-        function getSpiralColorAtU(u, rawColors) {
-            const totalColorPoints = rawColors.length / 3;
-            const floatIdx = u * (totalColorPoints - 1);
-            const idx1 = Math.floor(floatIdx);
-            const idx2 = Math.min(idx1 + 1, totalColorPoints - 1);
-            const alpha = floatIdx - idx1;
-
-            const r1 = rawColors[idx1 * 3];
-            const g1 = rawColors[idx1 * 3 + 1];
-            const b1 = rawColors[idx1 * 3 + 2];
-            
-            const r2 = rawColors[idx2 * 3];
-            const g2 = rawColors[idx2 * 3 + 1];
-            const b2 = rawColors[idx2 * 3 + 2];
-            
-            _colorHelper.setRGB(
-                r1 + (r2 - r1) * alpha,
-                g1 + (g2 - g1) * alpha,
-                b1 + (b2 - b1) * alpha
-            );
-            return _colorHelper;
         }
 
         function setupUI() {
@@ -1260,7 +1218,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const timelineSlider = document.getElementById('timelineSlider');
             const spacingSlider = document.getElementById('spacingSlider');
             
-            const timelineContainer = document.getElementById('timelineContainer');
             const buttonGroup = document.getElementById('buttonGroup');
 
             toggleBtn.addEventListener('click', () => {
@@ -1506,19 +1463,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (processedData.length === 0) return;
             
-            timelineData = processedData; 
-            
             startYear = processedData[0].year;
             const lastEntry = processedData[processedData.length - 1];
             endYear = lastEntry.year;
-            
-            const yearsDiff = endYear - startYear;
-            const samplesInLastYear = lastEntry.anomalies.length;
-            const finalFraction = (lastEntry.fractions && lastEntry.fractions.length > 0)
-                ? lastEntry.fractions[lastEntry.fractions.length - 1]
-                : (samplesInLastYear > 1 ? (samplesInLastYear - 1) / samplesInLastYear : 0);
-            
-            totalDurationYears = yearsDiff + finalFraction;
 
             document.getElementById('timelineStart').innerText = startYear;
             document.getElementById('timelineEnd').innerText = endYear;
@@ -1542,8 +1489,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
-            const topDownThreshold = 1.2;
-            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / OPACITY_FADE_THRESHOLD));
             const inverseOpacity = 1 - opacityFade;
 
             months.forEach((month, index) => {
@@ -1557,7 +1503,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.height = 256;
                 
                 ctx.fillStyle = '#888'; 
-                // Use global font constant
                 ctx.font = '100px ' + FONT_FAMILY; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -1587,9 +1532,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 monthLabelsGroup.add(mesh);
             });
             scene.add(monthLabelsGroup);
-            
-            const visibleState = document.getElementById('helpersToggle').checked;
-            monthLabelsGroup.visible = visibleState;
         }
 
         function parseGISSData(text) {
@@ -1831,19 +1773,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             const startYearData = data[0].year;
             currentMaxAnomaly = -Infinity;
-            currentMinAnomaly = Infinity;
 
             data.forEach((entry) => {
                 entry.anomalies.forEach((val) => {
                     if (val > currentMaxAnomaly) currentMaxAnomaly = val;
-                    if (val < currentMinAnomaly) currentMinAnomaly = val;
                 });
             });
             
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
-            const topDownThreshold = 1.2;
-            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / OPACITY_FADE_THRESHOLD));
             const yearLabelRadius = getYearLabelRadius(currentMaxAnomaly);
 
             // 1. Generate raw data points (monthly or daily)
@@ -1876,7 +1815,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                         // For endCapMesh alignment, we still need tangent
                     });
 
-                    // Color calculation (FIXED SPECTRUM)
+                    // Color calculation with a fixed spectrum mapping.
                     let colorValue = anomaly;
                     if (currentDatasetKey === "co2") {
                         const ppm = spiralValueToCo2Ppm(anomaly);
@@ -1975,9 +1914,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // 3. Generate Custom Geometry with Caps
             const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments);
             
-            // --- NEW: Store original colors for highlight effect ---
+            // Store original colors for highlight effect.
             const colorAttr = geometry.attributes.color;
-            // Store as a Float32Array in userData
             geometry.userData.originalColorArray = new Float32Array(colorAttr.array);
             geometry.userData.lastTailRange = { start: 0, end: -1 }; // Empty start
 
@@ -2020,8 +1958,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             // Total indices needed for FULL draw (Body + Start Cap + End Cap)
             // However, animation only grows the body.
-            // Start cap indices = radialSegments * 3
-            const startCapIndices = CONFIG.radialSegments * 3;
             // Body indices = (numPoints-1) * radialSegments * 6
             const bodyIndices = (finalPoints.length - 1) * CONFIG.radialSegments * 6;
             
@@ -2171,8 +2107,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     endCapMesh.material.color.setHex(0xffffff); // Highlight tip white
                     
                     // Align Lid Rotation
-                    // We need the tangent. Let's compute it on the fly or store it.
-                    // Simple hack: Look at next point (or previous if at end)
+                    // Approximate tangent with neighboring points for end-cap orientation.
                     let targetPoint;
                     if (ptIndex < generatedGeometryData.length - 1) {
                         targetPoint = generatedGeometryData[ptIndex + 1].point;
@@ -2228,8 +2163,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             const polarAngle = controls.getPolarAngle();
-            const topDownThreshold = 1.2; 
-            const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const opacityFade = Math.min(1, Math.max(0, polarAngle / OPACITY_FADE_THRESHOLD));
             const inverseOpacity = 1 - opacityFade; 
             const azimuthAngle = controls.getAzimuthalAngle();
 
