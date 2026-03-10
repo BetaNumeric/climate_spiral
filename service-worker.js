@@ -1,4 +1,4 @@
-const CACHE_NAME = "climate-spiral-v1";
+const CACHE_NAME = "climate-spiral-v3";
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 
 const CORE_ASSETS = [
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./index.html",
   "./manifest.json",
   "./data/GLB.Ts+dSST.txt",
+  "./data/co2_mm_mlo.txt",
   "./icons/icon_32.png",
   "./icons/icon_192.png",
   "./icons/icon_512.png",

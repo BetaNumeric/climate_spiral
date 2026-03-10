@@ -130,7 +130,8 @@
 
         /* Range Slider Styling */
         input[type=range] {
-            -webkit-appearance: none; 
+            -webkit-appearance: none;
+            appearance: none;
             width: 100%; 
             background: transparent; 
         }
@@ -339,9 +340,9 @@
     <div id="infoPanel" class="panel">
         <button class="close-btn" data-target="infoPanel">×</button>
         <h1>Climate Spiral</h1>
-        <p>Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
+        <p id="infoDescription">Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
         <p>
-            Source: <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
+            Source: <a id="sourceLink" href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
             Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
         </p>
         
@@ -355,7 +356,7 @@
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size: 0.8rem; color: #aaa;">Anomaly</div>
+                    <div style="font-size: 0.8rem; color: #aaa;" id="infoMetricLabel">Anomaly</div>
                     <div style="font-size: 1.2rem; color: #8b9be1; font-family: monospace;" id="infoTemp">-- °C</div>
                 </div>
             </div>
@@ -365,10 +366,10 @@
             <div id="legendMarker"></div>
         </div>
         <div class="legend-labels">
-            <span>-1.0</span>
-            <span>0°C</span>
-            <span>+1.0</span>
-            <span>+2.0</span>
+            <span id="legendLabel0">-1.0</span>
+            <span id="legendLabel1">0°C</span>
+            <span id="legendLabel2">+1.0</span>
+            <span id="legendLabel3">+2.0</span>
         </div>
     </div>
 
@@ -416,6 +417,14 @@
                 <span class="slider-switch"></span>
             </label>
         </div>
+
+        <div class="setting-row">
+            <span>Use CO2 Data</span>
+            <label class="switch">
+                <input type="checkbox" id="co2ModeToggle">
+                <span class="slider-switch"></span>
+            </label>
+        </div>
         
         <!-- File Upload & Fetch -->
         <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px; flex-direction:column; align-items:flex-start; gap:10px;">
@@ -430,7 +439,7 @@
                 </label>
             </div>
             <input type="file" id="fileUpload" accept=".txt" style="display:none;">
-            <p style="font-size:0.75rem; color:#888; margin:0;">"Fetch" tries NASA direct/proxy. Initial load checks local.</p>
+            <p id="fetchHint" style="font-size:0.75rem; color:#888; margin:0;">"Fetch" tries current source direct/proxy. Initial load checks local.</p>
         </div>
 
         <!-- Spacing Slider -->
@@ -533,6 +542,36 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 2025   138  126  136  123  108  105  102  116  125  119  121  105    119 121    130  122  108  122  2025
 `;
 
+        const DATASET_CONFIG = {
+            temperature: {
+                id: "temperature",
+                title: "Temperature",
+                metricLabel: "Anomaly",
+                localPath: "data/GLB.Ts+dSST.txt",
+                remoteUrl: "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt",
+                sourceLabel: "NASA GISS",
+                sourceHref: "https://data.giss.nasa.gov/gistemp/",
+                supportsInterpolation: true,
+                description: "Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year."
+            },
+            co2: {
+                id: "co2",
+                title: "CO2 Monthly",
+                metricLabel: "CO2",
+                localPath: "data/co2_mm_mlo.txt",
+                remoteUrl: "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",
+                sourceLabel: "NOAA GML",
+                sourceHref: "https://gml.noaa.gov/ccgg/trends/mlo.html",
+                supportsInterpolation: false,
+                description: "Visualizing monthly atmospheric CO2 at Mauna Loa. Each coil represents one year."
+            }
+        };
+
+        const CO2_BASELINE_PPM = 280;
+        const CO2_RING_STEP_PPM = 50;
+        const CO2_REFERENCE_RINGS_PPM = [330, 380, 430];
+        const CO2_MONTH_LABEL_OFFSET = 2.85;
+
         // --- State ---
         let scene, renderer, controls;
         let perspectiveCamera, orthographicCamera, activeCamera;
@@ -551,9 +590,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // Reused color helper to prevent GC churn
         const _colorHelper = new THREE.Color();
         
+        let currentDatasetKey = "temperature";
         let currentDataText = INITIAL_DATA_SOURCE; 
         let timelineData = []; 
         let generatedGeometryData = null; // Store data for animation mapping
+        const datasetPlaybackState = {
+            temperature: { initialized: false, progress: 0, completed: false, wasAnimating: false },
+            co2: { initialized: false, progress: 0, completed: false, wasAnimating: false }
+        };
         
         // Animation State
         let isAnimating = false;
@@ -637,9 +681,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             // Year Indicator (3D Mesh)
             createYearIndicator();
-            
-            // Temp Grid (Static Circles)
-            createTemperatureGrid();
 
             // Drag and Drop
             const dragOverlay = document.getElementById('dragOverlay');
@@ -694,33 +735,183 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
         }
 
+        function getActiveDataset() {
+            return DATASET_CONFIG[currentDatasetKey];
+        }
+
+        function formatMetricValue(displayValue) {
+            if (currentDatasetKey === "co2") {
+                return displayValue.toFixed(2) + " ppm";
+            }
+            const tempSign = displayValue > 0 ? "+" : "";
+            return tempSign + displayValue.toFixed(2) + " °C";
+        }
+
+        function co2PpmToSpiralValue(ppm) {
+            return (ppm - CO2_BASELINE_PPM) / CO2_RING_STEP_PPM;
+        }
+
+        function spiralValueToCo2Ppm(spiralValue) {
+            return CO2_BASELINE_PPM + (spiralValue * CO2_RING_STEP_PPM);
+        }
+
+        function getDatasetRadiusBase() {
+            return currentDatasetKey === "co2" ? 0 : CONFIG.radiusBase;
+        }
+
+        function getSpiralRadius(value) {
+            return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
+        }
+
+        function getOuterRingValue(maxValue) {
+            if (currentDatasetKey === "co2") {
+                const co2RefMax = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
+                return Math.max(maxValue, co2RefMax);
+            }
+            return maxValue;
+        }
+
+        function getMonthLabelOffset() {
+            return currentDatasetKey === "co2" ? CO2_MONTH_LABEL_OFFSET : 0.5;
+        }
+
+        function getYearLabelRadius(maxValue) {
+            // Keep the same relative spacing between month labels and year labels across datasets.
+            return getSpiralRadius(getOuterRingValue(maxValue)) + getMonthLabelOffset() + 2.5;
+        }
+
+        function setSpiralTargetY(targetY) {
+            if (!controls || !activeCamera) return;
+            const previousTarget = controls.target.clone();
+            const nextTarget = new THREE.Vector3(0, targetY, 0);
+            const delta = nextTarget.clone().sub(previousTarget);
+
+            // Move camera with the target so relative viewing angle/distance are preserved.
+            activeCamera.position.add(delta);
+            controls.target.copy(nextTarget);
+            controls.update();
+        }
+
+        function updateLegendLabels() {
+            const labels = [
+                document.getElementById('legendLabel0'),
+                document.getElementById('legendLabel1'),
+                document.getElementById('legendLabel2'),
+                document.getElementById('legendLabel3')
+            ];
+            if (labels.some((el) => !el)) return;
+
+            if (currentDatasetKey === "co2") {
+                labels[0].innerText = CO2_BASELINE_PPM + " ppm";
+                labels[1].innerText = CO2_REFERENCE_RINGS_PPM[0] + " ppm";
+                labels[2].innerText = CO2_REFERENCE_RINGS_PPM[1] + " ppm";
+                labels[3].innerText = CO2_REFERENCE_RINGS_PPM[2] + " ppm";
+            } else {
+                labels[0].innerText = "-1.0";
+                labels[1].innerText = "0°C";
+                labels[2].innerText = "+1.0";
+                labels[3].innerText = "+2.0";
+            }
+        }
+
+        function applyDatasetUI() {
+            const dataset = getActiveDataset();
+            const metricLabel = document.getElementById('infoMetricLabel');
+            const infoDescription = document.getElementById('infoDescription');
+            const sourceLink = document.getElementById('sourceLink');
+            const fetchHint = document.getElementById('fetchHint');
+            const interpolationRow = document.getElementById('interpolationRow');
+            const interpolationToggle = document.getElementById('interpolationToggle');
+            const smoothSpiralToggle = document.getElementById('smoothSpiralToggle');
+            const infoTemp = document.getElementById('infoTemp');
+
+            if (metricLabel) metricLabel.innerText = dataset.metricLabel;
+            if (infoDescription) infoDescription.innerText = dataset.description;
+            if (sourceLink) {
+                sourceLink.href = dataset.sourceHref;
+                sourceLink.innerText = dataset.sourceLabel;
+            }
+            if (fetchHint) {
+                fetchHint.innerText = '"Fetch" tries ' + dataset.sourceLabel + ' direct/proxy. Initial load checks local.';
+            }
+            if (interpolationToggle && !dataset.supportsInterpolation) {
+                interpolationToggle.checked = false;
+            }
+            if (interpolationRow && !dataset.supportsInterpolation) {
+                interpolationRow.style.display = "none";
+            }
+            if (smoothSpiralToggle) smoothSpiralToggle.disabled = false;
+            if (infoTemp) {
+                infoTemp.innerText = currentDatasetKey === "co2" ? "-- ppm" : "-- °C";
+            }
+
+            updateLegendLabels();
+            createTemperatureGrid();
+        }
+
+        function applyDataText(text, sourceLabel) {
+            currentDataText = text;
+            updateDataVisualization();
+            restoreOrStartDatasetPlayback();
+            updateSourceLabel(sourceLabel);
+        }
+
+        function saveCurrentDatasetPlaybackState() {
+            const state = datasetPlaybackState[currentDatasetKey];
+            if (!state || totalIndices <= 0) return;
+
+            state.initialized = true;
+            state.progress = Math.max(0, Math.min(1, animationIndex / totalIndices));
+            state.completed = animationIndex >= totalIndices;
+            state.wasAnimating = isAnimating;
+        }
+
+        function restoreOrStartDatasetPlayback() {
+            const state = datasetPlaybackState[currentDatasetKey];
+            if (!state || !state.initialized) {
+                resetAnimation();
+                saveCurrentDatasetPlaybackState();
+                return;
+            }
+
+            animationIndex = state.completed
+                ? totalIndices
+                : Math.floor(state.progress * totalIndices);
+            lastDrawnYear = -1;
+
+            if (spiralMesh) {
+                updateSpiralVisuals();
+                const percent = totalIndices > 0 ? (animationIndex / totalIndices) * 100 : 0;
+                document.getElementById('timelineSlider').value = percent;
+                updateTimelineState(animationIndex);
+            }
+
+            const shouldAnimate = state.wasAnimating && !state.completed;
+            if (isAnimating !== shouldAnimate) toggleAnimation();
+        }
+
         function handleFile(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                currentDataText = e.target.result; // Update source
-                updateDataVisualization();
-                resetAnimation();
-                updateSourceLabel("User File");
+                applyDataText(e.target.result, "User File");
             };
             reader.readAsText(file);
         }
         
         function fetchRemoteData() {
+            const dataset = getActiveDataset();
             const statusEl = document.getElementById('fetchStatus');
             statusEl.style.display = 'block';
-            statusEl.innerText = "Fetching NASA...";
+            statusEl.innerText = "Fetching " + dataset.title + "...";
             statusEl.style.color = "#f39c12";
 
-            const directUrl = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt";
+            const directUrl = dataset.remoteUrl;
             const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
             
             const onSuccess = (text, sourceLabel) => {
-                currentDataText = text;
-                updateDataVisualization();
-                resetAnimation();
+                applyDataText(text, sourceLabel);
                 statusEl.innerText = "Success!";
                 statusEl.style.color = "#2ecc71";
-                updateSourceLabel(sourceLabel);
                 setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
             };
 
@@ -730,7 +921,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     if(!response.ok) throw new Error("Direct fetch failed");
                     return response.text();
                 })
-                .then(text => onSuccess(text, "NASA Direct"))
+                .then(text => onSuccess(text, dataset.sourceLabel + " direct"))
                 .catch(err => {
                     console.log("Direct fetch failed (likely CORS), trying proxy...", err);
                     statusEl.innerText = "Trying Proxy...";
@@ -741,7 +932,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                             if(!response.ok) throw new Error("Proxy fetch failed");
                             return response.text();
                         })
-                        .then(text => onSuccess(text, "NASA via proxy"))
+                        .then(text => onSuccess(text, dataset.sourceLabel + " via proxy"))
                         .catch(finalErr => {
                             console.warn("All fetches failed", finalErr);
                             statusEl.innerText = "Fetch Failed";
@@ -751,29 +942,33 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
         
         function loadLocalData() {
+            const dataset = getActiveDataset();
             const statusEl = document.getElementById('fetchStatus');
             statusEl.style.display = 'block';
             statusEl.innerText = "Checking local...";
             statusEl.style.color = "#f39c12";
 
-            fetch('data/GLB.Ts+dSST.txt')
+            fetch(dataset.localPath)
                 .then(response => {
                     if(!response.ok) throw new Error("Local data not found");
                     return response.text();
                 })
                 .then(text => {
-                    currentDataText = text;
-                    updateDataVisualization();
-                    resetAnimation();
+                    applyDataText(text, "Local Data");
                     statusEl.innerText = "Local Data";
                     statusEl.style.color = "#2ecc71";
-                    updateSourceLabel("Local Data");
                     setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
                 })
                 .catch(error => {
-                    console.log("Local fetch failed, using embedded data.", error);
-                    statusEl.innerText = "";
-                    updateSourceLabel("Embedded Data");
+                    console.log("Local fetch failed.", error);
+                    if (dataset.id === "temperature") {
+                        applyDataText(INITIAL_DATA_SOURCE, "Embedded Data");
+                        statusEl.innerText = "";
+                        return;
+                    }
+                    statusEl.innerText = "Local Missing";
+                    statusEl.style.color = "#e74c3c";
+                    updateSourceLabel("Load File / Fetch");
                 });
         }
         
@@ -892,10 +1087,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempLabelGroup = new THREE.Group();
             tempVerticalGroup = new THREE.Group();
             
-            const temps = [0, 1, -1];
+            const ticks = currentDatasetKey === "co2"
+                ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
+                : [0, 1, -1];
             
-            temps.forEach(temp => {
-                const r = CONFIG.radiusBase + (temp * CONFIG.radiusScale);
+            ticks.forEach(temp => {
+                const r = getSpiralRadius(temp);
                 const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
                 const points = curve.getPoints(64);
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -914,7 +1111,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 ctx.font = '80px ' + FONT_FAMILY; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                const labelText = temp > 0 ? `+${temp}°C` : `${temp}°C`;
+                const labelText = currentDatasetKey === "co2"
+                    ? `${Math.round(spiralValueToCo2Ppm(temp))} ppm`
+                    : (temp > 0 ? `+${temp}°C` : `${temp}°C`);
                 ctx.fillText(labelText, 256, 128);
                 
                 const texture = new THREE.CanvasTexture(canvas);
@@ -977,6 +1176,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             scene.add(tempGridGroup);
             scene.add(tempLabelGroup);
             scene.add(tempVerticalGroup);
+            updateTemperatureVerticals(spiralHeight);
         }
 
         function updateTemperatureVerticals(height) {
@@ -1050,6 +1250,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const helpersSwitch = document.getElementById('helpersToggle'); 
             const interpSwitch = document.getElementById('interpolationToggle');
             const smoothSpiralSwitch = document.getElementById('smoothSpiralToggle');
+            const co2ModeSwitch = document.getElementById('co2ModeToggle');
             const freeCamSwitch = document.getElementById('freeCameraToggle'); 
             const fileInput = document.getElementById('fileUpload');
             const fetchBtn = document.getElementById('fetchBtn');
@@ -1091,6 +1292,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             interpSwitch.addEventListener('change', updateDataVisualization);
             smoothSpiralSwitch.addEventListener('change', updateDataVisualization);
+            co2ModeSwitch.addEventListener('change', (e) => {
+                saveCurrentDatasetPlaybackState();
+                currentDatasetKey = e.target.checked ? "co2" : "temperature";
+                applyDatasetUI();
+                loadLocalData();
+            });
             
             freeCamSwitch.addEventListener('change', (e) => {
                 const isFree = e.target.checked;
@@ -1147,6 +1354,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 updateSpiralVisuals();
                 updateTimelineState(animationIndex);
+                saveCurrentDatasetPlaybackState();
             });
             
             spacingSlider.addEventListener('input', (e) => {
@@ -1155,6 +1363,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 document.getElementById('spacingValue').innerText = val.toFixed(1);
                 updateDataVisualization(); 
             });
+
+            applyDatasetUI();
         }
 
         function updateTimelineState(index) {
@@ -1171,6 +1381,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const exactYear = ptData.decimalYear;
                     const displayYear = Math.floor(exactYear);
                     const currentAnomaly = ptData.anomaly || 0;
+                    const currentDisplayValue = Number.isFinite(ptData.displayValue) ? ptData.displayValue : currentAnomaly;
                     
                     // Update Text
                     updateYearIndicatorText(displayYear);
@@ -1185,12 +1396,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const monthIndex = Math.min(11, Math.floor((exactYear % 1) * 12));
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
-                    const tempSign = currentAnomaly > 0 ? "+" : "";
-                    document.getElementById('infoTemp').innerText = tempSign + currentAnomaly.toFixed(2) + " °C";
+                    document.getElementById('infoTemp').innerText = formatMetricValue(currentDisplayValue);
                     
-                    // Update Legend (FIXED RANGE -1 to 2)
-                    // Percent = (val - (-1)) / 3 * 100
-                    let percent = (currentAnomaly + 1) / 3 * 100;
+                    // Update legend marker position
+                    let percent;
+                    if (currentDatasetKey === "co2") {
+                        const minValue = co2PpmToSpiralValue(CO2_BASELINE_PPM);
+                        const maxValue = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
+                        percent = ((currentAnomaly - minValue) / (maxValue - minValue)) * 100;
+                    } else {
+                        percent = (currentAnomaly + 1) / 3 * 100;
+                    }
                     percent = Math.max(0, Math.min(100, percent)); 
                     document.getElementById('legendMarker').style.left = percent + "%";
                     
@@ -1233,6 +1449,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 playBtn.classList.remove('active');
                 playBtn.title = "Play Animation";
             }
+
+            saveCurrentDatasetPlaybackState();
         }
 
         function switchCamera(isOrtho) {
@@ -1273,32 +1491,43 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateDataVisualization() {
-            const rawData = parseGISSData(currentDataText);
-            const hasGaps = checkForGaps(rawData);
+            const dataset = getActiveDataset();
+            const rawData = currentDatasetKey === "co2"
+                ? parseCO2MonthlyData(currentDataText)
+                : parseGISSData(currentDataText);
+            const hasGaps = dataset.supportsInterpolation && checkForGaps(rawData);
             const interpRow = document.getElementById('interpolationRow');
-            if(interpRow) interpRow.style.display = hasGaps ? 'flex' : 'none';
+            if (interpRow) interpRow.style.display = hasGaps ? 'flex' : 'none';
 
             const shouldInterpolate = document.getElementById('interpolationToggle').checked;
-            const processedData = (hasGaps && shouldInterpolate) ? interpolateSparseData(rawData) : rawData;
+            const processedData = (dataset.supportsInterpolation && hasGaps && shouldInterpolate)
+                ? interpolateSparseData(rawData)
+                : rawData;
+
+            if (processedData.length === 0) return;
             
             timelineData = processedData; 
             
-            if (processedData.length > 0) {
-                startYear = processedData[0].year;
-                const lastEntry = processedData[processedData.length - 1];
-                endYear = lastEntry.year;
-                
-                const yearsDiff = endYear - startYear;
-                const monthsInLastYear = lastEntry.anomalies.length;
-                
-                totalDurationYears = yearsDiff + ((monthsInLastYear - 1) / 12);
+            startYear = processedData[0].year;
+            const lastEntry = processedData[processedData.length - 1];
+            endYear = lastEntry.year;
+            
+            const yearsDiff = endYear - startYear;
+            const samplesInLastYear = lastEntry.anomalies.length;
+            const finalFraction = (lastEntry.fractions && lastEntry.fractions.length > 0)
+                ? lastEntry.fractions[lastEntry.fractions.length - 1]
+                : (samplesInLastYear > 1 ? (samplesInLastYear - 1) / samplesInLastYear : 0);
+            
+            totalDurationYears = yearsDiff + finalFraction;
 
-                document.getElementById('timelineStart').innerText = startYear;
-                document.getElementById('timelineEnd').innerText = endYear;
-            }
+            document.getElementById('timelineStart').innerText = startYear;
+            document.getElementById('timelineEnd').innerText = endYear;
 
             createSpiral(processedData);
-            createMonthRing(CONFIG.radiusBase + (currentMaxAnomaly * CONFIG.radiusScale) + .5); 
+            const ringValue = getOuterRingValue(currentMaxAnomaly);
+            const monthLabelOffset = getMonthLabelOffset();
+            createMonthRing(getSpiralRadius(ringValue) + monthLabelOffset); 
+            updateLegendLabels();
         }
 
         function createMonthRing(radius) {
@@ -1400,6 +1629,45 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 }
             });
             return data;
+        }
+
+        function parseCO2MonthlyData(text) {
+            const lines = text.split('\n');
+            const byYear = new Map();
+
+            lines.forEach((line) => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) return;
+
+                const parts = trimmed.split(/\s+/);
+                if (parts.length < 4) return;
+
+                const year = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10);
+                const decimalYear = parseFloat(parts[2]);
+                const monthlyAverage = parseFloat(parts[3]);
+                const deseasonalized = parseFloat(parts[4]);
+                const ppm = (Number.isFinite(monthlyAverage) && monthlyAverage > 0)
+                    ? monthlyAverage
+                    : deseasonalized;
+
+                if (!Number.isFinite(year) || !Number.isFinite(ppm) || ppm <= 0) return;
+
+                const fraction = (Number.isFinite(month) && month >= 1 && month <= 12)
+                    ? (month - 1) / 12
+                    : Math.max(0, Math.min(0.9999, decimalYear - year));
+
+                if (!byYear.has(year)) {
+                    byYear.set(year, { year, anomalies: [], displayValues: [], fractions: [] });
+                }
+
+                const entry = byYear.get(year);
+                entry.anomalies.push(co2PpmToSpiralValue(ppm));
+                entry.displayValues.push(ppm);
+                entry.fractions.push(fraction);
+            });
+
+            return Array.from(byYear.values()).sort((a, b) => a.year - b.year);
         }
 
         function interpolateSparseData(sparseData) {
@@ -1576,14 +1844,23 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const polarAngle = controls.getPolarAngle();
             const topDownThreshold = 1.2;
             const opacityFade = Math.min(1, Math.max(0, polarAngle / topDownThreshold));
+            const yearLabelRadius = getYearLabelRadius(currentMaxAnomaly);
 
-            // 1. Generate Raw Data Points (One per month)
-            data.forEach((entry, yearIdx) => {
-                entry.anomalies.forEach((anomaly, monthIdx) => {
-                    const angle = (monthIdx / 12) * Math.PI * 2 + CONFIG.angleOffset;
-                    const r = CONFIG.radiusBase + (anomaly * CONFIG.radiusScale);
+            // 1. Generate raw data points (monthly or daily)
+            data.forEach((entry) => {
+                const sampleCount = Math.max(1, entry.anomalies.length);
+                entry.anomalies.forEach((anomaly, sampleIdx) => {
+                    const fraction = (entry.fractions && Number.isFinite(entry.fractions[sampleIdx]))
+                        ? entry.fractions[sampleIdx]
+                        : (sampleIdx / sampleCount);
+                    const displayValue = (entry.displayValues && Number.isFinite(entry.displayValues[sampleIdx]))
+                        ? entry.displayValues[sampleIdx]
+                        : anomaly;
+
+                    const angle = fraction * Math.PI * 2 + CONFIG.angleOffset;
+                    const r = getSpiralRadius(anomaly);
                     const yearOffset = entry.year - startYearData;
-                    const yPos = (yearOffset + (monthIdx / 12)) * CONFIG.heightPerYear;
+                    const yPos = (yearOffset + fraction) * CONFIG.heightPerYear;
 
                     const x = Math.cos(angle) * r;
                     const z = Math.sin(angle) * r;
@@ -1592,21 +1869,28 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     
                     // Metadata for timeline
                     rawMetaData.push({
-                        decimalYear: entry.year + (monthIdx / 12),
+                        decimalYear: entry.year + fraction,
                         anomaly: anomaly,
+                        displayValue: displayValue,
                         // Store tangent basis later if needed, but we calculate it in geometry gen now
                         // For endCapMesh alignment, we still need tangent
                     });
 
                     // Color calculation (FIXED SPECTRUM)
+                    let colorValue = anomaly;
+                    if (currentDatasetKey === "co2") {
+                        const ppm = spiralValueToCo2Ppm(anomaly);
+                        colorValue = ((ppm - CO2_BASELINE_PPM) / (CO2_REFERENCE_RINGS_PPM[2] - CO2_BASELINE_PPM)) * 2;
+                    }
+
                     let c = new THREE.Color();
-                    if (anomaly < 0) {
-                        const t = Math.min(1, Math.abs(anomaly));
+                    if (colorValue < 0) {
+                        const t = Math.min(1, Math.abs(colorValue));
                         c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
-                    } else if (anomaly <= 1) {
-                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, anomaly);
+                    } else if (colorValue <= 1) {
+                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, colorValue);
                     } else {
-                        const t = Math.min(1, anomaly - 1);
+                        const t = Math.min(1, colorValue - 1);
                         c.lerpColors(CONFIG.colors.hot, CONFIG.colors.extreme, t);
                     }
                     rawColors.push(c);
@@ -1615,7 +1899,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 if (entry.year % 10 === 0) {
                     const yearOffset = entry.year - startYearData;
                     const y = (yearOffset) * CONFIG.heightPerYear;
-                    const sprite = addYearLabel(entry.year, y);
+                    const sprite = addYearLabel(entry.year, y, yearLabelRadius);
                     sprite.material.opacity = opacityFade;
                     yearLabels.add(sprite);
                 }
@@ -1628,7 +1912,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const nextDecade = Math.floor(lastYear / 10) * 10 + 10;
             const yearOffset = nextDecade - startYearData;
             const y = yearOffset * CONFIG.heightPerYear;
-            const sprite = addYearLabel(nextDecade, y);
+            const sprite = addYearLabel(nextDecade, y, yearLabelRadius);
             sprite.material.opacity = opacityFade;
             yearLabels.add(sprite);
             
@@ -1670,10 +1954,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const valA = rawMetaData[idxA].anomaly;
                     const valB = rawMetaData[idxB].anomaly;
                     const interpVal = valA + (valB - valA) * alpha;
+
+                    const displayA = rawMetaData[idxA].displayValue;
+                    const displayB = rawMetaData[idxB].displayValue;
+                    const interpDisplay = displayA + (displayB - displayA) * alpha;
                     
                     finalMetaData.push({
                         decimalYear: interpYear,
-                        anomaly: interpVal
+                        anomaly: interpVal,
+                        displayValue: interpDisplay
                     });
                 }
                 
@@ -1697,7 +1986,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 point: p,
                 color: finalColors[i],
                 decimalYear: finalMetaData[i].decimalYear,
-                anomaly: finalMetaData[i].anomaly
+                anomaly: finalMetaData[i].anomaly,
+                displayValue: finalMetaData[i].displayValue
             }));
 
             const material = new THREE.MeshStandardMaterial({
@@ -1726,7 +2016,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             endCapMesh.visible = visible;
             scene.add(endCapMesh);
 
-            controls.target.set(0, spiralHeight / 2, 0);
+            setSpiralTargetY(spiralHeight / 2);
             
             // Total indices needed for FULL draw (Body + Start Cap + End Cap)
             // However, animation only grows the body.
@@ -1750,7 +2040,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
         }
 
-        function addYearLabel(year, y) {
+        function addYearLabel(year, y, radius) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 512;
@@ -1770,7 +2060,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const sprite = new THREE.Sprite(spriteMat);
             sprite.scale.set(6, 3, 1);
             
-            sprite.position.set(CONFIG.radiusBase + 10, y, 0);
+            sprite.position.set(radius, y, 0);
             return sprite;
         }
 
