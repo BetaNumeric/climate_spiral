@@ -942,7 +942,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             statusEl.innerText = "Checking local...";
             statusEl.style.color = "#f39c12";
 
-            fetch(dataset.localPath)
+            fetch(dataset.localPath, { cache: "no-store" })
                 .then(response => {
                     if(!response.ok) throw new Error("Local data not found");
                     return response.text();
@@ -2218,6 +2218,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
     </script>
     <script>
         if ("serviceWorker" in navigator) {
+            const hadServiceWorkerController = Boolean(navigator.serviceWorker.controller);
+            let refreshingForServiceWorker = false;
+
+            navigator.serviceWorker.addEventListener("controllerchange", () => {
+                if (!hadServiceWorkerController || refreshingForServiceWorker) return;
+                refreshingForServiceWorker = true;
+                window.location.reload();
+            });
+
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("./service-worker.js").catch((error) => {
                     console.error("Service worker registration failed:", error);

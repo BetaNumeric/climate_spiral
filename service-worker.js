@@ -1,12 +1,15 @@
-const CACHE_NAME = "climate-spiral-v3";
+const CACHE_NAME = "climate-spiral-v4";
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
+const DATA_ASSETS = [
+  "./data/GLB.Ts+dSST.txt",
+  "./data/co2_mm_mlo.txt",
+];
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./data/GLB.Ts+dSST.txt",
-  "./data/co2_mm_mlo.txt",
+  ...DATA_ASSETS,
   "./icons/icon_32.png",
   "./icons/icon_192.png",
   "./icons/icon_512.png",
@@ -20,6 +23,7 @@ const CORE_ASSETS = [
 ];
 
 const toAbsoluteUrl = (path) => new URL(path, self.location).toString();
+const DATA_ASSET_URLS = new Set(DATA_ASSETS.map(toAbsoluteUrl));
 
 async function cacheCoreAssets(cache) {
   await Promise.allSettled(
@@ -37,6 +41,37 @@ function shouldCache(url, response) {
   if (!response || !response.ok) return false;
   if (url.origin === self.location.origin) return true;
   return REMOTE_CACHE_ORIGINS.has(url.origin);
+}
+
+async function networkFirst(request, cache) {
+  try {
+    const response = await fetch(new Request(request, { cache: "no-store" }));
+    if (shouldCache(new URL(request.url), response)) {
+      cache.put(request, response.clone()).catch(() => {});
+    }
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+
+    if (request.mode === "navigate") {
+      const appShell = await cache.match(toAbsoluteUrl("./index.html"));
+      if (appShell) return appShell;
+    }
+
+    throw error;
+  }
+}
+
+async function cacheFirst(request, cache) {
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  if (shouldCache(new URL(request.url), response)) {
+    cache.put(request, response.clone()).catch(() => {});
+  }
+  return response;
 }
 
 self.addEventListener("install", (event) => {
@@ -69,22 +104,11 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      const cached = await cache.match(request);
-      if (cached) return cached;
-
-      try {
-        const response = await fetch(request);
-        if (shouldCache(requestUrl, response)) {
-          cache.put(request, response.clone()).catch(() => {});
-        }
-        return response;
-      } catch (error) {
-        if (request.mode === "navigate") {
-          const appShell = await cache.match(toAbsoluteUrl("./index.html"));
-          if (appShell) return appShell;
-        }
-        throw error;
+      if (request.mode === "navigate" || DATA_ASSET_URLS.has(requestUrl.toString())) {
+        return networkFirst(request, cache);
       }
+
+      return cacheFirst(request, cache);
     })()
   );
 });
