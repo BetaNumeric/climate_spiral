@@ -1863,6 +1863,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (rawPoints.length < 2) return;
 
+            const getNextMonthlyDecimalYear = (decimalYear) => {
+                const absoluteMonth = Math.round(decimalYear * 12);
+                return (absoluteMonth + 1) / 12;
+            };
+
+            const createPointFromDecimalYear = (decimalYear, anomaly) => {
+                const normalizedDecimalYear = Math.round(decimalYear * 12) / 12;
+                const fraction = normalizedDecimalYear - Math.floor(normalizedDecimalYear);
+                const angle = fraction * Math.PI * 2 + CONFIG.angleOffset;
+                const r = getSpiralRadius(anomaly);
+                const yPos = (normalizedDecimalYear - startYearData) * CONFIG.heightPerYear;
+
+                return new THREE.Vector3(
+                    Math.cos(angle) * r,
+                    yPos,
+                    Math.sin(angle) * r
+                );
+            };
+
             // 2. Smooth vs Rough Generation
             const isSmooth = document.getElementById('smoothSpiralToggle').checked;
             
@@ -1871,16 +1890,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             let finalMetaData = []; // To store interpolated year info
             
             if (isSmooth) {
-                const curve = new THREE.CatmullRomCurve3(rawPoints);
+                const lastMeta = rawMetaData[rawMetaData.length - 1];
+                const ghostPoint = createPointFromDecimalYear(
+                    getNextMonthlyDecimalYear(lastMeta.decimalYear),
+                    lastMeta.anomaly
+                );
+                // Rendering-only persistence boundary: extend the curve one month at the
+                // last observed value, but draw/sample only through the real final point.
+                const splinePoints = [...rawPoints, ghostPoint];
+                const curve = new THREE.CatmullRomCurve3(splinePoints);
                 curve.curveType = 'centripetal'; 
                 
                 const pointsPerSeg = 6; 
-                const totalPoints = (rawPoints.length - 1) * pointsPerSeg + 1;
+                const finalPointCount = (rawPoints.length - 1) * pointsPerSeg + 1;
+                const lastRealT = (rawPoints.length - 1) / (splinePoints.length - 1);
                 
-                finalPoints = curve.getPoints(totalPoints); 
-                
-                for (let i = 0; i < finalPoints.length; i++) {
-                    const u = i / (finalPoints.length - 1);
+                for (let i = 0; i < finalPointCount; i++) {
+                    const u = i / (finalPointCount - 1);
+                    finalPoints.push(curve.getPoint(u * lastRealT));
+
                     const floatIdx = u * (rawPoints.length - 1);
                     const idxA = Math.floor(floatIdx);
                     const idxB = Math.min(idxA + 1, rawPoints.length - 1);
