@@ -1,4 +1,5 @@
-const CACHE_NAME = "climate-spiral-v4";
+const CACHE_PREFIX = "climate-spiral-";
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -88,7 +89,11 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const cacheKeys = await caches.keys();
-      await Promise.all(cacheKeys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)));
+      await Promise.all(
+        cacheKeys
+          .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      );
       await self.clients.claim();
     })()
   );

@@ -582,11 +582,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         
         let dirLight; // Global ref for update
 
-        // Reused color helper to prevent GC churn
-        const _colorHelper = new THREE.Color();
-        
         let currentDatasetKey = "temperature";
         let currentDataText = INITIAL_DATA_SOURCE; 
+        let dataLoadToken = 0;
         let generatedGeometryData = null; // Store data for animation mapping
         const datasetPlaybackState = {
             temperature: { initialized: false, progress: 0, completed: false, wasAnimating: false },
@@ -600,9 +598,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let startYear = 1880;
         let endYear = 2025; 
         let animationSpeed = 0.8; 
+        const endCapDirection = new THREE.Vector3();
+        const endCapTarget = new THREE.Vector3();
         
         // UI State
         let timelineTimeout;
+        let dataStatusTimeout;
 
         // --- Initialization ---
         init();
@@ -729,8 +730,58 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
         }
 
+        function getDatasetByKey(datasetKey) {
+            return DATASET_CONFIG[datasetKey];
+        }
+
         function getActiveDataset() {
-            return DATASET_CONFIG[currentDatasetKey];
+            return getDatasetByKey(currentDatasetKey);
+        }
+
+        function beginDataLoad() {
+            dataLoadToken += 1;
+            return dataLoadToken;
+        }
+
+        function isCurrentDataLoad(datasetKey, token) {
+            return datasetKey === currentDatasetKey && token === dataLoadToken;
+        }
+
+        function updateDataStatus(message, color = "#f39c12", hideAfterMs = 0) {
+            const statusEl = document.getElementById('fetchStatus');
+            if (!statusEl) return;
+
+            clearTimeout(dataStatusTimeout);
+            statusEl.innerText = message;
+            statusEl.style.color = color;
+            statusEl.style.display = message ? 'block' : 'none';
+
+            if (message && hideAfterMs > 0) {
+                dataStatusTimeout = setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, hideAfterMs);
+            }
+        }
+
+        async function fetchText(url, options) {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error("Fetch failed: " + response.status);
+            return response.text();
+        }
+
+        function parseDatasetData(text, datasetKey) {
+            return datasetKey === "co2"
+                ? parseCO2MonthlyData(text)
+                : parseGISSData(text);
+        }
+
+        function hasUsableData(data) {
+            return Array.isArray(data) && data.some((entry) => {
+                return entry
+                    && Number.isFinite(entry.year)
+                    && Array.isArray(entry.anomalies)
+                    && entry.anomalies.some(Number.isFinite);
+            });
         }
 
         function formatMetricValue(displayValue) {
@@ -755,6 +806,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function getSpiralRadius(value) {
             return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
+        }
+
+        function getNextMonthlyDecimalYear(decimalYear) {
+            const absoluteMonth = Math.round(decimalYear * 12);
+            return (absoluteMonth + 1) / 12;
+        }
+
+        function createSpiralPoint(decimalYear, anomaly, originYear) {
+            const year = Math.floor(decimalYear);
+            const fraction = decimalYear - year;
+            const angle = fraction * Math.PI * 2 + CONFIG.angleOffset;
+            const r = getSpiralRadius(anomaly);
+            const yPos = (decimalYear - originYear) * CONFIG.heightPerYear;
+
+            return new THREE.Vector3(
+                Math.cos(angle) * r,
+                yPos,
+                Math.sin(angle) * r
+            );
         }
 
         function getOuterRingValue(maxValue) {
@@ -843,11 +913,21 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             createTemperatureGrid();
         }
 
-        function applyDataText(text, sourceLabel) {
+        function applyDataText(text, sourceLabel, datasetKey = currentDatasetKey) {
+            if (datasetKey !== currentDatasetKey) return false;
+
+            const rawData = parseDatasetData(text, datasetKey);
+            if (!hasUsableData(rawData)) {
+                const dataset = getDatasetByKey(datasetKey);
+                console.warn("No usable records found for " + dataset.title + " data.");
+                return false;
+            }
+
             currentDataText = text;
-            updateDataVisualization();
+            if (!updateDataVisualization(rawData)) return false;
             restoreOrStartDatasetPlayback();
             updateSourceLabel(sourceLabel);
+            return true;
         }
 
         function saveCurrentDatasetPlaybackState() {
@@ -885,83 +965,87 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function handleFile(file) {
+            const datasetKey = currentDatasetKey;
+            const token = beginDataLoad();
             const reader = new FileReader();
             reader.onload = function(e) {
-                applyDataText(e.target.result, "User File");
+                if (!isCurrentDataLoad(datasetKey, token)) return;
+                if (applyDataText(e.target.result, "User File", datasetKey)) {
+                    updateDataStatus("User File", "#2ecc71", 3000);
+                } else {
+                    updateDataStatus("Invalid Data", "#e74c3c");
+                }
+            };
+            reader.onerror = function() {
+                if (isCurrentDataLoad(datasetKey, token)) {
+                    updateDataStatus("Read Failed", "#e74c3c");
+                }
             };
             reader.readAsText(file);
         }
         
-        function fetchRemoteData() {
-            const dataset = getActiveDataset();
-            const statusEl = document.getElementById('fetchStatus');
-            statusEl.style.display = 'block';
-            statusEl.innerText = "Fetching " + dataset.title + "...";
-            statusEl.style.color = "#f39c12";
+        async function fetchRemoteData() {
+            const datasetKey = currentDatasetKey;
+            const token = beginDataLoad();
+            const dataset = getDatasetByKey(datasetKey);
+            updateDataStatus("Fetching " + dataset.title + "...");
 
             const directUrl = dataset.remoteUrl;
             const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
-            
-            const onSuccess = (text, sourceLabel) => {
-                applyDataText(text, sourceLabel);
-                statusEl.innerText = "Success!";
-                statusEl.style.color = "#2ecc71";
-                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
-            };
 
-            // 1. Try Direct
-            fetch(directUrl)
-                .then(response => {
-                    if(!response.ok) throw new Error("Direct fetch failed");
-                    return response.text();
-                })
-                .then(text => onSuccess(text, dataset.sourceLabel + " direct"))
-                .catch(err => {
-                    console.log("Direct fetch failed (likely CORS), trying proxy...", err);
-                    statusEl.innerText = "Trying Proxy...";
-                    
-                    // 2. Try Proxy
-                    fetch(proxyUrl)
-                        .then(response => {
-                            if(!response.ok) throw new Error("Proxy fetch failed");
-                            return response.text();
-                        })
-                        .then(text => onSuccess(text, dataset.sourceLabel + " via proxy"))
-                        .catch(finalErr => {
-                            console.warn("All fetches failed", finalErr);
-                            statusEl.innerText = "Fetch Failed";
-                            statusEl.style.color = "#e74c3c";
-                        });
-                });
+            try {
+                const text = await fetchText(directUrl, { cache: "no-store" });
+                if (!isCurrentDataLoad(datasetKey, token)) return;
+                if (!applyDataText(text, dataset.sourceLabel + " direct", datasetKey)) {
+                    throw new Error("Direct fetch returned no usable records");
+                }
+                updateDataStatus("Success!", "#2ecc71", 3000);
+            } catch (err) {
+                if (!isCurrentDataLoad(datasetKey, token)) return;
+                console.log("Direct fetch failed (likely CORS), trying proxy...", err);
+                updateDataStatus("Trying Proxy...");
+
+                try {
+                    const text = await fetchText(proxyUrl, { cache: "no-store" });
+                    if (!isCurrentDataLoad(datasetKey, token)) return;
+                    if (!applyDataText(text, dataset.sourceLabel + " via proxy", datasetKey)) {
+                        throw new Error("Proxy fetch returned no usable records");
+                    }
+                    updateDataStatus("Success!", "#2ecc71", 3000);
+                } catch (finalErr) {
+                    if (!isCurrentDataLoad(datasetKey, token)) return;
+                    console.warn("All fetches failed", finalErr);
+                    updateDataStatus("Fetch Failed", "#e74c3c");
+                }
+            }
         }
         
         function loadLocalData() {
-            const dataset = getActiveDataset();
-            const statusEl = document.getElementById('fetchStatus');
-            statusEl.style.display = 'block';
-            statusEl.innerText = "Checking local...";
-            statusEl.style.color = "#f39c12";
+            const datasetKey = currentDatasetKey;
+            const token = beginDataLoad();
+            const dataset = getDatasetByKey(datasetKey);
+            updateDataStatus("Checking local...");
 
-            fetch(dataset.localPath, { cache: "no-store" })
-                .then(response => {
-                    if(!response.ok) throw new Error("Local data not found");
-                    return response.text();
-                })
+            fetchText(dataset.localPath, { cache: "no-store" })
                 .then(text => {
-                    applyDataText(text, "Local Data");
-                    statusEl.innerText = "Local Data";
-                    statusEl.style.color = "#2ecc71";
-                    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+                    if (!isCurrentDataLoad(datasetKey, token)) return;
+                    if (!applyDataText(text, "Local Data", datasetKey)) {
+                        throw new Error("Local data has no usable records");
+                    }
+                    updateDataStatus("Local Data", "#2ecc71", 3000);
                 })
                 .catch(error => {
+                    if (!isCurrentDataLoad(datasetKey, token)) return;
                     console.log("Local fetch failed.", error);
                     if (dataset.id === "temperature") {
-                        applyDataText(INITIAL_DATA_SOURCE, "Embedded Data");
-                        statusEl.innerText = "";
+                        if (applyDataText(INITIAL_DATA_SOURCE, "Embedded Data", datasetKey)) {
+                            updateDataStatus("");
+                            return;
+                        }
+                        updateDataStatus("Invalid Data", "#e74c3c");
                         return;
                     }
-                    statusEl.innerText = "Local Missing";
-                    statusEl.style.color = "#e74c3c";
+                    updateDataStatus("Local Missing", "#e74c3c");
                     updateSourceLabel("Load File / Fetch");
                 });
         }
@@ -1447,11 +1531,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return false;
         }
 
-        function updateDataVisualization() {
+        function updateDataVisualization(rawDataOverride) {
             const dataset = getActiveDataset();
-            const rawData = currentDatasetKey === "co2"
-                ? parseCO2MonthlyData(currentDataText)
-                : parseGISSData(currentDataText);
+            const rawData = Array.isArray(rawDataOverride)
+                ? rawDataOverride
+                : parseDatasetData(currentDataText, currentDatasetKey);
+            if (!hasUsableData(rawData)) return false;
+
             const hasGaps = dataset.supportsInterpolation && checkForGaps(rawData);
             const interpRow = document.getElementById('interpolationRow');
             if (interpRow) interpRow.style.display = hasGaps ? 'flex' : 'none';
@@ -1461,7 +1547,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 ? interpolateSparseData(rawData)
                 : rawData;
 
-            if (processedData.length === 0) return;
+            if (!hasUsableData(processedData)) return false;
             
             startYear = processedData[0].year;
             const lastEntry = processedData[processedData.length - 1];
@@ -1475,6 +1561,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const monthLabelOffset = getMonthLabelOffset();
             createMonthRing(getSpiralRadius(ringValue) + monthLabelOffset); 
             updateLegendLabels();
+            return true;
         }
 
         function createMonthRing(radius) {
@@ -1655,6 +1742,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const T = new THREE.Vector3();
             const N = new THREE.Vector3();
             const B = new THREE.Vector3();
+            const T1 = new THREE.Vector3();
+            const T2 = new THREE.Vector3();
             
             // --- 1. Generate Tube Vertices ---
             for (let i = 0; i < numPoints; i++) {
@@ -1665,8 +1754,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 } else if (i === numPoints - 1) {
                     T.subVectors(points[i], points[i-1]).normalize();
                 } else {
-                    const T1 = new THREE.Vector3().subVectors(points[i], points[i-1]);
-                    const T2 = new THREE.Vector3().subVectors(points[i+1], points[i]);
+                    T1.subVectors(points[i], points[i-1]);
+                    T2.subVectors(points[i+1], points[i]);
                     T.addVectors(T1, T2).normalize();
                 }
 
@@ -1798,19 +1887,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                         ? entry.displayValues[sampleIdx]
                         : anomaly;
 
-                    const angle = fraction * Math.PI * 2 + CONFIG.angleOffset;
-                    const r = getSpiralRadius(anomaly);
-                    const yearOffset = entry.year - startYearData;
-                    const yPos = (yearOffset + fraction) * CONFIG.heightPerYear;
+                    const decimalYear = entry.year + fraction;
 
-                    const x = Math.cos(angle) * r;
-                    const z = Math.sin(angle) * r;
-
-                    rawPoints.push(new THREE.Vector3(x, yPos, z));
+                    rawPoints.push(createSpiralPoint(decimalYear, anomaly, startYearData));
                     
                     // Metadata for timeline
                     rawMetaData.push({
-                        decimalYear: entry.year + fraction,
+                        decimalYear: decimalYear,
                         anomaly: anomaly,
                         displayValue: displayValue,
                         // Store tangent basis later if needed, but we calculate it in geometry gen now
@@ -1863,25 +1946,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (rawPoints.length < 2) return;
 
-            const getNextMonthlyDecimalYear = (decimalYear) => {
-                const absoluteMonth = Math.round(decimalYear * 12);
-                return (absoluteMonth + 1) / 12;
-            };
-
-            const createPointFromDecimalYear = (decimalYear, anomaly) => {
-                const normalizedDecimalYear = Math.round(decimalYear * 12) / 12;
-                const fraction = normalizedDecimalYear - Math.floor(normalizedDecimalYear);
-                const angle = fraction * Math.PI * 2 + CONFIG.angleOffset;
-                const r = getSpiralRadius(anomaly);
-                const yPos = (normalizedDecimalYear - startYearData) * CONFIG.heightPerYear;
-
-                return new THREE.Vector3(
-                    Math.cos(angle) * r,
-                    yPos,
-                    Math.sin(angle) * r
-                );
-            };
-
             // 2. Smooth vs Rough Generation
             const isSmooth = document.getElementById('smoothSpiralToggle').checked;
             
@@ -1891,9 +1955,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             if (isSmooth) {
                 const lastMeta = rawMetaData[rawMetaData.length - 1];
-                const ghostPoint = createPointFromDecimalYear(
+                const ghostPoint = createSpiralPoint(
                     getNextMonthlyDecimalYear(lastMeta.decimalYear),
-                    lastMeta.anomaly
+                    lastMeta.anomaly,
+                    startYearData
                 );
                 // Rendering-only persistence boundary: extend the curve one month at the
                 // last observed value, but draw/sample only through the real final point.
@@ -2144,8 +2209,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     } else if (ptIndex > 0) {
                         // Extrapolate direction
                         const prev = generatedGeometryData[ptIndex - 1].point;
-                        const dir = new THREE.Vector3().subVectors(data.point, prev);
-                        targetPoint = new THREE.Vector3().addVectors(data.point, dir);
+                        endCapDirection.subVectors(data.point, prev);
+                        targetPoint = endCapTarget.copy(data.point).add(endCapDirection);
                     }
                     
                     if (targetPoint) {
