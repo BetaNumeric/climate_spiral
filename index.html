@@ -100,12 +100,16 @@
             gap: 2px;
         }
 
-        #skipEndBtn .transport-icon {
+        .skip-btn .transport-icon {
             gap: 0;
         }
 
-        #skipEndBtn .transport-triangle + .transport-triangle {
+        .skip-btn .transport-triangle + .transport-triangle {
             margin-left: 1px;
+        }
+
+        #skipStartBtn .transport-bar {
+            margin-right: 1px;
         }
 
         #skipEndBtn .transport-bar {
@@ -179,7 +183,7 @@
         #timelineContainer {
             position: absolute;
             bottom: 0;
-            left: 205px;
+            left: 155px;
             right: 105px;
             height: 40px;
             
@@ -212,11 +216,11 @@
             display: none !important;
         }
 
-        #bottomWrapper.is-playing #timelineContainer {
-            left: 105px;
+        #bottomWrapper.is-playing .paused-only {
+            display: none;
         }
 
-        #bottomWrapper.is-playing .paused-only {
+        #bottomWrapper:not(.is-playing) .playing-only {
             display: none;
         }
 
@@ -747,6 +751,13 @@
 
         <!-- Timeline Controls -->
         <div id="transportGroup">
+            <button id="skipStartBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to Beginning" aria-label="Skip to beginning">
+                <span class="transport-icon" aria-hidden="true">
+                    <span class="transport-bar"></span>
+                    <span class="transport-triangle backward"></span>
+                    <span class="transport-triangle backward"></span>
+                </span>
+            </button>
             <button id="stepBackBtn" class="icon-btn paused-only" type="button" title="Previous Month" aria-label="Previous month">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-bar"></span>
@@ -766,7 +777,7 @@
                     <span class="transport-bar"></span>
                 </span>
             </button>
-            <button id="skipEndBtn" class="icon-btn" type="button" title="Skip to End" aria-label="Skip to end">
+            <button id="skipEndBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to End" aria-label="Skip to end">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-triangle forward"></span>
                     <span class="transport-triangle forward"></span>
@@ -1779,6 +1790,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const playBtn = document.getElementById('playBtn');
             const stepBackBtn = document.getElementById('stepBackBtn');
             const stepForwardBtn = document.getElementById('stepForwardBtn');
+            const skipStartBtn = document.getElementById('skipStartBtn');
             const skipEndBtn = document.getElementById('skipEndBtn');
             const infoPanel = document.getElementById('infoPanel');
             const settingsPanel = document.getElementById('settingsPanel');
@@ -1902,6 +1914,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             playBtn.addEventListener('click', toggleAnimation);
             stepBackBtn.addEventListener('click', () => stepTimeline(-1));
             stepForwardBtn.addEventListener('click', () => stepTimeline(1));
+            skipStartBtn.addEventListener('click', skipToStart);
             skipEndBtn.addEventListener('click', skipToEnd);
             
             speedSlider.addEventListener('input', (e) => {
@@ -2033,6 +2046,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const atEnd = totalIndices <= 0 || animationIndex >= totalIndices - 0.5;
             document.getElementById('stepBackBtn').disabled = isAnimating || atStart;
             document.getElementById('stepForwardBtn').disabled = isAnimating || atEnd;
+            document.getElementById('skipStartBtn').disabled = atStart;
             document.getElementById('skipEndBtn').disabled = atEnd;
         }
 
@@ -2055,6 +2069,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function stepTimeline(direction) {
             setPlaybackPosition(getAdjacentTimelineStop(direction));
+        }
+
+        function skipToStart() {
+            setPlaybackPosition(0);
         }
 
         function skipToEnd() {
@@ -2799,8 +2817,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             const baseSpeed = Math.ceil(totalIndices / 600); 
             const speed = baseSpeed * animationSpeed;
-            
+            const wasAtStart = animationIndex <= 0.5;
+
             animationIndex += speed;
+            if (wasAtStart && animationIndex > 0.5) updatePlaybackButtonAvailability();
             
             if (animationIndex >= totalIndices) {
                 animationIndex = totalIndices;
