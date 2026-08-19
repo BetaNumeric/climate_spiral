@@ -262,14 +262,6 @@
                 right: 0;
             }
 
-            .panel {
-                bottom: calc(126px + env(safe-area-inset-bottom, 0px));
-                left: 12px;
-                right: 12px;
-                min-width: 0;
-                max-width: none;
-                box-sizing: border-box;
-            }
         }
 
         @media (max-width: 380px) {
@@ -385,6 +377,36 @@
         }
         .close-btn:hover { color: white; }
 
+        .info-details-toggle {
+            display: none;
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: none;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .info-details-toggle:hover { color: #fff; }
+
+        .info-details-toggle .chevron {
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: translateY(-2px) rotate(45deg);
+        }
+
+        #infoPanel.details-expanded .info-details-toggle .chevron {
+            transform: translateY(2px) rotate(225deg);
+        }
+
         /* Settings Toggle Rows */
         .setting-row {
             display: flex;
@@ -476,6 +498,92 @@
             border: 4px dashed #8b9be1;
         }
 
+        @media (max-width: 700px) {
+            .panel {
+                position: fixed;
+                left: 50%;
+                right: auto;
+                width: min(320px, calc(100vw - 24px));
+                min-width: 0;
+                max-width: 320px;
+                padding: 16px;
+                box-sizing: border-box;
+            }
+
+            #settingsPanel {
+                top: 50%;
+                bottom: auto;
+                transform: translate(-50%, -50%);
+                max-height: min(70vh, calc(100dvh - 32px));
+            }
+
+            #infoPanel {
+                top: auto;
+                bottom: calc(114px + env(safe-area-inset-bottom, 0px));
+                transform: translateX(-50%);
+                max-height: calc(100dvh - 158px - env(safe-area-inset-bottom, 0px));
+                transition: bottom 0.2s ease;
+            }
+
+            body:not(.timeline-visible) #infoPanel {
+                bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .info-details-toggle {
+                display: flex;
+            }
+
+            #infoPanel:not(.details-expanded) #infoDetails {
+                display: none;
+            }
+
+            #infoPanel:not(.details-expanded) #currentDataDisplay {
+                margin-top: 0 !important;
+                padding-top: 18px !important;
+                border-top: none !important;
+            }
+
+            #infoPanel:not(.details-expanded) {
+                padding: 12px 14px;
+            }
+
+            #infoPanel:not(.details-expanded) .info-data-label {
+                display: none;
+            }
+
+            #infoPanel:not(.details-expanded) .close-btn {
+                top: 3px;
+                right: 4px;
+                width: 24px;
+                height: 24px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+            }
+
+            #infoPanel:not(.details-expanded) .info-details-toggle {
+                top: 2px;
+                left: 3px;
+                width: 26px;
+                height: 26px;
+            }
+
+            #infoPanel:not(.details-expanded) .info-details-toggle .chevron {
+                width: 7px;
+                height: 7px;
+            }
+
+            #infoPanel:not(.details-expanded) .legend {
+                margin-top: 10px;
+            }
+
+            #infoPanel.details-expanded #infoDetails {
+                padding-top: 24px;
+            }
+        }
+
     </style>
     <!-- Load Three.js from CDN -->
     <script type="importmap">
@@ -494,24 +602,29 @@
     <!-- Info Box -->
     <div id="infoPanel" class="panel">
         <button class="close-btn" data-target="infoPanel">×</button>
-        <h1>Climate Spiral</h1>
-        <p id="infoDescription">Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
-        <p>
-            Source: <a id="sourceLink" href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
-            Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
-        </p>
+        <button id="infoDetailsToggle" class="info-details-toggle" type="button" aria-label="Show information" aria-controls="infoDetails" aria-expanded="false">
+            <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div id="infoDetails">
+            <h1>Climate Spiral</h1>
+            <p id="infoDescription">Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
+            <p>
+                Source: <a id="sourceLink" href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
+                Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
+            </p>
+        </div>
         
         <!-- Live Data Display -->
         <div id="currentDataDisplay" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #333;">
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
-                    <div style="font-size: 0.8rem; color: #aaa;">Date</div>
+                    <div class="info-data-label" style="font-size: 0.8rem; color: #aaa;">Date</div>
                     <div style="font-size: 1.1rem; font-weight: bold; color: #fff;">
                         <span id="infoMonth">Jan</span> <span id="infoYear">1880</span>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size: 0.8rem; color: #aaa;" id="infoMetricLabel">Anomaly</div>
+                    <div class="info-data-label" style="font-size: 0.8rem; color: #aaa;" id="infoMetricLabel">Anomaly</div>
                     <div style="font-size: 1.2rem; color: #8b9be1; font-family: monospace;" id="infoTemp">-- °C</div>
                 </div>
             </div>
@@ -700,6 +813,12 @@
         const FONT_FAMILY = '"Inter", sans-serif';
         const OPACITY_FADE_THRESHOLD = 1.2;
         const MONTHS_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const DEFAULT_ORTHOGRAPHIC_DISTANCE = 200;
+        const CAMERA_RESET_DURATION_MS = 450;
+        const DOUBLE_TAP_MAX_DELAY_MS = 500;
+        const TAP_MAX_DURATION_MS = 300;
+        const TAP_MAX_MOVEMENT_PX = 12;
+        const DOUBLE_TAP_MAX_DISTANCE_PX = 28;
 
         const INITIAL_DATA_SOURCE = `
 Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year
@@ -783,6 +902,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let animationSpeed = 0.8; 
         const endCapDirection = new THREE.Vector3();
         const endCapTarget = new THREE.Vector3();
+        const defaultCameraQuaternion = new THREE.Quaternion();
+        let lastCameraResetTime = -Infinity;
+        let cameraResetAnimation = null;
         
         // UI State
         let timelineTimeout;
@@ -833,8 +955,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             );
             
             // Set initial position for Ortho (Top Down)
-            orthographicCamera.position.set(0, 200, 0);
+            orthographicCamera.position.set(0, DEFAULT_ORTHOGRAPHIC_DISTANCE, 0);
             orthographicCamera.lookAt(0, 0, 0);
+            defaultCameraQuaternion.copy(orthographicCamera.quaternion);
             
             // Sync perspective start pos
             perspectiveCamera.position.copy(orthographicCamera.position);
@@ -842,14 +965,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             activeCamera = orthographicCamera;
 
             // Controls
-            controls = new OrbitControls(activeCamera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.autoRotate = false;
-            // Lock camera to prevent looking from below ground
-            controls.maxPolarAngle = Math.PI / 2; 
-            controls.target.set(0, 0, 0); 
-            controls.enablePan = false; // Restricted by default
+            controls = createOrbitControls(activeCamera, new THREE.Vector3());
+            setupCameraResetGestures(renderer.domElement);
 
             // Lights - Improved for 3D look
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
@@ -1031,6 +1148,191 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function getYearLabelRadius(maxValue) {
             // Keep the same relative spacing between month labels and year labels across datasets.
             return getSpiralRadius(getOuterRingValue(maxValue)) + getMonthLabelOffset() + 2.5;
+        }
+
+        function createOrbitControls(camera, target) {
+            const nextControls = new OrbitControls(camera, renderer.domElement);
+            const isFreeCamera = document.getElementById('freeCameraToggle')?.checked ?? false;
+
+            nextControls.enableDamping = true;
+            nextControls.dampingFactor = 0.05;
+            nextControls.autoRotate = false;
+            nextControls.maxPolarAngle = isFreeCamera ? Math.PI : Math.PI / 2;
+            nextControls.enablePan = isFreeCamera;
+            nextControls.target.copy(target);
+            nextControls.update();
+
+            return nextControls;
+        }
+
+        function resetCameraView() {
+            const now = performance.now();
+            if (now - lastCameraResetTime < 250 || !controls || !activeCamera) return;
+            lastCameraResetTime = now;
+
+            const camera = activeCamera;
+            const controlsEnabled = cameraResetAnimation?.controlsEnabled ?? controls.enabled;
+            const dampingEnabled = controls.enableDamping;
+            const startPosition = camera.position.clone();
+            const startTarget = controls.target.clone();
+            const startZoom = camera.zoom;
+
+            // Clear pending damping, then restore the current rendered view as the animation start.
+            cameraResetAnimation = null;
+            controls.enableDamping = false;
+            controls.update();
+            camera.position.copy(startPosition);
+            controls.target.copy(startTarget);
+            controls.update();
+            controls.enableDamping = dampingEnabled;
+            controls.enabled = false;
+
+            let endDistance = DEFAULT_ORTHOGRAPHIC_DISTANCE;
+            if (camera === perspectiveCamera) {
+                const defaultVisibleHeight = orthographicCamera.top - orthographicCamera.bottom;
+                const halfFov = THREE.MathUtils.degToRad(perspectiveCamera.fov / 2);
+                endDistance = defaultVisibleHeight / (2 * Math.tan(halfFov));
+            }
+
+            const startSpherical = new THREE.Spherical().setFromVector3(
+                startPosition.clone().sub(startTarget)
+            );
+            const thetaDelta = Math.atan2(
+                Math.sin(-startSpherical.theta),
+                Math.cos(-startSpherical.theta)
+            );
+
+            cameraResetAnimation = {
+                camera,
+                controlsEnabled,
+                startTime: now,
+                startTarget,
+                endTarget: new THREE.Vector3(0, spiralHeight / 2, 0),
+                startZoom,
+                startSpherical,
+                endDistance,
+                thetaDelta,
+                currentSpherical: new THREE.Spherical(),
+                currentOffset: new THREE.Vector3()
+            };
+        }
+
+        function updateCameraResetAnimation() {
+            const animation = cameraResetAnimation;
+            if (!animation) return;
+
+            if (activeCamera !== animation.camera) {
+                controls.enabled = animation.controlsEnabled;
+                cameraResetAnimation = null;
+                controls.update();
+                return;
+            }
+
+            const progress = Math.min(
+                (performance.now() - animation.startTime) / CAMERA_RESET_DURATION_MS,
+                1
+            );
+            const eased = progress * progress * (3 - 2 * progress);
+
+            controls.target.lerpVectors(animation.startTarget, animation.endTarget, eased);
+            animation.currentSpherical.set(
+                THREE.MathUtils.lerp(animation.startSpherical.radius, animation.endDistance, eased),
+                THREE.MathUtils.lerp(animation.startSpherical.phi, 0, eased),
+                animation.startSpherical.theta + animation.thetaDelta * eased
+            );
+            animation.currentOffset.setFromSpherical(animation.currentSpherical);
+            animation.camera.position.copy(controls.target).add(animation.currentOffset);
+            animation.camera.zoom = THREE.MathUtils.lerp(animation.startZoom, 1, eased);
+            animation.camera.updateProjectionMatrix();
+            controls.update();
+
+            if (progress === 1) {
+                animation.camera.quaternion.copy(defaultCameraQuaternion);
+                controls.enabled = animation.controlsEnabled;
+                cameraResetAnimation = null;
+            }
+        }
+
+        function setupCameraResetGestures(canvas) {
+            const activeTouchPointers = new Set();
+            let tapCandidate = null;
+            let previousTap = null;
+
+            canvas.addEventListener('dblclick', (event) => {
+                event.preventDefault();
+                resetCameraView();
+            });
+
+            canvas.addEventListener('pointerdown', (event) => {
+                if (event.pointerType !== 'touch') return;
+
+                activeTouchPointers.add(event.pointerId);
+                if (activeTouchPointers.size > 1) {
+                    tapCandidate = null;
+                    previousTap = null;
+                    return;
+                }
+
+                tapCandidate = {
+                    pointerId: event.pointerId,
+                    startTime: performance.now(),
+                    startX: event.clientX,
+                    startY: event.clientY,
+                    moved: false
+                };
+            }, { passive: true });
+
+            canvas.addEventListener('pointermove', (event) => {
+                if (!tapCandidate || event.pointerId !== tapCandidate.pointerId) return;
+                const distance = Math.hypot(
+                    event.clientX - tapCandidate.startX,
+                    event.clientY - tapCandidate.startY
+                );
+                if (distance > TAP_MAX_MOVEMENT_PX) tapCandidate.moved = true;
+            }, { passive: true });
+
+            canvas.addEventListener('pointerup', (event) => {
+                if (event.pointerType !== 'touch') return;
+
+                const involvedMultiplePointers = activeTouchPointers.size > 1;
+                activeTouchPointers.delete(event.pointerId);
+                if (
+                    involvedMultiplePointers ||
+                    !tapCandidate ||
+                    event.pointerId !== tapCandidate.pointerId
+                ) {
+                    tapCandidate = null;
+                    return;
+                }
+
+                const now = performance.now();
+                const duration = now - tapCandidate.startTime;
+                const isTap = !tapCandidate.moved && duration <= TAP_MAX_DURATION_MS;
+
+                if (isTap) {
+                    const isDoubleTap = previousTap &&
+                        now - previousTap.time <= DOUBLE_TAP_MAX_DELAY_MS &&
+                        Math.hypot(event.clientX - previousTap.x, event.clientY - previousTap.y) <= DOUBLE_TAP_MAX_DISTANCE_PX;
+
+                    if (isDoubleTap) {
+                        event.preventDefault();
+                        previousTap = null;
+                        requestAnimationFrame(resetCameraView);
+                    } else {
+                        previousTap = { time: now, x: event.clientX, y: event.clientY };
+                    }
+                } else {
+                    previousTap = null;
+                }
+
+                tapCandidate = null;
+            }, { passive: false });
+
+            canvas.addEventListener('pointercancel', (event) => {
+                activeTouchPointers.delete(event.pointerId);
+                tapCandidate = null;
+                previousTap = null;
+            }, { passive: true });
         }
 
         function setSpiralTargetY(targetY) {
@@ -1480,6 +1782,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const skipEndBtn = document.getElementById('skipEndBtn');
             const infoPanel = document.getElementById('infoPanel');
             const settingsPanel = document.getElementById('settingsPanel');
+            const infoDetailsToggle = document.getElementById('infoDetailsToggle');
             
             const orthoSwitch = document.getElementById('orthoToggle');
             const helpersSwitch = document.getElementById('helpersToggle'); 
@@ -1498,13 +1801,24 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const transportGroup = document.getElementById('transportGroup');
             const buttonGroup = document.getElementById('buttonGroup');
 
+            const setInfoDetailsExpanded = (expanded) => {
+                infoPanel.classList.toggle('details-expanded', expanded);
+                infoDetailsToggle.setAttribute('aria-expanded', String(expanded));
+                infoDetailsToggle.setAttribute('aria-label', expanded ? 'Hide information' : 'Show information');
+            };
+
             toggleBtn.addEventListener('click', () => {
-                infoPanel.classList.toggle('visible');
+                const willOpen = !infoPanel.classList.contains('visible');
+                infoPanel.classList.toggle('visible', willOpen);
+                if (willOpen) setInfoDetailsExpanded(false);
                 settingsPanel.classList.remove('visible');
             });
             settingsBtn.addEventListener('click', () => {
                 settingsPanel.classList.toggle('visible');
                 infoPanel.classList.remove('visible');
+            });
+            infoDetailsToggle.addEventListener('click', () => {
+                setInfoDetailsExpanded(!infoPanel.classList.contains('details-expanded'));
             });
             document.querySelectorAll('.close-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -1551,22 +1865,23 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             fetchBtn.addEventListener('click', fetchRemoteData);
             exportBtn.addEventListener('click', exportGLTF);
 
+            const timelineContainerEl = document.getElementById('timelineContainer');
+            const controlGroups = [transportGroup, buttonGroup];
+
+            const setTimelineVisible = (visible) => {
+                timelineContainerEl.classList.toggle('collapsed', !visible);
+                document.body.classList.toggle('timeline-visible', visible);
+            };
+
             const showTimeline = () => {
                 clearTimeout(timelineTimeout);
-                const containerEl = document.getElementById('timelineContainer');
-                if(containerEl) containerEl.classList.remove('collapsed');
+                setTimelineVisible(true);
             };
             
             const hideTimeline = () => {
                 clearTimeout(timelineTimeout);
-                timelineTimeout = setTimeout(() => {
-                    const containerEl = document.getElementById('timelineContainer');
-                    if(containerEl) containerEl.classList.add('collapsed');
-                }, 2000);
+                timelineTimeout = setTimeout(() => setTimelineVisible(false), 2000);
             };
-            
-            const timelineContainerEl = document.getElementById('timelineContainer');
-            const controlGroups = [transportGroup, buttonGroup];
 
             controlGroups.forEach(group => {
                 group.addEventListener('mouseenter', showTimeline);
@@ -2509,7 +2824,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function animate() {
             requestAnimationFrame(animate);
             updateAnimation();
-            controls.update();
+            if (cameraResetAnimation) updateCameraResetAnimation();
+            else controls.update();
             
             // Sync Directional Light with Camera
             if (dirLight && activeCamera) {
