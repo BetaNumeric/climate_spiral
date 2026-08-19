@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Climate Spiral</title>
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,12 +18,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body { margin: 0; overflow: hidden; overscroll-behavior: none; background-color: #050505; color: white; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body *,
+        body *::before,
+        body *::after {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        canvas {
+            touch-action: none;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
         
         /* Icons */
         .icon-btn {
             width: 40px;
             height: 40px;
+            padding: 0;
             border-radius: 50%;
             background: #333;
             color: white;
@@ -42,24 +70,99 @@
             overflow: hidden;
         }
         .icon-btn:hover { background: #555; }
-        .icon-btn.active { background: #555; border-color: #8b9be1; color: #8b9be1; }
+        .icon-btn.active { background: #555; border-color: #8b9be1; color: #fff; }
+        .icon-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .icon-btn:disabled { opacity: 0.35; cursor: default; background: #222; border-color: #444; }
 
         .btn-icon-img {
-            width: 60%;
-            height: 60%;
+            width: 14px;
+            height: 14px;
             object-fit: contain;
             display: block; /* Default to show if loaded */
         }
         
         .btn-text {
             display: none; /* Hidden by default, shown via onerror */
+            width: 14px;
+            height: 14px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
             line-height: 1;
+            text-align: center;
+        }
+
+        .transport-icon {
+            width: 30px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        #skipEndBtn .transport-icon {
+            gap: 0;
+        }
+
+        #skipEndBtn .transport-triangle + .transport-triangle {
+            margin-left: 1px;
+        }
+
+        #skipEndBtn .transport-bar {
+            margin-left: 1px;
+        }
+
+        .transport-bar,
+        .pause-bar {
+            width: 4px;
+            min-width: 4px;
+            height: 14px;
+            background: currentColor;
+            flex: 0 0 4px;
+        }
+
+        .transport-triangle,
+        .playback-triangle {
+            width: 12px;
+            height: 14px;
+            background: currentColor;
+            flex: 0 0 12px;
+        }
+
+        .transport-triangle.backward {
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+
+        .transport-triangle.forward,
+        .playback-triangle {
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .playback-icon {
+            width: 30px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .playback-icon .playback-triangle {
+            display: none;
+        }
+
+        .playback-icon.show-play .playback-triangle {
+            display: block;
+        }
+
+        .playback-icon.show-play .pause-bar {
+            display: none;
         }
 
         /* Bottom Controls Wrapper */
         #bottomWrapper {
             position: absolute;
-            bottom: 20px;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             left: 20px;
             right: 20px;
             display: flex;
@@ -76,8 +179,8 @@
         #timelineContainer {
             position: absolute;
             bottom: 0;
-            left: 0; /* Anchored left */
-            right: 160px; /* Anchored right (space for 3 buttons + gaps) */
+            left: 205px;
+            right: 105px;
             height: 40px;
             
             background: rgba(0, 0, 0, 0.8);
@@ -90,7 +193,7 @@
             pointer-events: auto;
             
             /* Animation properties */
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease, left 0.2s ease;
             overflow: hidden;
             white-space: nowrap;
             z-index: 20;
@@ -109,6 +212,14 @@
             display: none !important;
         }
 
+        #bottomWrapper.is-playing #timelineContainer {
+            left: 105px;
+        }
+
+        #bottomWrapper.is-playing .paused-only {
+            display: none;
+        }
+
         /* Timeline Labels Responsive Logic */
         @media (max-width: 600px) {
             #timelineStart, #timelineEnd {
@@ -116,15 +227,56 @@
             }
         }
 
-        /* Button Group - Anchored Right */
+        /* Button Groups */
+        #transportGroup,
         #buttonGroup {
             position: absolute;
             bottom: 0;
-            right: 0;
             display: flex;
             gap: 10px;
             pointer-events: auto;
             z-index: 25;
+        }
+
+        #transportGroup {
+            left: 0;
+        }
+
+        #buttonGroup {
+            right: 0;
+        }
+
+        @media (max-width: 700px) {
+            #bottomWrapper {
+                bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+                left: 12px;
+                right: 12px;
+                height: 92px;
+            }
+
+            #timelineContainer,
+            #bottomWrapper.is-playing #timelineContainer {
+                top: 0;
+                bottom: auto;
+                left: 0;
+                right: 0;
+            }
+
+            .panel {
+                bottom: calc(126px + env(safe-area-inset-bottom, 0px));
+                left: 12px;
+                right: 12px;
+                min-width: 0;
+                max-width: none;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 380px) {
+            #transportGroup,
+            #buttonGroup {
+                gap: 7px;
+            }
         }
 
         /* Range Slider Styling */
@@ -152,6 +304,10 @@
             border-radius: 2px;
         }
         input[type=range]:focus { outline: none; }
+
+        #timelineSlider {
+            touch-action: pan-x;
+        }
 
         /* Panels (Info & Settings) */
         .panel {
@@ -467,7 +623,7 @@
     </div>
 
     <!-- Bottom Wrapper -->
-    <div id="bottomWrapper">
+    <div id="bottomWrapper" class="is-playing">
         
         <!-- Timeline Slider (Collapsed by default) -->
         <div id="timelineContainer" class="collapsed">
@@ -476,12 +632,38 @@
             <span style="font-size:0.8rem; color:#aaa; min-width:35px;" id="timelineEnd">2025</span>
         </div>
 
-        <!-- Buttons -->
-        <div id="buttonGroup">
-            <button id="playBtn" class="icon-btn" title="Play Animation">
-                <img src="icons/pause.png" alt="Play" id="playIconImg" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                <span class="btn-text">❚❚</span>
+        <!-- Timeline Controls -->
+        <div id="transportGroup">
+            <button id="stepBackBtn" class="icon-btn paused-only" type="button" title="Previous Month" aria-label="Previous month">
+                <span class="transport-icon" aria-hidden="true">
+                    <span class="transport-bar"></span>
+                    <span class="transport-triangle backward"></span>
+                </span>
             </button>
+            <button id="playBtn" class="icon-btn" type="button" title="Play Animation" aria-label="Play animation" aria-pressed="false">
+                <span id="playIcon" class="playback-icon" aria-hidden="true">
+                    <span class="pause-bar"></span>
+                    <span class="pause-bar"></span>
+                    <span class="playback-triangle"></span>
+                </span>
+            </button>
+            <button id="stepForwardBtn" class="icon-btn paused-only" type="button" title="Next Month" aria-label="Next month">
+                <span class="transport-icon" aria-hidden="true">
+                    <span class="transport-triangle forward"></span>
+                    <span class="transport-bar"></span>
+                </span>
+            </button>
+            <button id="skipEndBtn" class="icon-btn" type="button" title="Skip to End" aria-label="Skip to end">
+                <span class="transport-icon" aria-hidden="true">
+                    <span class="transport-triangle forward"></span>
+                    <span class="transport-triangle forward"></span>
+                    <span class="transport-bar"></span>
+                </span>
+            </button>
+        </div>
+
+        <!-- Utility Buttons -->
+        <div id="buttonGroup">
             <button id="settingsBtn" class="icon-btn" title="Settings">
                 <img src="icons/settings.png" alt="Settings" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                 <span class="btn-text">⚙</span>
@@ -595,6 +777,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let isAnimating = false;
         let animationIndex = 0;
         let totalIndices = 0;
+        let timelineStops = [];
         let startYear = 1880;
         let endYear = 2025; 
         let animationSpeed = 0.8; 
@@ -604,6 +787,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // UI State
         let timelineTimeout;
         let dataStatusTimeout;
+
+        const preventNativeInteraction = (event) => event.preventDefault();
+        document.addEventListener('contextmenu', preventNativeInteraction);
+        document.addEventListener('selectstart', preventNativeInteraction);
+        document.addEventListener('dragstart', preventNativeInteraction);
+        document.addEventListener('dblclick', preventNativeInteraction);
 
         // --- Initialization ---
         init();
@@ -958,6 +1147,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const percent = totalIndices > 0 ? (animationIndex / totalIndices) * 100 : 0;
                 document.getElementById('timelineSlider').value = percent;
                 updateTimelineState(animationIndex);
+                updatePlaybackButtonAvailability();
             }
 
             const shouldAnimate = state.wasAnimating && !state.completed;
@@ -1285,6 +1475,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const toggleBtn = document.getElementById('infoBtn');
             const settingsBtn = document.getElementById('settingsBtn');
             const playBtn = document.getElementById('playBtn');
+            const stepBackBtn = document.getElementById('stepBackBtn');
+            const stepForwardBtn = document.getElementById('stepForwardBtn');
+            const skipEndBtn = document.getElementById('skipEndBtn');
             const infoPanel = document.getElementById('infoPanel');
             const settingsPanel = document.getElementById('settingsPanel');
             
@@ -1302,6 +1495,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const timelineSlider = document.getElementById('timelineSlider');
             const spacingSlider = document.getElementById('spacingSlider');
             
+            const transportGroup = document.getElementById('transportGroup');
             const buttonGroup = document.getElementById('buttonGroup');
 
             toggleBtn.addEventListener('click', () => {
@@ -1372,14 +1566,28 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             };
             
             const timelineContainerEl = document.getElementById('timelineContainer');
+            const controlGroups = [transportGroup, buttonGroup];
 
-            buttonGroup.addEventListener('mouseenter', showTimeline);
+            controlGroups.forEach(group => {
+                group.addEventListener('mouseenter', showTimeline);
+                group.addEventListener('mouseleave', hideTimeline);
+            });
+            transportGroup.addEventListener('pointerdown', (event) => {
+                if (event.pointerType === 'mouse') return;
+                showTimeline();
+                hideTimeline();
+            });
             timelineContainerEl.addEventListener('mouseenter', showTimeline);
-            buttonGroup.addEventListener('mouseleave', hideTimeline);
             timelineContainerEl.addEventListener('mouseleave', hideTimeline);
+            timelineContainerEl.addEventListener('pointerdown', showTimeline);
+            timelineContainerEl.addEventListener('pointerup', hideTimeline);
+            timelineContainerEl.addEventListener('pointercancel', hideTimeline);
             hideTimeline();
 
             playBtn.addEventListener('click', toggleAnimation);
+            stepBackBtn.addEventListener('click', () => stepTimeline(-1));
+            stepForwardBtn.addEventListener('click', () => stepTimeline(1));
+            skipEndBtn.addEventListener('click', skipToEnd);
             
             speedSlider.addEventListener('input', (e) => {
                 animationSpeed = parseFloat(e.target.value);
@@ -1388,14 +1596,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             timelineSlider.addEventListener('input', (e) => {
                 showTimeline(); 
-                if (isAnimating) toggleAnimation(); 
-                
                 const percent = parseFloat(e.target.value);
-                animationIndex = Math.floor((percent / 100) * totalIndices);
-                
-                updateSpiralVisuals();
-                updateTimelineState(animationIndex);
-                saveCurrentDatasetPlaybackState();
+                setPlaybackPosition((percent / 100) * totalIndices);
             });
             
             spacingSlider.addEventListener('input', (e) => {
@@ -1409,7 +1611,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateTimelineState(index) {
-            const progress = index / totalIndices;
+            const progress = totalIndices > 0 ? index / totalIndices : 0;
             
             if(yearIndicatorMesh && generatedGeometryData) {
                 // Find geometry data at current progress
@@ -1434,7 +1636,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     // Update Panel Info
                     document.getElementById('infoYear').innerText = displayYear;
                     // Calc month from decimal
-                    const monthIndex = Math.min(11, Math.floor((exactYear % 1) * 12));
+                    const monthIndex = Math.min(11, Math.max(0, Math.floor((exactYear - displayYear) * 12 + 1e-6)));
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
                     document.getElementById('infoTemp').innerText = formatMetricValue(currentDisplayValue);
@@ -1463,35 +1665,85 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function toggleAnimation() {
             isAnimating = !isAnimating;
             const playBtn = document.getElementById('playBtn');
-            const playIcon = document.getElementById('playIconImg'); 
-            const playText = playBtn.querySelector('.btn-text');
+            const playIcon = document.getElementById('playIcon');
+            const bottomWrapper = document.getElementById('bottomWrapper');
 
             if (isAnimating) {
-                if(playIcon) {
-                    playIcon.src = 'icons/pause.png';
-                    playIcon.alt = 'Pause';
-                }
-                playText.innerText = '❚❚';
+                playIcon.classList.remove('show-play');
                 
                 playBtn.classList.add('active');
                 playBtn.title = "Pause Animation";
+                playBtn.setAttribute('aria-label', 'Pause animation');
+                playBtn.setAttribute('aria-pressed', 'true');
+                bottomWrapper.classList.add('is-playing');
                 
                 if (animationIndex >= totalIndices) {
                     animationIndex = 0;
-                    if (spiralMesh) spiralMesh.geometry.setDrawRange(0, 0);
+                    lastDrawnYear = -1;
+                    if (spiralMesh) {
+                        updateSpiralVisuals();
+                        document.getElementById('timelineSlider').value = 0;
+                        updateTimelineState(0);
+                    }
                 }
             } else {
-                if(playIcon) {
-                    playIcon.src = 'icons/play.png';
-                    playIcon.alt = 'Play';
-                }
-                playText.innerText = '▶';
+                playIcon.classList.add('show-play');
                 
                 playBtn.classList.remove('active');
                 playBtn.title = "Play Animation";
+                playBtn.setAttribute('aria-label', 'Play animation');
+                playBtn.setAttribute('aria-pressed', 'false');
+                bottomWrapper.classList.remove('is-playing');
             }
 
+            updatePlaybackButtonAvailability();
             saveCurrentDatasetPlaybackState();
+        }
+
+        function setPlaybackPosition(index, pause = true) {
+            if (!spiralMesh || totalIndices <= 0) return;
+            if (pause && isAnimating) toggleAnimation();
+
+            animationIndex = Math.max(0, Math.min(totalIndices, index));
+            lastDrawnYear = -1;
+            updateSpiralVisuals();
+            document.getElementById('timelineSlider').value = (animationIndex / totalIndices) * 100;
+            updateTimelineState(animationIndex);
+            updatePlaybackButtonAvailability();
+            saveCurrentDatasetPlaybackState();
+        }
+
+        function updatePlaybackButtonAvailability() {
+            const atStart = totalIndices <= 0 || animationIndex <= 0.5;
+            const atEnd = totalIndices <= 0 || animationIndex >= totalIndices - 0.5;
+            document.getElementById('stepBackBtn').disabled = isAnimating || atStart;
+            document.getElementById('stepForwardBtn').disabled = isAnimating || atEnd;
+            document.getElementById('skipEndBtn').disabled = atEnd;
+        }
+
+        function getAdjacentTimelineStop(direction) {
+            if (!timelineStops.length) return direction < 0 ? 0 : totalIndices;
+
+            const epsilon = 0.5;
+            if (direction < 0) {
+                for (let i = timelineStops.length - 1; i >= 0; i--) {
+                    if (timelineStops[i] < animationIndex - epsilon) return timelineStops[i];
+                }
+                return timelineStops[0];
+            }
+
+            for (let i = 0; i < timelineStops.length; i++) {
+                if (timelineStops[i] > animationIndex + epsilon) return timelineStops[i];
+            }
+            return timelineStops[timelineStops.length - 1];
+        }
+
+        function stepTimeline(direction) {
+            setPlaybackPosition(getAdjacentTimelineStop(direction));
+        }
+
+        function skipToEnd() {
+            setPlaybackPosition(totalIndices);
         }
 
         function switchCamera(isOrtho) {
@@ -1853,6 +2105,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
             if (endCapMesh) { disposeHierarchy(endCapMesh); scene.remove(endCapMesh); }
             if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
+            timelineStops = [];
 
             const rawPoints = [];
             const rawColors = [];
@@ -1952,6 +2205,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             let finalPoints = [];
             let finalColors = [];
             let finalMetaData = []; // To store interpolated year info
+            let pointsPerObservation = 1;
             
             if (isSmooth) {
                 const lastMeta = rawMetaData[rawMetaData.length - 1];
@@ -1966,8 +2220,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const curve = new THREE.CatmullRomCurve3(splinePoints);
                 curve.curveType = 'centripetal'; 
                 
-                const pointsPerSeg = 6; 
-                const finalPointCount = (rawPoints.length - 1) * pointsPerSeg + 1;
+                pointsPerObservation = 6;
+                const finalPointCount = (rawPoints.length - 1) * pointsPerObservation + 1;
                 const lastRealT = (rawPoints.length - 1) / (splinePoints.length - 1);
                 
                 for (let i = 0; i < finalPointCount; i++) {
@@ -2057,6 +2311,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const bodyIndices = (finalPoints.length - 1) * CONFIG.radialSegments * 6;
             
             totalIndices = bodyIndices; // For animation progress calculation
+            const geometryIndexStride = CONFIG.radialSegments * 6;
+            timelineStops = rawMetaData.map((_, observationIndex) => (
+                Math.min(totalIndices, observationIndex * pointsPerObservation * geometryIndexStride)
+            ));
             
             if (!isAnimating) {
                 // Show full geometry including end cap
@@ -2069,6 +2327,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 updateYearIndicatorText(endYear);
             }
+            updatePlaybackButtonAvailability();
         }
 
         function addYearLabel(year, y, radius) {
