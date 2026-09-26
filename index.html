@@ -251,7 +251,7 @@
 
         @media (max-width: 700px) {
             #bottomWrapper {
-                bottom: max(4px, env(safe-area-inset-bottom, 0px));
+                bottom: max(8px, env(safe-area-inset-bottom, 0px));
                 left: 12px;
                 right: 12px;
                 height: 92px;
@@ -410,7 +410,80 @@
             transform: translateY(2px) rotate(225deg);
         }
 
-        /* Settings Toggle Rows */
+        /* Settings */
+        #settingsPanel {
+            width: min(340px, calc(100vw - 24px));
+            min-width: 0;
+            max-width: 340px;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        #settingsPanel.visible { display: flex; flex-direction: column; }
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 0 0 auto;
+            padding: 8px 10px 8px 16px;
+            border-bottom: 1px solid #333;
+        }
+        .settings-header h2 { margin: 0; padding: 0; border: 0; font-size: 1rem; }
+        .settings-header .close-btn { position: static; width: 32px; height: 32px; padding: 0; }
+        .settings-body { min-height: 0; padding: 0 16px 8px; overflow-y: auto; scroll-padding-block: 12px; }
+        .settings-dataset { display: grid; gap: 8px; padding: 16px 0; }
+        .settings-dataset > label { color: #aaa; font-size: 0.8rem; }
+        #datasetSelect {
+            width: 100%;
+            min-width: 0;
+            height: 38px;
+            padding: 0 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #222;
+            color: #fff;
+            color-scheme: dark;
+            font: inherit;
+            font-size: 16px;
+        }
+        #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
+        .settings-section { border-top: 1px solid #333; }
+        .settings-section > summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 44px;
+            color: #eee;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+        }
+        .settings-section > summary::-webkit-details-marker { display: none; }
+        .settings-section > summary::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            flex: 0 0 6px;
+            margin-right: 3px;
+            border-right: 2px solid #999;
+            border-bottom: 2px solid #999;
+            transform: rotate(-45deg);
+        }
+        .settings-section[open] > summary::after { transform: translateY(-2px) rotate(45deg); }
+        .settings-section > summary:hover { color: #fff; }
+        .settings-section-content { padding: 4px 0 16px; }
+        .section-status { margin-left: auto; color: #8b9be1; font-size: 0.75rem; font-weight: 400; }
+        .section-status:empty { display: none; }
+        #settingsPanel :is(button, select, input, summary, a):focus-visible {
+            outline: 2px solid #8b9be1;
+            outline-offset: 2px;
+        }
+        #settingsPanel .switch:focus-within .slider-switch { outline: 2px solid #8b9be1; outline-offset: 2px; }
+        #settingsPanel input:not([type=checkbox]):disabled,
+        #settingsPanel select:disabled { opacity: 0.45; }
+        .switch input:disabled + .slider-switch { opacity: 0.45; cursor: default; }
         .setting-row {
             display: flex;
             justify-content: space-between;
@@ -418,7 +491,14 @@
             margin-bottom: 15px;
             font-size: 0.9rem;
             color: #ddd;
+            gap: 12px;
         }
+        .setting-row:last-child { margin-bottom: 0; }
+        .setting-column { flex-direction: column; align-items: stretch; gap: 4px; }
+        .data-source-status { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
+        #dataOrigin { color: #888; font-size: 0.75rem; }
+        .data-actions { display: flex; gap: 10px; }
+        .data-actions .upload-label { flex: 1; min-width: 0; }
         
         /* Toggle Switch CSS */
         .switch {
@@ -427,8 +507,19 @@
             width: 36px;
             height: 20px;
             margin-left: 10px;
+            flex-shrink: 0;
         }
-        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch input {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+        .switch input:disabled { cursor: default; }
         .slider-switch {
             position: absolute;
             cursor: pointer;
@@ -477,8 +568,34 @@
             font-size: 0.8rem;
             border: 1px solid #555;
             transition: background 0.2s;
+            min-height: 32px;
         }
         .upload-label:hover { background: #555; }
+
+        .upload-label:disabled { opacity: 0.45; cursor: default; }
+
+        .video-export-row { gap: 12px; flex-wrap: wrap; }
+        #videoDuration {
+            width: 70px;
+            padding: 5px;
+            box-sizing: border-box;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #222;
+            color: #fff;
+            font: inherit;
+            font-size: 16px;
+        }
+        #videoExportProgress { width: 100%; accent-color: #8b9be1; }
+        #videoExportStatus {
+            margin: 8px 0;
+            font-size: 0.8rem;
+            color: #aaa;
+            overflow-wrap: anywhere;
+        }
+        #videoExportStatus:empty { display: none; }
+        #videoDownload { display: inline-block; text-decoration: none; }
+        #videoDownload[hidden] { display: none; }
         
         .loading-text {
             color: #f39c12;
@@ -645,96 +762,114 @@
     </div>
 
     <!-- Settings Box -->
-    <div id="settingsPanel" class="panel">
-        <button class="close-btn" data-target="settingsPanel">×</button>
-        <h2>Settings</h2>
-        
-        <div class="setting-row">
-            <span>Show Annotations</span>
-            <label class="switch">
-                <input type="checkbox" id="helpersToggle" checked>
-                <span class="slider-switch"></span>
-            </label>
+    <div id="settingsPanel" class="panel" role="region" aria-labelledby="settingsTitle">
+        <div class="settings-header">
+            <h2 id="settingsTitle">Settings</h2>
+            <button class="close-btn" type="button" data-target="settingsPanel" aria-label="Close settings">×</button>
         </div>
-
-        <div class="setting-row">
-            <span>Orthographic View</span>
-            <label class="switch">
-                <input type="checkbox" id="orthoToggle" checked>
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-        
-        <div class="setting-row">
-            <span>Free Camera</span>
-            <label class="switch">
-                <input type="checkbox" id="freeCameraToggle">
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-
-        <div class="setting-row" id="interpolationRow" style="display:none;">
-            <span>Interpolate Gaps</span>
-            <label class="switch">
-                <input type="checkbox" id="interpolationToggle">
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-
-        <div class="setting-row">
-            <span>Smooth Spiral</span>
-            <label class="switch">
-                <input type="checkbox" id="smoothSpiralToggle" checked>
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-
-        <div class="setting-row">
-            <span>Use CO2 Data</span>
-            <label class="switch">
-                <input type="checkbox" id="co2ModeToggle">
-                <span class="slider-switch"></span>
-            </label>
-        </div>
-        
-        <!-- File Upload & Fetch -->
-        <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px; flex-direction:column; align-items:flex-start; gap:10px;">
-            <div style="display:flex; justify-content:space-between; width:100%;">
-                <span>Data Source <span id="dataOrigin" style="font-size:0.75rem; color:#888; margin-left:5px;">(Init)</span></span>
-                <span id="fetchStatus" class="loading-text">Fetching...</span>
+        <div class="settings-body">
+            <div class="settings-dataset">
+                <label for="datasetSelect">Dataset</label>
+                <select id="datasetSelect"></select>
+                <a id="settingsSourceLink" target="_blank" rel="noopener noreferrer"></a>
             </div>
-            <div style="display:flex; gap:10px; width:100%;">
-                <button id="fetchBtn" class="upload-label" style="flex:1; border:1px solid #555; background:#3b4cc0;">Fetch Latest</button>
-                <label for="fileUpload" class="upload-label" style="flex:1; text-align:center;">
-                    Load .txt
-                </label>
-            </div>
-            <input type="file" id="fileUpload" accept=".txt" style="display:none;">
-            <p id="fetchHint" style="font-size:0.75rem; color:#888; margin:0;">"Fetch" tries current source direct/proxy. Initial load checks local.</p>
-        </div>
 
-        <!-- Spacing Slider -->
-        <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
-            <div class="slider-label">
-                <span>Coil Spacing</span>
-                <span id="spacingValue" class="slider-val">0.3</span>
-            </div>
-            <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.25" style="width:100%;">
-        </div>
+            <details id="viewSettings" class="settings-section" open>
+                <summary>View</summary>
+                <div class="settings-section-content">
+                    <div class="setting-row">
+                        <label for="helpersToggle">Show Annotations</label>
+                        <span class="switch">
+                            <input type="checkbox" id="helpersToggle" checked>
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="setting-row">
+                        <label for="orthoToggle">Orthographic View</label>
+                        <span class="switch">
+                            <input type="checkbox" id="orthoToggle" checked>
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="setting-row">
+                        <label for="freeCameraToggle">Free Camera</label>
+                        <span class="switch">
+                            <input type="checkbox" id="freeCameraToggle">
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="setting-row">
+                        <label for="smoothSpiralToggle">Smooth Spiral</label>
+                        <span class="switch">
+                            <input type="checkbox" id="smoothSpiralToggle" checked>
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="setting-row setting-column">
+                        <div class="slider-label">
+                            <label for="spacingSlider">Coil Spacing</label>
+                            <output id="spacingValue" class="slider-val" for="spacingSlider">0.25</output>
+                        </div>
+                        <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.25">
+                    </div>
+                </div>
+            </details>
 
-        <!-- Speed Slider -->
-        <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
-            <div class="slider-label">
-                <span>Animation Speed</span>
-                <span id="speedValue" class="slider-val">0.8x</span>
-            </div>
-            <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8" style="width:100%;">
-        </div>
+            <details id="animationSettings" class="settings-section">
+                <summary>Animation</summary>
+                <div class="settings-section-content">
+                    <div class="setting-row setting-column">
+                        <div class="slider-label">
+                            <label for="speedSlider">Animation Speed</label>
+                            <output id="speedValue" class="slider-val" for="speedSlider">0.8x</output>
+                        </div>
+                        <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8">
+                    </div>
+                </div>
+            </details>
 
-        <!-- Export -->
-        <div class="setting-row" style="border-top: 1px solid #444; padding-top: 15px;">
-            <span>Export 3D Model</span>
-            <button id="exportBtn" class="upload-label" style="border:1px solid #555; background:#444;">Export .glb</button>
+            <details id="dataSettings" class="settings-section">
+                <summary>Data Source</summary>
+                <div class="settings-section-content">
+                    <div class="data-source-status">
+                        <span id="dataOrigin">(Init)</span>
+                        <span id="fetchStatus" class="loading-text" role="status">Fetching...</span>
+                    </div>
+                    <div class="setting-row" id="interpolationRow" style="display:none;">
+                        <label for="interpolationToggle">Interpolate Gaps</label>
+                        <span class="switch">
+                            <input type="checkbox" id="interpolationToggle">
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="data-actions">
+                        <button id="fetchBtn" class="upload-label" type="button">Fetch Latest</button>
+                        <button id="fileUploadBtn" class="upload-label" type="button">Load .txt</button>
+                    </div>
+                    <input type="file" id="fileUpload" accept=".txt" hidden>
+                </div>
+            </details>
+
+            <details id="exportSettings" class="settings-section">
+                <summary><span>Export</span><span id="exportSectionStatus" class="section-status"></span></summary>
+                <div class="settings-section-content">
+                    <div class="setting-row">
+                        <span>3D Model</span>
+                        <button id="exportBtn" class="upload-label" type="button">Export .glb</button>
+                    </div>
+                    <div class="setting-row video-export-row">
+                        <label for="videoDuration">Video Length (s)</label>
+                        <input id="videoDuration" type="number" min="5" max="120" step="1" value="20" inputmode="numeric">
+                    </div>
+                    <div class="setting-row video-export-row">
+                        <span>Animation</span>
+                        <button id="videoExportBtn" class="upload-label" type="button">Export video</button>
+                    </div>
+                    <progress id="videoExportProgress" max="100" value="0" aria-label="Video export progress" hidden></progress>
+                    <p id="videoExportStatus" role="status" aria-live="polite"></p>
+                    <a id="videoDownload" class="upload-label" hidden>Download video</a>
+                </div>
+            </details>
         </div>
     </div>
 
@@ -897,10 +1032,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let currentDataText = INITIAL_DATA_SOURCE; 
         let dataLoadToken = 0;
         let generatedGeometryData = null; // Store data for animation mapping
-        const datasetPlaybackState = {
-            temperature: { initialized: false, progress: 0, completed: false, wasAnimating: false },
-            co2: { initialized: false, progress: 0, completed: false, wasAnimating: false }
-        };
+        const datasetPlaybackState = Object.fromEntries(
+            Object.keys(DATASET_CONFIG).map(key => [
+                key, { initialized: false, progress: 0, completed: false, wasAnimating: false }
+            ])
+        );
         
         // Animation State
         let isAnimating = false;
@@ -915,6 +1051,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         const defaultCameraQuaternion = new THREE.Quaternion();
         let lastCameraResetTime = -Infinity;
         let cameraResetAnimation = null;
+        let videoExport = null;
+        let videoDownloadUrl = null;
         
         // UI State
         let timelineTimeout;
@@ -1176,6 +1314,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function resetCameraView() {
+            if (videoExport) return;
             const now = performance.now();
             if (now - lastCameraResetTime < 250 || !controls || !activeCamera) return;
             lastCameraResetTime = now;
@@ -1384,7 +1523,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const metricLabel = document.getElementById('infoMetricLabel');
             const infoDescription = document.getElementById('infoDescription');
             const sourceLink = document.getElementById('sourceLink');
-            const fetchHint = document.getElementById('fetchHint');
+            const datasetSelect = document.getElementById('datasetSelect');
+            const settingsSourceLink = document.getElementById('settingsSourceLink');
             const interpolationRow = document.getElementById('interpolationRow');
             const interpolationToggle = document.getElementById('interpolationToggle');
             const smoothSpiralToggle = document.getElementById('smoothSpiralToggle');
@@ -1396,9 +1536,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 sourceLink.href = dataset.sourceHref;
                 sourceLink.innerText = dataset.sourceLabel;
             }
-            if (fetchHint) {
-                fetchHint.innerText = '"Fetch" tries ' + dataset.sourceLabel + ' direct/proxy. Initial load checks local.';
-            }
+            datasetSelect.value = currentDatasetKey;
+            settingsSourceLink.textContent = dataset.sourceLabel;
+            settingsSourceLink.href = dataset.sourceHref;
             if (interpolationToggle && !dataset.supportsInterpolation) {
                 interpolationToggle.checked = false;
             }
@@ -1424,6 +1564,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 return false;
             }
 
+            cancelVideoExport('Export cancelled: the dataset changed.');
             currentDataText = text;
             if (!updateDataVisualization(rawData)) return false;
             restoreOrStartDatasetPlayback();
@@ -1594,6 +1735,181 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 },
                 { binary: true }
             );
+        }
+
+        function getVideoMimeType() {
+            if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) return null;
+            return [
+                'video/mp4;codecs=avc1.42E01E',
+                'video/mp4',
+                'video/webm;codecs=vp9',
+                'video/webm;codecs=vp8',
+                'video/webm'
+            ].find(type => MediaRecorder.isTypeSupported(type)) || null;
+        }
+
+        function setVideoExportStatus(message) {
+            document.getElementById('videoExportStatus').textContent = message;
+            document.getElementById('exportSectionStatus').textContent = videoExport
+                ? (videoExport.stopping ? 'Finishing...' : 'Recording')
+                : (videoDownloadUrl ? 'Ready' : '');
+        }
+
+        function startVideoExport() {
+            if (videoExport) {
+                cancelVideoExport();
+                return;
+            }
+
+            const status = document.getElementById('videoExportStatus');
+            const durationInput = document.getElementById('videoDuration');
+            if (!durationInput.reportValidity()) return;
+            const duration = durationInput.valueAsNumber;
+            if (!Number.isFinite(duration)) {
+                setVideoExportStatus('Enter a video length between 5 and 120 seconds.');
+                return;
+            }
+            const mimeType = getVideoMimeType();
+            if (!mimeType || !spiralMesh || totalIndices <= 0 || document.hidden) {
+                setVideoExportStatus(mimeType ? 'No animation is available to export.' : 'Video export is unavailable in this browser.');
+                return;
+            }
+
+            let stream;
+            try {
+                // Use a fixed, even-sized canvas for encoders, capped at a 1920px long edge.
+                const canvas = document.createElement('canvas');
+                const source = renderer.domElement;
+                const scale = Math.min(1, 1920 / Math.max(source.width, source.height));
+                canvas.width = Math.max(2, Math.floor(source.width * scale / 2) * 2);
+                canvas.height = Math.max(2, Math.floor(source.height * scale / 2) * 2);
+                const context = canvas.getContext('2d', { alpha: false });
+                if (!context) throw new Error('Could not create a recording canvas.');
+                stream = canvas.captureStream(30);
+                const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 });
+                const session = {
+                    canvas, context, stream, recorder, chunks: [],
+                    durationMs: duration * 1000,
+                    startedAt: null,
+                    stopping: false,
+                    lastPercent: -1,
+                    index: animationIndex,
+                    wasAnimating: isAnimating,
+                    controlsEnabled: cameraResetAnimation?.controlsEnabled ?? controls.enabled,
+                    filename: 'climate-spiral-' + currentDatasetKey + '-' + startYear + '-' + endYear,
+                    disabledControls: []
+                };
+
+                cameraResetAnimation = null;
+                controls.enabled = false;
+                setPlaybackPosition(0);
+                videoExport = session;
+                const inputs = document.querySelectorAll(
+                    '#settingsPanel input, #settingsPanel select, #settingsPanel button:not(.close-btn):not(#videoExportBtn), #transportGroup button, #timelineSlider'
+                );
+                session.disabledControls = Array.from(inputs, element => ({ element, disabled: element.disabled }));
+                inputs.forEach(element => { element.disabled = true; });
+                document.getElementById('videoExportBtn').textContent = 'Cancel export';
+                document.getElementById('videoDownload').hidden = true;
+                document.getElementById('videoExportProgress').value = 0;
+                document.getElementById('videoExportProgress').hidden = false;
+                setVideoExportStatus('Recording 0%');
+                status.scrollIntoView({ block: 'nearest' });
+
+                recorder.ondataavailable = event => {
+                    if (videoExport === session && event.data.size) session.chunks.push(event.data);
+                };
+                recorder.onerror = () => {
+                    if (videoExport === session) cancelVideoExport('Recording failed. Try a smaller window or another browser.');
+                };
+                recorder.onstop = () => {
+                    if (videoExport !== session) return;
+                    const blob = new Blob(session.chunks, { type: recorder.mimeType || mimeType });
+                    if (!session.stopping || !blob.size) {
+                        finishVideoExport(session, 'Recording ended before the video was complete.');
+                        return;
+                    }
+                    finishVideoExport(session, 'Video ready.', blob);
+                };
+            } catch (error) {
+                console.error('Video export failed:', error);
+                stream?.getTracks().forEach(track => track.stop());
+                if (videoExport) cancelVideoExport('Could not start recording. Try another browser.');
+                else setVideoExportStatus('Could not start recording. Try another browser.');
+            }
+        }
+
+        function updateVideoExport() {
+            const session = videoExport;
+            if (session.stopping) return;
+            const elapsed = session.startedAt === null ? 0 : performance.now() - session.startedAt;
+            // Hold the first and last frames briefly so both endpoints are visible in the video.
+            const progress = THREE.MathUtils.clamp((elapsed - 250) / (session.durationMs - 750), 0, 1);
+            animationIndex = progress * totalIndices;
+            updateSpiralVisuals();
+            updateTimelineState(animationIndex);
+            document.getElementById('timelineSlider').value = progress * 100;
+            const percent = Math.min(100, Math.floor(elapsed / session.durationMs * 100));
+            if (percent !== session.lastPercent) {
+                session.lastPercent = percent;
+                document.getElementById('videoExportProgress').value = percent;
+                setVideoExportStatus('Recording ' + percent + '%');
+            }
+        }
+
+        function captureVideoFrame() {
+            const session = videoExport;
+            if (!session || session.stopping) return;
+            try {
+                // Copy immediately after rendering, before WebGL clears its drawing buffer.
+                session.context.drawImage(renderer.domElement, 0, 0, session.canvas.width, session.canvas.height);
+                if (session.startedAt === null) {
+                    session.recorder.start(1000);
+                    session.startedAt = performance.now();
+                } else if (performance.now() - session.startedAt >= session.durationMs) {
+                    session.stopping = true;
+                    setVideoExportStatus('Finishing video...');
+                    session.recorder.stop();
+                }
+            } catch (error) {
+                console.error('Video recording failed:', error);
+                cancelVideoExport('Recording failed. Try another browser.');
+            }
+        }
+
+        function cancelVideoExport(message = 'Export cancelled.') {
+            if (videoExport) finishVideoExport(videoExport, message);
+        }
+
+        function finishVideoExport(session, message, blob = null) {
+            videoExport = null;
+            if (session.recorder.state !== 'inactive') session.recorder.stop();
+            session.stream.getTracks().forEach(track => track.stop());
+            session.disabledControls.forEach(({ element, disabled }) => { element.disabled = disabled; });
+            controls.enabled = session.controlsEnabled;
+            setPlaybackPosition(session.index);
+            if (session.wasAnimating) toggleAnimation();
+
+            const download = document.getElementById('videoDownload');
+            if (blob) {
+                if (videoDownloadUrl) URL.revokeObjectURL(videoDownloadUrl);
+                videoDownloadUrl = URL.createObjectURL(blob);
+                const extension = blob.type.startsWith('video/mp4') ? 'mp4' : 'webm';
+                download.href = videoDownloadUrl;
+                download.download = session.filename + '.' + extension;
+                download.textContent = 'Download .' + extension;
+            }
+            download.hidden = !videoDownloadUrl;
+            document.getElementById('videoExportBtn').textContent = 'Export video';
+            document.getElementById('videoExportProgress').hidden = true;
+            const status = document.getElementById('videoExportStatus');
+            setVideoExportStatus(message);
+            if (document.getElementById('settingsPanel').classList.contains('visible')
+                && document.getElementById('exportSettings').open) {
+                (blob ? download : status).scrollIntoView({ block: 'nearest' });
+            }
+            session.chunks.length = 0;
+            session.canvas.width = session.canvas.height = 0;
         }
 
         function createYearIndicator() {
@@ -1799,7 +2115,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const helpersSwitch = document.getElementById('helpersToggle'); 
             const interpSwitch = document.getElementById('interpolationToggle');
             const smoothSpiralSwitch = document.getElementById('smoothSpiralToggle');
-            const co2ModeSwitch = document.getElementById('co2ModeToggle');
+            const datasetSelect = document.getElementById('datasetSelect');
             const freeCamSwitch = document.getElementById('freeCameraToggle'); 
             const fileInput = document.getElementById('fileUpload');
             const fetchBtn = document.getElementById('fetchBtn');
@@ -1811,6 +2127,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             const transportGroup = document.getElementById('transportGroup');
             const buttonGroup = document.getElementById('buttonGroup');
+
+            Object.entries(DATASET_CONFIG).forEach(([key, dataset]) => {
+                datasetSelect.add(new Option(dataset.title, key));
+            });
+            datasetSelect.value = currentDatasetKey;
 
             const setInfoDetailsExpanded = (expanded) => {
                 infoPanel.classList.toggle('details-expanded', expanded);
@@ -1852,9 +2173,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             interpSwitch.addEventListener('change', updateDataVisualization);
             smoothSpiralSwitch.addEventListener('change', updateDataVisualization);
-            co2ModeSwitch.addEventListener('change', (e) => {
+            datasetSelect.addEventListener('change', (e) => {
+                const nextDatasetKey = e.target.value;
+                if (videoExport || !Object.hasOwn(DATASET_CONFIG, nextDatasetKey) || nextDatasetKey === currentDatasetKey) {
+                    datasetSelect.value = currentDatasetKey;
+                    return;
+                }
                 saveCurrentDatasetPlaybackState();
-                currentDatasetKey = e.target.checked ? "co2" : "temperature";
+                currentDatasetKey = nextDatasetKey;
                 applyDatasetUI();
                 loadLocalData();
             });
@@ -1872,9 +2198,22 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             fileInput.addEventListener('change', (e) => {
                 if(e.target.files.length > 0) handleFile(e.target.files[0]);
             });
+            document.getElementById('fileUploadBtn').addEventListener('click', () => fileInput.click());
             
             fetchBtn.addEventListener('click', fetchRemoteData);
             exportBtn.addEventListener('click', exportGLTF);
+            document.getElementById('videoExportBtn').addEventListener('click', startVideoExport);
+            if (!getVideoMimeType()) {
+                document.getElementById('videoExportBtn').disabled = true;
+                document.getElementById('videoDuration').disabled = true;
+                setVideoExportStatus('Video export is unavailable in this browser.');
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) cancelVideoExport('Export cancelled: keep this page visible while recording.');
+            });
+            renderer.domElement.addEventListener('webglcontextlost', () => {
+                cancelVideoExport('Export cancelled: the 3D view was interrupted.');
+            });
 
             const timelineContainerEl = document.getElementById('timelineContainer');
             const controlGroups = [transportGroup, buttonGroup];
@@ -1930,7 +2269,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             spacingSlider.addEventListener('input', (e) => {
                 const val = parseFloat(e.target.value);
                 CONFIG.heightPerYear = val;
-                document.getElementById('spacingValue').innerText = val.toFixed(1);
+                document.getElementById('spacingValue').innerText = val.toFixed(2);
                 updateDataVisualization(); 
             });
 
@@ -2687,6 +3026,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function onWindowResize() {
+            cancelVideoExport('Export cancelled: the window size changed.');
             const aspect = window.innerWidth / window.innerHeight;
             const frustumSize = CONFIG.frustumSize;
 
@@ -2842,9 +3182,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function animate() {
             requestAnimationFrame(animate);
-            updateAnimation();
-            if (cameraResetAnimation) updateCameraResetAnimation();
-            else controls.update();
+            if (videoExport) {
+                updateVideoExport();
+            } else {
+                updateAnimation();
+                if (cameraResetAnimation) updateCameraResetAnimation();
+                else controls.update();
+            }
             
             // Sync Directional Light with Camera
             if (dirLight && activeCamera) {
@@ -2901,6 +3245,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             renderer.render(scene, activeCamera);
+            captureVideoFrame();
         }
     </script>
     <script>

@@ -20,11 +20,13 @@ The animation plays automatically upon loading. You can control the playback usi
 * **Zoom:** Use the mouse scroll wheel.  
 * **Move:** Right-click and drag (requires "Free Camera" to be enabled in the settings).
 
-Click the gear icon to access settings. Here you can toggle between an orthographic and 3D perspective view, adjust the animation speed, or toggle visual helpers like the grid and labels.
+Click the gear icon to access settings. Controls are grouped into collapsible **View**, **Animation**, **Data Source**, and **Export** sections. View starts expanded; each section can be opened independently.
 
-You can switch between **Temperature** and **CO2** in the settings panel.
+Use the **Dataset** selector at the top of Settings to switch between **Temperature** and **CO2 Monthly**. Each dataset retains its playback position and play/pause state while switching. The selector's options are generated from `DATASET_CONFIG`, so future supported datasets can appear without adding another toggle.
 
-To update the data, you can click "Fetch Latest" in the settings menu (which uses a proxy) or drag and drop a supported raw data file into the browser window.
+To save an animation, open **Export**, set **Video Length (s)**, and select **Export video**. The full timeline is recorded from the current camera view, including visible annotations but excluding the interface. Recording runs in real time at up to 30 fps, with a maximum long edge of 1920 pixels. Keep the page visible and its window size unchanged until **Download .mp4** or **Download .webm** appears; the format is selected from those supported by your browser. You can collapse Export while recording; its heading shows **Recording** or **Ready**. You can cancel the export, and your original playback position and play/pause state are restored afterward. The video is generated locally without uploading data. **Export .glb** remains available for the 3D model.
+
+To update the selected dataset, open **Data Source** and select **Fetch Latest** (with a proxy fallback) or **Load .txt**. You can also drag and drop a supported raw data file into the browser window.
 
 ## **Mobile / PWA**
 
