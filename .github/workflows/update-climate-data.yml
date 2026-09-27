@@ -29,15 +29,21 @@ jobs:
             "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt" \
             --output data/co2_mm_mlo.txt
 
+      - name: Download and validate ocean temperature data
+        run: node scripts/update-ocean-data.mjs
+
+      - name: Test ocean data handling
+        run: node --test tests/ocean-data.test.mjs
+
       - name: Commit changed data files
         run: |
-          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt; then
+          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ocean-temperature.json; then
             echo "No data changes."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt
+          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ocean-temperature.json
           git commit -m "Update climate data"
           git push

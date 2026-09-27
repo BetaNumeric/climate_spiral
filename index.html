@@ -937,6 +937,7 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+        import { getOceanDataUrl, parseOceanTemperatureData } from './ocean-data.mjs';
 
         // --- Configuration ---
         const CONFIG = {
@@ -995,7 +996,21 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 sourceLabel: "NASA GISS",
                 sourceHref: "https://data.giss.nasa.gov/gistemp/",
                 supportsInterpolation: true,
+                parse: parseGISSData,
                 description: "Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year."
+            },
+            ocean: {
+                id: "ocean",
+                title: "Ocean Temperature",
+                metricLabel: "Ocean Anomaly",
+                localPath: "data/ocean-temperature.json",
+                remoteUrl: getOceanDataUrl,
+                sourceLabel: "NOAA NCEI",
+                sourceHref: "https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series",
+                supportsInterpolation: false,
+                fileExtension: ".json",
+                parse: parseOceanTemperatureData,
+                description: "Global ocean surface temperature anomalies from 1850, rebased to 1951-1980. Source: NOAA Climate at a Glance (1901-2000 baseline). Each coil represents a year."
             },
             co2: {
                 id: "co2",
@@ -1006,6 +1021,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 sourceLabel: "NOAA GML",
                 sourceHref: "https://gml.noaa.gov/ccgg/trends/mlo.html",
                 supportsInterpolation: false,
+                parse: parseCO2MonthlyData,
                 description: "Visualizing monthly atmospheric CO2 at Mauna Loa. Each coil represents one year."
             }
         };
@@ -1224,9 +1240,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function parseDatasetData(text, datasetKey) {
-            return datasetKey === "co2"
-                ? parseCO2MonthlyData(text)
-                : parseGISSData(text);
+            return getDatasetByKey(datasetKey).parse(text);
         }
 
         function hasUsableData(data) {
@@ -1539,6 +1553,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             datasetSelect.value = currentDatasetKey;
             settingsSourceLink.textContent = dataset.sourceLabel;
             settingsSourceLink.href = dataset.sourceHref;
+            const fileExtension = dataset.fileExtension || '.txt';
+            document.getElementById('fileUpload').accept = fileExtension;
+            document.getElementById('fileUploadBtn').textContent = 'Load ' + fileExtension;
             if (interpolationToggle && !dataset.supportsInterpolation) {
                 interpolationToggle.checked = false;
             }
@@ -1633,7 +1650,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const dataset = getDatasetByKey(datasetKey);
             updateDataStatus("Fetching " + dataset.title + "...");
 
-            const directUrl = dataset.remoteUrl;
+            const directUrl = typeof dataset.remoteUrl === 'function' ? dataset.remoteUrl() : dataset.remoteUrl;
             const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
 
             try {
