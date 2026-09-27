@@ -1,17 +1,23 @@
-// NOAA Climate at a Glance, global ocean, individual monthly anomalies.
-export function getOceanDataUrl(year = new Date().getUTCFullYear()) {
+const SOURCE_TITLES = {
+    ocean: 'Global Ocean Average Temperature Departures',
+    land: 'Global Land Average Temperature Departures'
+};
+
+// NOAA Climate at a Glance, global land or ocean, individual monthly anomalies.
+export function getTemperatureDataUrl(surface, year = new Date().getUTCFullYear()) {
+    if (!Object.hasOwn(SOURCE_TITLES, surface)) throw new Error('Invalid temperature surface.');
     return 'https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/'
-        + 'globe/ocean/1/0/1850-' + year + '.json';
+        + 'globe/' + surface + '/1/0/1850-' + year + '.json';
 }
 
-export function parseOceanTemperatureData(text) {
+export function parseTemperatureData(text, surface) {
     let source;
     try {
         source = JSON.parse(text);
     } catch {
         return [];
     }
-    if (source?.description?.title !== 'Global Ocean Average Temperature Departures'
+    if (!Object.hasOwn(SOURCE_TITLES, surface) || source?.description?.title !== SOURCE_TITLES[surface]
         || source.description.units !== 'Degrees Celsius'
         || source.description.base_period !== '1901-2000'
         || !source.data || typeof source.data !== 'object' || Array.isArray(source.data)) {

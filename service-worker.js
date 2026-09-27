@@ -1,17 +1,22 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v6`;
+const CACHE_NAME = `${CACHE_PREFIX}v8`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
   "./data/co2_mm_mlo.txt",
   "./data/ocean-temperature.json",
+  "./data/land-temperature.json",
+  "./data/sea-ice-north.json",
+  "./data/sea-ice-south.json",
 ];
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./ocean-data.mjs",
+  "./temperature-data.mjs",
+  "./sea-ice-data.mjs",
+  "./vendor/d3-dsv/dsv.mjs",
   ...DATA_ASSETS,
   "./icons/icon_32.png",
   "./icons/icon_192.png",

@@ -365,6 +365,7 @@
             font-size: 0.8rem;
             margin-top: 4px;
         }
+        .legend.sea-ice { background: linear-gradient(to right, #176b87, #effbff); }
 
         /* Close Button */
         .close-btn {
@@ -937,7 +938,9 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-        import { getOceanDataUrl, parseOceanTemperatureData } from './ocean-data.mjs';
+        import { getTemperatureDataUrl, parseTemperatureData } from './temperature-data.mjs';
+        import { fetchSeaIceData, parseSeaIceData, seaIceExtentToSpiralValue, spiralValueToSeaIceExtent,
+            getMonthlySegments, SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS } from './sea-ice-data.mjs';
 
         // --- Configuration ---
         const CONFIG = {
@@ -951,7 +954,9 @@
                 cold: new THREE.Color(0x0000ff),
                 neutral: new THREE.Color(0xffffff),
                 hot: new THREE.Color(0xff0000),
-                extreme: new THREE.Color(0x800080)
+                extreme: new THREE.Color(0x800080),
+                iceLow: new THREE.Color(0x176b87),
+                iceHigh: new THREE.Color(0xeffbff)
             },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
@@ -989,7 +994,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         const DATASET_CONFIG = {
             temperature: {
                 id: "temperature",
-                title: "Temperature",
+                title: "Global Temperature",
                 metricLabel: "Anomaly",
                 localPath: "data/GLB.Ts+dSST.txt",
                 remoteUrl: "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.txt",
@@ -997,24 +1002,67 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 sourceHref: "https://data.giss.nasa.gov/gistemp/",
                 supportsInterpolation: true,
                 parse: parseGISSData,
-                description: "Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year."
+                description: "Global average surface temperature anomalies combining land air temperatures and ocean surface temperatures, relative to 1951-1980. Source: NASA GISTEMP. Each coil represents a year."
             },
             ocean: {
                 id: "ocean",
                 title: "Ocean Temperature",
                 metricLabel: "Ocean Anomaly",
                 localPath: "data/ocean-temperature.json",
-                remoteUrl: getOceanDataUrl,
+                remoteUrl: () => getTemperatureDataUrl('ocean'),
                 sourceLabel: "NOAA NCEI",
                 sourceHref: "https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series",
                 supportsInterpolation: false,
                 fileExtension: ".json",
-                parse: parseOceanTemperatureData,
+                parse: text => parseTemperatureData(text, 'ocean'),
                 description: "Global ocean surface temperature anomalies from 1850, rebased to 1951-1980. Source: NOAA Climate at a Glance (1901-2000 baseline). Each coil represents a year."
+            },
+            land: {
+                id: "land",
+                title: "Land Temperature",
+                metricLabel: "Land Anomaly",
+                localPath: "data/land-temperature.json",
+                remoteUrl: () => getTemperatureDataUrl('land'),
+                sourceLabel: "NOAA NCEI",
+                sourceHref: "https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series",
+                supportsInterpolation: false,
+                fileExtension: ".json",
+                parse: text => parseTemperatureData(text, 'land'),
+                description: "Global land-only surface air temperature anomalies from 1850, rebased to 1951-1980. Source: NOAA Climate at a Glance (1901-2000 baseline). Each coil represents a year."
+            },
+            arctic: {
+                id: "arctic",
+                title: "Arctic Sea Ice",
+                metricLabel: "Extent (million km\u00b2)",
+                localPath: "data/sea-ice-north.json",
+                fetchRemote: fetchText => fetchSeaIceData('north', fetchText),
+                sourceLabel: "NOAA/NSIDC",
+                sourceHref: "https://nsidc.org/data/g02135/versions/4",
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                kind: "sea-ice",
+                fileExtension: ".json",
+                parse: text => parseSeaIceData(text, 'north'),
+                description: "Arctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
+            },
+            antarctic: {
+                id: "antarctic",
+                title: "Antarctic Sea Ice",
+                metricLabel: "Extent (million km\u00b2)",
+                localPath: "data/sea-ice-south.json",
+                fetchRemote: fetchText => fetchSeaIceData('south', fetchText),
+                sourceLabel: "NOAA/NSIDC",
+                sourceHref: "https://nsidc.org/data/g02135/versions/4",
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                kind: "sea-ice",
+                fileExtension: ".json",
+                parse: text => parseSeaIceData(text, 'south'),
+                description: "Antarctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
             },
             co2: {
                 id: "co2",
-                title: "CO2 Monthly",
+                title: "CO2",
                 metricLabel: "CO2",
                 localPath: "data/co2_mm_mlo.txt",
                 remoteUrl: "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",
@@ -1253,6 +1301,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function formatMetricValue(displayValue) {
+            if (getActiveDataset().kind === 'sea-ice') return displayValue.toFixed(2) + ' M km\u00b2';
             if (currentDatasetKey === "co2") {
                 return displayValue.toFixed(2) + " ppm";
             }
@@ -1269,7 +1318,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getDatasetRadiusBase() {
-            return currentDatasetKey === "co2" ? 0 : CONFIG.radiusBase;
+            return currentDatasetKey === "co2" || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
         }
 
         function getSpiralRadius(value) {
@@ -1296,6 +1345,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getOuterRingValue(maxValue) {
+            if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, seaIceExtentToSpiralValue(SEA_ICE_MAX_EXTENT));
             if (currentDatasetKey === "co2") {
                 const co2RefMax = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
                 return Math.max(maxValue, co2RefMax);
@@ -1304,6 +1354,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getMonthLabelOffset() {
+            if (getActiveDataset().kind === 'sea-ice') return 2;
             return currentDatasetKey === "co2" ? CO2_MONTH_LABEL_OFFSET : 0.5;
         }
 
@@ -1511,25 +1562,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateLegendLabels() {
-            const labels = [
-                document.getElementById('legendLabel0'),
-                document.getElementById('legendLabel1'),
-                document.getElementById('legendLabel2'),
-                document.getElementById('legendLabel3')
-            ];
-            if (labels.some((el) => !el)) return;
-
-            if (currentDatasetKey === "co2") {
-                labels[0].innerText = CO2_BASELINE_PPM + " ppm";
-                labels[1].innerText = CO2_REFERENCE_RINGS_PPM[0] + " ppm";
-                labels[2].innerText = CO2_REFERENCE_RINGS_PPM[1] + " ppm";
-                labels[3].innerText = CO2_REFERENCE_RINGS_PPM[2] + " ppm";
-            } else {
-                labels[0].innerText = "-1.0";
-                labels[1].innerText = "0°C";
-                labels[2].innerText = "+1.0";
-                labels[3].innerText = "+2.0";
-            }
+            const isSeaIce = getActiveDataset().kind === 'sea-ice';
+            const values = isSeaIce ? [0, ...SEA_ICE_TICKS].map(String)
+                : currentDatasetKey === 'co2' ? [CO2_BASELINE_PPM, ...CO2_REFERENCE_RINGS_PPM].map(value => value + ' ppm')
+                : ['-1.0', '0\u00b0C', '+1.0', '+2.0'];
+            document.querySelector('.legend').classList.toggle('sea-ice', isSeaIce);
+            document.querySelector('.legend-labels').replaceChildren(...values.map(value => {
+                const label = document.createElement('span');
+                label.textContent = value;
+                return label;
+            }));
         }
 
         function applyDatasetUI() {
@@ -1564,7 +1606,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             if (smoothSpiralToggle) smoothSpiralToggle.disabled = false;
             if (infoTemp) {
-                infoTemp.innerText = currentDatasetKey === "co2" ? "-- ppm" : "-- °C";
+                infoTemp.innerText = dataset.kind === 'sea-ice' ? '-- M km\u00b2'
+                    : currentDatasetKey === "co2" ? "-- ppm" : "-- °C";
             }
 
             updateLegendLabels();
@@ -1651,10 +1694,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             updateDataStatus("Fetching " + dataset.title + "...");
 
             const directUrl = typeof dataset.remoteUrl === 'function' ? dataset.remoteUrl() : dataset.remoteUrl;
-            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(directUrl);
+            const requestData = (proxy = false) => {
+                const request = url => fetchText(proxy ? 'https://corsproxy.io/?' + encodeURIComponent(url) : url,
+                    { cache: 'no-store', signal: AbortSignal.timeout(30000) });
+                return dataset.fetchRemote ? dataset.fetchRemote(request) : request(directUrl);
+            };
 
             try {
-                const text = await fetchText(directUrl, { cache: "no-store" });
+                const text = await requestData();
                 if (!isCurrentDataLoad(datasetKey, token)) return;
                 if (!applyDataText(text, dataset.sourceLabel + " direct", datasetKey)) {
                     throw new Error("Direct fetch returned no usable records");
@@ -1666,7 +1713,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 updateDataStatus("Trying Proxy...");
 
                 try {
-                    const text = await fetchText(proxyUrl, { cache: "no-store" });
+                    const text = await requestData(true);
                     if (!isCurrentDataLoad(datasetKey, token)) return;
                     if (!applyDataText(text, dataset.sourceLabel + " via proxy", datasetKey)) {
                         throw new Error("Proxy fetch returned no usable records");
@@ -2000,7 +2047,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempLabelGroup = new THREE.Group();
             tempVerticalGroup = new THREE.Group();
             
-            const ticks = currentDatasetKey === "co2"
+            const isSeaIce = getActiveDataset().kind === 'sea-ice';
+            const ticks = isSeaIce ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue) : currentDatasetKey === "co2"
                 ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
                 : [0, 1, -1];
             
@@ -2021,10 +2069,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.width = 512; 
                 canvas.height = 256;
                 ctx.fillStyle = '#888';
-                ctx.font = '80px ' + FONT_FAMILY; 
+                ctx.font = (isSeaIce ? '56px ' : '80px ') + FONT_FAMILY;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                const labelText = currentDatasetKey === "co2"
+                const labelText = isSeaIce ? Math.round(spiralValueToSeaIceExtent(temp)) + ' M km\u00b2' : currentDatasetKey === "co2"
                     ? `${Math.round(spiralValueToCo2Ppm(temp))} ppm`
                     : (temp > 0 ? `+${temp}°C` : `${temp}°C`);
                 ctx.fillText(labelText, 256, 128);
@@ -2294,12 +2342,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updateTimelineState(index) {
-            const progress = totalIndices > 0 ? index / totalIndices : 0;
-            
             if(yearIndicatorMesh && generatedGeometryData) {
-                // Find geometry data at current progress
                 const pointCount = generatedGeometryData.length;
-                const idx = Math.min(Math.floor(progress * (pointCount - 1)), pointCount - 1);
+                // Use the geometry stride directly so exact month stops cannot round down a sample.
+                const idx = Math.min(Math.floor(index / (CONFIG.radialSegments * 6)), pointCount - 1);
                 
                 const ptData = generatedGeometryData[idx];
                 
@@ -2322,11 +2368,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const monthIndex = Math.min(11, Math.max(0, Math.floor((exactYear - displayYear) * 12 + 1e-6)));
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
-                    document.getElementById('infoTemp').innerText = formatMetricValue(currentDisplayValue);
+                    document.getElementById('infoTemp').innerText = ptData.missing ? 'No data' : formatMetricValue(currentDisplayValue);
+                    document.getElementById('legendMarker').hidden = Boolean(ptData.missing);
                     
                     // Update legend marker position
                     let percent;
-                    if (currentDatasetKey === "co2") {
+                    if (getActiveDataset().kind === 'sea-ice') {
+                        percent = currentDisplayValue / SEA_ICE_MAX_EXTENT * 100;
+                    } else if (currentDatasetKey === "co2") {
                         const minValue = co2PpmToSpiralValue(CO2_BASELINE_PPM);
                         const maxValue = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
                         percent = ((currentAnomaly - minValue) / (maxValue - minValue)) * 100;
@@ -2440,7 +2489,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const dist = perspectiveCamera.position.distanceTo(target);
                 const fov = perspectiveCamera.fov; 
                 const visibleHeight = 2 * dist * Math.tan(THREE.MathUtils.degToRad(fov / 2));
-                const frustumHeight = CONFIG.frustumSize; 
+                const frustumHeight = orthographicCamera.top - orthographicCamera.bottom;
                 orthographicCamera.zoom = frustumHeight / visibleHeight;
                 orthographicCamera.updateProjectionMatrix();
                 orthographicCamera.position.copy(perspectiveCamera.position);
@@ -2448,7 +2497,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 activeCamera = orthographicCamera;
             } else {
                 const zoom = orthographicCamera.zoom;
-                const frustumHeight = CONFIG.frustumSize;
+                const frustumHeight = orthographicCamera.top - orthographicCamera.bottom;
                 const visibleHeight = frustumHeight / zoom;
                 const fov = perspectiveCamera.fov;
                 const dist = visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
@@ -2500,6 +2549,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const ringValue = getOuterRingValue(currentMaxAnomaly);
             const monthLabelOffset = getMonthLabelOffset();
             createMonthRing(getSpiralRadius(ringValue) + monthLabelOffset); 
+            updateOrthographicFrustum();
             updateLegendLabels();
             return true;
         }
@@ -2666,9 +2716,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         // --- Custom Geometry Generator ---
-        function createDataTubeGeometry(points, colors, radius, radialSegments) {
+        function createDataTubeGeometry(points, colors, radius, radialSegments, metadata = null) {
             const numPoints = points.length;
             const numSegments = numPoints - 1;
+            const visibleSegments = Array.from({ length: numSegments }, (_, i) => !metadata || (
+                !metadata[i].missing && !metadata[i + 1].missing
+                && metadata[i + 1].decimalYear - metadata[i].decimalYear <= 1 / 12 + 1e-6
+            ));
             
             // Vertices for the tube: numPoints * radialSegments
             const vertexCount = (numPoints * radialSegments) + 2;
@@ -2689,14 +2743,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             for (let i = 0; i < numPoints; i++) {
                 P.copy(points[i]);
                 
-                if (i === 0) {
-                    T.subVectors(points[1], points[0]).normalize();
-                } else if (i === numPoints - 1) {
+                if (visibleSegments[i] && (i === 0 || !visibleSegments[i - 1])) {
+                    T.subVectors(points[i + 1], points[i]).normalize();
+                } else if (i > 0 && visibleSegments[i - 1] && !visibleSegments[i]) {
                     T.subVectors(points[i], points[i-1]).normalize();
-                } else {
+                } else if (visibleSegments[i] && visibleSegments[i - 1]) {
                     T1.subVectors(points[i], points[i-1]);
                     T2.subVectors(points[i+1], points[i]);
                     T.addVectors(T1, T2).normalize();
+                } else {
+                    T.set(0, 1, 0);
                 }
 
                 N.set(P.x, 0, P.z);
@@ -2767,8 +2823,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const c = (i + 1) * radialSegments + nextJ;
                     const d = (i + 1) * radialSegments + j;
 
-                    indexArray.push(a, b, d);
-                    indexArray.push(b, c, d);
+                    if (visibleSegments[i]) {
+                        indexArray.push(a, b, d);
+                        indexArray.push(b, c, d);
+                    } else {
+                        // Cap real gap endpoints; keep degenerate slots so timeline indices stay stable.
+                        if (!metadata[i].missing) indexArray.push(i * radialSegments, a, b);
+                        else indexArray.push(a, a, a);
+                        if (!metadata[i + 1].missing) indexArray.push((i + 1) * radialSegments, c, d);
+                        else indexArray.push(d, d, d);
+                    }
                 }
             }
             
@@ -2849,7 +2913,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     }
 
                     let c = new THREE.Color();
-                    if (colorValue < 0) {
+                    if (getActiveDataset().kind === 'sea-ice') {
+                        c.lerpColors(CONFIG.colors.iceLow, CONFIG.colors.iceHigh, Math.min(1, displayValue / SEA_ICE_MAX_EXTENT));
+                    } else if (colorValue < 0) {
                         const t = Math.min(1, Math.abs(colorValue));
                         c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
                     } else if (colorValue <= 1) {
@@ -2896,30 +2962,32 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             let pointsPerObservation = 1;
             
             if (isSmooth) {
-                const lastMeta = rawMetaData[rawMetaData.length - 1];
-                const ghostPoint = createSpiralPoint(
-                    getNextMonthlyDecimalYear(lastMeta.decimalYear),
-                    lastMeta.anomaly,
-                    startYearData
-                );
-                // Rendering-only persistence boundary: extend the curve one month at the
-                // last observed value, but draw/sample only through the real final point.
-                const splinePoints = [...rawPoints, ghostPoint];
-                const curve = new THREE.CatmullRomCurve3(splinePoints);
-                curve.curveType = 'centripetal'; 
+                const segments = getActiveDataset().preserveMonthlyGaps
+                    ? getMonthlySegments(rawMetaData.map(point => point.decimalYear))
+                    : [{ start: 0, end: rawPoints.length - 1 }];
+                const curves = segments.map(segment => {
+                    const lastMeta = rawMetaData[segment.end];
+                    // Rendering-only persistence boundary; never sample the ghost month.
+                    const ghostPoint = createSpiralPoint(getNextMonthlyDecimalYear(lastMeta.decimalYear), lastMeta.anomaly, startYearData);
+                    const curve = new THREE.CatmullRomCurve3([...rawPoints.slice(segment.start, segment.end + 1), ghostPoint]);
+                    curve.curveType = 'centripetal';
+                    return { ...segment, curve };
+                });
+                let curveIndex = 0;
                 
                 pointsPerObservation = 6;
                 const finalPointCount = (rawPoints.length - 1) * pointsPerObservation + 1;
-                const lastRealT = (rawPoints.length - 1) / (splinePoints.length - 1);
                 
                 for (let i = 0; i < finalPointCount; i++) {
-                    const u = i / (finalPointCount - 1);
-                    finalPoints.push(curve.getPoint(u * lastRealT));
-
-                    const floatIdx = u * (rawPoints.length - 1);
+                    const floatIdx = i / pointsPerObservation;
                     const idxA = Math.floor(floatIdx);
                     const idxB = Math.min(idxA + 1, rawPoints.length - 1);
                     const alpha = floatIdx - idxA;
+                    while (curveIndex < curves.length - 1 && idxA > curves[curveIndex].end) curveIndex++;
+                    const segment = curves[curveIndex];
+                    const missing = floatIdx > segment.end;
+                    finalPoints.push(missing ? rawPoints[idxA].clone()
+                        : segment.curve.getPoint((floatIdx - segment.start) / (segment.end - segment.start + 1)));
                     
                     finalColors.push(lerpColor(rawColors[idxA], rawColors[idxB], alpha));
                     
@@ -2938,7 +3006,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     finalMetaData.push({
                         decimalYear: interpYear,
                         anomaly: interpVal,
-                        displayValue: interpDisplay
+                        displayValue: interpDisplay,
+                        missing
                     });
                 }
                 
@@ -2949,7 +3018,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             // 3. Generate Custom Geometry with Caps
-            const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments);
+            const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments,
+                getActiveDataset().preserveMonthlyGaps ? finalMetaData : null);
             
             // Store original colors for highlight effect.
             const colorAttr = geometry.attributes.color;
@@ -2962,7 +3032,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 color: finalColors[i],
                 decimalYear: finalMetaData[i].decimalYear,
                 anomaly: finalMetaData[i].anomaly,
-                displayValue: finalMetaData[i].displayValue
+                displayValue: finalMetaData[i].displayValue,
+                missing: finalMetaData[i].missing
             }));
 
             const material = new THREE.MeshStandardMaterial({
@@ -3045,18 +3116,21 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function onWindowResize() {
             cancelVideoExport('Export cancelled: the window size changed.');
             const aspect = window.innerWidth / window.innerHeight;
-            const frustumSize = CONFIG.frustumSize;
 
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             perspectiveCamera.aspect = aspect;
             perspectiveCamera.updateProjectionMatrix();
 
-            let adjustedFrustum = frustumSize;
-            if (aspect < 1) {
-                const targetWidth = 45; 
-                adjustedFrustum = targetWidth / aspect; 
-            }
+            updateOrthographicFrustum();
+        }
+
+        function updateOrthographicFrustum() {
+            const aspect = window.innerWidth / window.innerHeight;
+            const outerRadius = getSpiralRadius(getOuterRingValue(currentMaxAnomaly)) + getMonthLabelOffset();
+            // Fit the full 3D envelope so long, wide spirals stay in frame when rotated.
+            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * (outerRadius + 2), spiralHeight + 8));
+            const adjustedFrustum = aspect < 1 ? frustumSize / aspect : frustumSize;
 
             orthographicCamera.left = -adjustedFrustum * aspect / 2;
             orthographicCamera.right = adjustedFrustum * aspect / 2;
@@ -3145,19 +3219,22 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const data = generatedGeometryData[ptIndex];
                 
                 if (data) {
-                    endCapMesh.visible = true; // Always visible during animation
+                    endCapMesh.visible = !data.missing;
                     endCapMesh.position.copy(data.point);
                     endCapMesh.material.color.setHex(0xffffff); // Highlight tip white
                     
                     // Align Lid Rotation
                     // Approximate tangent with neighboring points for end-cap orientation.
                     let targetPoint;
-                    if (ptIndex < generatedGeometryData.length - 1) {
-                        targetPoint = generatedGeometryData[ptIndex + 1].point;
-                    } else if (ptIndex > 0) {
-                        // Extrapolate direction
-                        const prev = generatedGeometryData[ptIndex - 1].point;
-                        endCapDirection.subVectors(data.point, prev);
+                    const next = generatedGeometryData[ptIndex + 1];
+                    const prev = generatedGeometryData[ptIndex - 1];
+                    if (next && !next.missing && (!getActiveDataset().preserveMonthlyGaps
+                        || next.decimalYear - data.decimalYear <= 1 / 12 + 1e-6)) {
+                        targetPoint = next.point;
+                    } else if (prev && !prev.missing && (!getActiveDataset().preserveMonthlyGaps
+                        || data.decimalYear - prev.decimalYear <= 1 / 12 + 1e-6)) {
+                        // Extrapolate from the current run, including at a data gap.
+                        endCapDirection.subVectors(data.point, prev.point);
                         targetPoint = endCapTarget.copy(data.point).add(endCapDirection);
                     }
                     

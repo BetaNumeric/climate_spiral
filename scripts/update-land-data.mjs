@@ -1,3 +1,3 @@
 import { updateTemperatureData } from './update-temperature-data.mjs';
 
-await updateTemperatureData('ocean');
+await updateTemperatureData('land');
