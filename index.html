@@ -366,6 +366,9 @@
             margin-top: 4px;
         }
         .legend.sea-ice { background: linear-gradient(to right, #176b87, #effbff); }
+        .legend.methane { background: linear-gradient(to right, #2a9d8f, #ffd166); }
+        .legend.sea-level { background: linear-gradient(to right, #39b9db, #ff7866); }
+        .legend.enso { background: linear-gradient(to right, #0000ff, #ffffff 50%, #ff0000); }
 
         /* Close Button */
         .close-btn {
@@ -939,6 +942,11 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
         import { getTemperatureDataUrl, parseTemperatureData } from './temperature-data.mjs';
+        import { ENSO_DATA_URL, ENSO_TICKS, parseENSOData, ensoAnomalyToRadius } from './enso-data.mjs';
+        import { SEA_LEVEL_SOURCE_URL, SEA_LEVEL_TICKS, fetchSeaLevelData, parseSeaLevelData,
+            seaLevelMmToSpiralValue, spiralValueToSeaLevelMm } from './sea-level-data.mjs';
+        import { METHANE_DATA_URL, METHANE_AXIS_MIN, METHANE_TICKS, parseMethaneData,
+            methanePpbToSpiralValue, spiralValueToMethanePpb } from './methane-data.mjs';
         import { fetchSeaIceData, parseSeaIceData, seaIceExtentToSpiralValue, spiralValueToSeaIceExtent,
             getMonthlySegments, SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS } from './sea-ice-data.mjs';
 
@@ -956,7 +964,11 @@
                 hot: new THREE.Color(0xff0000),
                 extreme: new THREE.Color(0x800080),
                 iceLow: new THREE.Color(0x176b87),
-                iceHigh: new THREE.Color(0xeffbff)
+                iceHigh: new THREE.Color(0xeffbff),
+                methaneLow: new THREE.Color(0x2a9d8f),
+                methaneHigh: new THREE.Color(0xffd166),
+                seaLevelLow: new THREE.Color(0x39b9db),
+                seaLevelHigh: new THREE.Color(0xff7866)
             },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
@@ -1060,9 +1072,40 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 parse: text => parseSeaIceData(text, 'south'),
                 description: "Antarctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
             },
+            // ENSO is disabled for now. Uncomment this registration to restore it.
+            /*
+            enso: {
+                id: "enso",
+                title: "El Ni\u00f1o / La Ni\u00f1a",
+                metricLabel: "Relative Ni\u00f1o 3.4",
+                localPath: "data/Rnino34.ascii.txt",
+                remoteUrl: ENSO_DATA_URL,
+                sourceLabel: "NOAA CPC",
+                sourceHref: "https://www.cpc.ncep.noaa.gov/data/indices/",
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                parse: parseENSOData,
+                description: "Monthly relative Ni\u00f1o 3.4 (ERSSTv6), in \u00b0C relative to 1991-2020, adjusted for tropical-wide warming. Not the 3-month RONI or an official El Ni\u00f1o/La Ni\u00f1a classification. Recent values may be revised. Source: NOAA CPC."
+            },
+            */
+            sealevel: {
+                id: "sealevel",
+                title: "Global Sea Level",
+                metricLabel: "Change since 1993",
+                framingPadding: 4,
+                localPath: "data/global-sea-level.json",
+                fetchRemote: fetchSeaLevelData,
+                sourceLabel: "CU Sea Level Research Group",
+                sourceHref: SEA_LEVEL_SOURCE_URL,
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                fileExtension: ".json",
+                parse: parseSeaLevelData,
+                description: "Global mean sea-level change relative to the 1993 average, in mm. Monthly averages of CU satellite estimates, with seasonal signals retained and the source's GIA correction. The final source month is omitted as potentially incomplete. Recent values may be revised."
+            },
             co2: {
                 id: "co2",
-                title: "CO2",
+                title: "Global CO2",
                 metricLabel: "CO2",
                 localPath: "data/co2_mm_mlo.txt",
                 remoteUrl: "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",
@@ -1071,6 +1114,19 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 supportsInterpolation: false,
                 parse: parseCO2MonthlyData,
                 description: "Visualizing monthly atmospheric CO2 at Mauna Loa. Each coil represents one year."
+            },
+            methane: {
+                id: "methane",
+                title: "Global Methane",
+                metricLabel: "CH4",
+                localPath: "data/ch4_mm_gl.txt",
+                remoteUrl: METHANE_DATA_URL,
+                sourceLabel: "NOAA GML",
+                sourceHref: "https://gml.noaa.gov/ccgg/trends_ch4/",
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                parse: parseMethaneData,
+                description: "Global monthly mean atmospheric methane (CH4) from marine surface sites since July 1983, in ppb. Recent values are preliminary. Radius starts at 1500 ppb for display, not a climate baseline. Source: NOAA GML."
             }
         };
 
@@ -1301,6 +1357,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function formatMetricValue(displayValue) {
+            if (currentDatasetKey === 'sealevel') return (displayValue > 0 ? '+' : '') + displayValue.toFixed(1) + ' mm';
+            if (currentDatasetKey === 'methane') return displayValue.toFixed(2) + ' ppb';
             if (getActiveDataset().kind === 'sea-ice') return displayValue.toFixed(2) + ' M km\u00b2';
             if (currentDatasetKey === "co2") {
                 return displayValue.toFixed(2) + " ppm";
@@ -1318,10 +1376,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getDatasetRadiusBase() {
-            return currentDatasetKey === "co2" || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
+            return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
         }
 
         function getSpiralRadius(value) {
+            if (currentDatasetKey === 'enso') return ensoAnomalyToRadius(value);
             return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
         }
 
@@ -1345,6 +1404,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getOuterRingValue(maxValue) {
+            if (currentDatasetKey === 'sealevel') return Math.max(maxValue, seaLevelMmToSpiralValue(SEA_LEVEL_TICKS.at(-1)));
+            if (currentDatasetKey === 'enso') return Math.max(maxValue, ENSO_TICKS.at(-1));
+            if (currentDatasetKey === 'methane') return Math.max(maxValue, methanePpbToSpiralValue(METHANE_TICKS.at(-1)));
             if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, seaIceExtentToSpiralValue(SEA_ICE_MAX_EXTENT));
             if (currentDatasetKey === "co2") {
                 const co2RefMax = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
@@ -1355,7 +1417,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function getMonthLabelOffset() {
             if (getActiveDataset().kind === 'sea-ice') return 2;
-            return currentDatasetKey === "co2" ? CO2_MONTH_LABEL_OFFSET : 0.5;
+            return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' ? CO2_MONTH_LABEL_OFFSET : 0.5;
         }
 
         function getYearLabelRadius(maxValue) {
@@ -1564,9 +1626,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function updateLegendLabels() {
             const isSeaIce = getActiveDataset().kind === 'sea-ice';
             const values = isSeaIce ? [0, ...SEA_ICE_TICKS].map(String)
+                : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(value => value + ' mm')
+                : currentDatasetKey === 'enso' ? ENSO_TICKS.map(value => (value > 0 ? '+' : '') + value + '\u00b0C')
+                : currentDatasetKey === 'methane' ? [METHANE_AXIS_MIN, ...METHANE_TICKS].map(value => value + ' ppb')
                 : currentDatasetKey === 'co2' ? [CO2_BASELINE_PPM, ...CO2_REFERENCE_RINGS_PPM].map(value => value + ' ppm')
                 : ['-1.0', '0\u00b0C', '+1.0', '+2.0'];
             document.querySelector('.legend').classList.toggle('sea-ice', isSeaIce);
+            document.querySelector('.legend').classList.toggle('methane', currentDatasetKey === 'methane');
+            document.querySelector('.legend').classList.toggle('enso', currentDatasetKey === 'enso');
+            document.querySelector('.legend').classList.toggle('sea-level', currentDatasetKey === 'sealevel');
             document.querySelector('.legend-labels').replaceChildren(...values.map(value => {
                 const label = document.createElement('span');
                 label.textContent = value;
@@ -1607,6 +1675,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (smoothSpiralToggle) smoothSpiralToggle.disabled = false;
             if (infoTemp) {
                 infoTemp.innerText = dataset.kind === 'sea-ice' ? '-- M km\u00b2'
+                    : currentDatasetKey === 'sealevel' ? '-- mm'
+                    : currentDatasetKey === 'methane' ? '-- ppb'
                     : currentDatasetKey === "co2" ? "-- ppm" : "-- °C";
             }
 
@@ -2048,7 +2118,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempVerticalGroup = new THREE.Group();
             
             const isSeaIce = getActiveDataset().kind === 'sea-ice';
-            const ticks = isSeaIce ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue) : currentDatasetKey === "co2"
+            const ticks = currentDatasetKey === 'enso' ? ENSO_TICKS
+                : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(seaLevelMmToSpiralValue)
+                : currentDatasetKey === 'methane' ? METHANE_TICKS.map(methanePpbToSpiralValue)
+                : isSeaIce ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue) : currentDatasetKey === "co2"
                 ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
                 : [0, 1, -1];
             
@@ -2069,10 +2142,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 canvas.width = 512; 
                 canvas.height = 256;
                 ctx.fillStyle = '#888';
-                ctx.font = (isSeaIce ? '56px ' : '80px ') + FONT_FAMILY;
+                ctx.font = (isSeaIce || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' ? '56px ' : '80px ') + FONT_FAMILY;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                const labelText = isSeaIce ? Math.round(spiralValueToSeaIceExtent(temp)) + ' M km\u00b2' : currentDatasetKey === "co2"
+                const labelText = currentDatasetKey === 'methane' ? Math.round(spiralValueToMethanePpb(temp)) + ' ppb'
+                    : currentDatasetKey === 'sealevel' ? Math.round(spiralValueToSeaLevelMm(temp)) + ' mm'
+                    : isSeaIce ? Math.round(spiralValueToSeaIceExtent(temp)) + ' M km\u00b2' : currentDatasetKey === "co2"
                     ? `${Math.round(spiralValueToCo2Ppm(temp))} ppm`
                     : (temp > 0 ? `+${temp}°C` : `${temp}°C`);
                 ctx.fillText(labelText, 256, 128);
@@ -2373,7 +2448,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     
                     // Update legend marker position
                     let percent;
-                    if (getActiveDataset().kind === 'sea-ice') {
+                    if (currentDatasetKey === 'sealevel') {
+                        percent = currentDisplayValue / SEA_LEVEL_TICKS.at(-1) * 100;
+                    } else if (currentDatasetKey === 'enso') {
+                        percent = (currentDisplayValue - ENSO_TICKS[0]) / (ENSO_TICKS.at(-1) - ENSO_TICKS[0]) * 100;
+                    } else if (currentDatasetKey === 'methane') {
+                        percent = (currentDisplayValue - METHANE_AXIS_MIN) / (METHANE_TICKS.at(-1) - METHANE_AXIS_MIN) * 100;
+                    } else if (getActiveDataset().kind === 'sea-ice') {
                         percent = currentDisplayValue / SEA_ICE_MAX_EXTENT * 100;
                     } else if (currentDatasetKey === "co2") {
                         const minValue = co2PpmToSpiralValue(CO2_BASELINE_PPM);
@@ -2913,7 +2994,16 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     }
 
                     let c = new THREE.Color();
-                    if (getActiveDataset().kind === 'sea-ice') {
+                    if (currentDatasetKey === 'sealevel') {
+                        c.lerpColors(CONFIG.colors.seaLevelLow, CONFIG.colors.seaLevelHigh,
+                            THREE.MathUtils.clamp(displayValue / SEA_LEVEL_TICKS.at(-1), 0, 1));
+                    } else if (currentDatasetKey === 'enso') {
+                        c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
+                            Math.min(1, Math.abs(colorValue) / ENSO_TICKS.at(-1)));
+                    } else if (currentDatasetKey === 'methane') {
+                        const fraction = THREE.MathUtils.clamp((displayValue - METHANE_AXIS_MIN) / (METHANE_TICKS.at(-1) - METHANE_AXIS_MIN), 0, 1);
+                        c.lerpColors(CONFIG.colors.methaneLow, CONFIG.colors.methaneHigh, fraction);
+                    } else if (getActiveDataset().kind === 'sea-ice') {
                         c.lerpColors(CONFIG.colors.iceLow, CONFIG.colors.iceHigh, Math.min(1, displayValue / SEA_ICE_MAX_EXTENT));
                     } else if (colorValue < 0) {
                         const t = Math.min(1, Math.abs(colorValue));
@@ -3129,7 +3219,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const aspect = window.innerWidth / window.innerHeight;
             const outerRadius = getSpiralRadius(getOuterRingValue(currentMaxAnomaly)) + getMonthLabelOffset();
             // Fit the full 3D envelope so long, wide spirals stay in frame when rotated.
-            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * (outerRadius + 2), spiralHeight + 8));
+            const padding = getActiveDataset().framingPadding ?? 2;
+            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * (outerRadius + padding), spiralHeight + 8));
             const adjustedFrustum = aspect < 1 ? frustumSize / aspect : frustumSize;
 
             orthographicCamera.left = -adjustedFrustum * aspect / 2;

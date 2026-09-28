@@ -38,18 +38,28 @@ jobs:
       - name: Download and validate sea ice data
         run: node scripts/update-sea-ice-data.mjs
 
+      - name: Download and validate global methane data
+        run: node scripts/update-methane-data.mjs
+
+      # ENSO is disabled in the dataset selector for now.
+      # - name: Download and validate ENSO data
+      #   run: node scripts/update-enso-data.mjs
+
+      - name: Download and validate global sea level data
+        run: node scripts/update-sea-level-data.mjs
+
       - name: Test data handling
         run: node --test tests/*.test.mjs
 
       - name: Commit changed data files
         run: |
-          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json; then
+          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json; then
             echo "No data changes."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json
+          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json
           git commit -m "Update climate data"
           git push
