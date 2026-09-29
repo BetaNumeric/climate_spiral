@@ -437,7 +437,7 @@
         .settings-body { min-height: 0; padding: 0 16px 8px; overflow-y: auto; scroll-padding-block: 12px; }
         .settings-dataset { display: grid; gap: 8px; padding: 16px 0; }
         .settings-dataset > label { color: #aaa; font-size: 0.8rem; }
-        #datasetSelect {
+        #datasetSelect, #videoAdvanced select {
             width: 100%;
             min-width: 0;
             height: 38px;
@@ -579,7 +579,7 @@
         .upload-label:disabled { opacity: 0.45; cursor: default; }
 
         .video-export-row { gap: 12px; flex-wrap: wrap; }
-        #videoDuration {
+        .video-number {
             width: 70px;
             padding: 5px;
             box-sizing: border-box;
@@ -590,6 +590,13 @@
             font: inherit;
             font-size: 16px;
         }
+        #videoAdvanced { margin-bottom: 15px; }
+        #videoAdvanced > summary { font-size: 0.8rem; font-weight: 400; }
+        #videoAdvanced > .settings-section-content { padding-bottom: 0; }
+        .video-dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .video-dimensions label { display: grid; gap: 6px; font-size: 0.8rem; color: #ddd; min-width: 0; }
+        .video-dimensions .video-number { width: 100%; min-width: 0; }
+        #videoCustomSize[hidden], #videoTransitionRow[hidden] { display: none; }
         #videoExportProgress { width: 100%; accent-color: #8b9be1; }
         #videoExportStatus {
             margin: 8px 0;
@@ -598,8 +605,6 @@
             overflow-wrap: anywhere;
         }
         #videoExportStatus:empty { display: none; }
-        #videoDownload { display: inline-block; text-decoration: none; }
-        #videoDownload[hidden] { display: none; }
         
         .loading-text {
             color: #f39c12;
@@ -778,7 +783,21 @@
                 <a id="settingsSourceLink" target="_blank" rel="noopener noreferrer"></a>
             </div>
 
-            <details id="viewSettings" class="settings-section" open>
+            
+            <details id="animationSettings" class="settings-section" open>
+                <summary>Speed</summary>
+                <div class="settings-section-content">
+                    <div class="setting-row setting-column">
+                        <div class="slider-label">
+                            <label for="speedSlider">Months per frame</label>
+                            <output id="speedValue" class="slider-val" for="speedSlider">5</output>
+                        </div>
+                        <input type="range" id="speedSlider" min="1" max="12" step="1" value="5">
+                    </div>
+                </div>
+            </details>
+
+            <details id="viewSettings" class="settings-section">
                 <summary>View</summary>
                 <div class="settings-section-content">
                     <div class="setting-row">
@@ -819,18 +838,6 @@
                 </div>
             </details>
 
-            <details id="animationSettings" class="settings-section">
-                <summary>Animation</summary>
-                <div class="settings-section-content">
-                    <div class="setting-row setting-column">
-                        <div class="slider-label">
-                            <label for="speedSlider">Animation Speed</label>
-                            <output id="speedValue" class="slider-val" for="speedSlider">0.8x</output>
-                        </div>
-                        <input type="range" id="speedSlider" min="0.01" max="1.0" step="0.01" value="0.8">
-                    </div>
-                </div>
-            </details>
 
             <details id="dataSettings" class="settings-section">
                 <summary>Data Source</summary>
@@ -861,17 +868,54 @@
                         <span>3D Model</span>
                         <button id="exportBtn" class="upload-label" type="button">Export .glb</button>
                     </div>
+                    <details id="videoAdvanced" class="settings-section">
+                        <summary>Advanced video settings</summary>
+                        <div class="settings-section-content">
+                            <div class="setting-row setting-column">
+                                <label for="videoResolution">Resolution</label>
+                                <select id="videoResolution">
+                                    <option value="1080p">1920 x 1080 (Landscape)</option>
+                                    <option value="portrait">1080 x 1920 (Portrait)</option>
+                                    <option value="square">1080 x 1080 (Square)</option>
+                                    <option value="window">Current window</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                            <div id="videoCustomSize" class="video-dimensions" hidden>
+                                <label for="videoWidth">Width (px)<input id="videoWidth" class="video-number" type="number" min="128" max="3840" step="2" value="1920" inputmode="numeric"></label>
+                                <label for="videoHeight">Height (px)<input id="videoHeight" class="video-number" type="number" min="128" max="3840" step="2" value="1080" inputmode="numeric"></label>
+                            </div>
+                            <div class="setting-row setting-column">
+                                <label for="videoCamera">Camera animation</label>
+                                <select id="videoCamera">
+                                    <option value="current">Current view</option>
+                                    <option value="top-side" selected>Top-down to side</option>
+                                </select>
+                            </div>
+                            <div id="videoTransitionRow" class="setting-row">
+                                <label for="videoTransition">Camera turn (s)</label>
+                                <input id="videoTransition" class="video-number" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal">
+                            </div>
+                            <div class="setting-row">
+                                <label for="videoLegendToggle">Include legend</label>
+                                <span class="switch">
+                                    <input type="checkbox" id="videoLegendToggle" checked>
+                                    <span class="slider-switch"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </details>
                     <div class="setting-row video-export-row">
-                        <label for="videoDuration">Video Length (s)</label>
-                        <input id="videoDuration" type="number" min="5" max="120" step="1" value="20" inputmode="numeric">
+                        <span>Video duration</span>
+                        <output id="videoDurationEstimate">--:--</output>
                     </div>
                     <div class="setting-row video-export-row">
-                        <span>Animation</span>
+                        <span>Video</span>
                         <button id="videoExportBtn" class="upload-label" type="button">Export video</button>
                     </div>
                     <progress id="videoExportProgress" max="100" value="0" aria-label="Video export progress" hidden></progress>
                     <p id="videoExportStatus" role="status" aria-live="polite"></p>
-                    <a id="videoDownload" class="upload-label" hidden>Download video</a>
+                    <a id="videoDownload" hidden></a>
                 </div>
             </details>
         </div>
@@ -941,6 +985,8 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+        import { VIDEO_EXPORT_FPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming, getVideoLayout,
+            getVideoOrbitFrame, getVideoRecorderOptions } from './video-export.mjs';
         import { getTemperatureDataUrl, parseTemperatureData } from './temperature-data.mjs';
         import { ENSO_DATA_URL, ENSO_TICKS, parseENSOData, ensoAnomalyToRadius } from './enso-data.mjs';
         import { SEA_LEVEL_SOURCE_URL, SEA_LEVEL_TICKS, fetchSeaLevelData, parseSeaLevelData,
@@ -1165,7 +1211,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let timelineStops = [];
         let startYear = 1880;
         let endYear = 2025; 
-        let animationSpeed = 0.8; 
+        let monthsPerFrame = 5;
+        let nextPlaybackFrameAt = 0;
         const endCapDirection = new THREE.Vector3();
         const endCapTarget = new THREE.Vector3();
         const defaultCameraQuaternion = new THREE.Quaternion();
@@ -1874,7 +1921,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function getVideoMimeType() {
             if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) return null;
             return [
-                'video/mp4;codecs=avc1.42E01E',
+                'video/mp4;codecs=avc1',
                 'video/mp4',
                 'video/webm;codecs=vp9',
                 'video/webm;codecs=vp8',
@@ -1882,11 +1929,104 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             ].find(type => MediaRecorder.isTypeSupported(type)) || null;
         }
 
+        function getCurrentVideoFramePlan() {
+            const cameraMode = document.getElementById('videoCamera').value;
+            const turnSeconds = cameraMode === 'top-side'
+                ? document.getElementById('videoTransition').valueAsNumber : 0;
+            if (cameraMode === 'top-side' && turnSeconds < 0.5) {
+                throw new Error('Camera turn must be between 0.5 and 10 seconds.');
+            }
+            return getVideoFramePlan(timelineStops.length, monthsPerFrame, turnSeconds);
+        }
+
+        function updateVideoDurationEstimate() {
+            const output = document.getElementById('videoDurationEstimate');
+            try {
+                const { totalFrames } = getCurrentVideoFramePlan();
+                const totalSeconds = Math.round(totalFrames / VIDEO_EXPORT_FPS);
+                output.textContent = Math.floor(totalSeconds / 60) + ':' + String(totalSeconds % 60).padStart(2, '0');
+            } catch {
+                output.textContent = '--:--';
+            }
+        }
+
         function setVideoExportStatus(message) {
             document.getElementById('videoExportStatus').textContent = message;
             document.getElementById('exportSectionStatus').textContent = videoExport
-                ? (videoExport.stopping ? 'Finishing...' : 'Recording')
+                ? (videoExport.stopping ? 'Finishing...' : videoExport.paused ? 'Paused' : 'Recording')
                 : (videoDownloadUrl ? 'Ready' : '');
+        }
+
+        function getVideoLegendStops() {
+            if (currentDatasetKey === 'sealevel') return [[0, '#39b9db'], [1, '#ff7866']];
+            if (currentDatasetKey === 'methane') return [[0, '#2a9d8f'], [1, '#ffd166']];
+            if (getActiveDataset().kind === 'sea-ice') return [[0, '#176b87'], [1, '#effbff']];
+            if (currentDatasetKey === 'enso') return [[0, '#0000ff'], [0.5, '#ffffff'], [1, '#ff0000']];
+            return [[0, '#0000ff'], [1 / 3, '#ffffff'], [2 / 3, '#ff0000'], [1, '#800080']];
+        }
+
+        function drawVideoLegend(session) {
+            const rect = session.layout.legend;
+            if (!rect) return;
+
+            const context = session.context;
+            const date = document.getElementById('infoMonth').textContent + ' '
+                + document.getElementById('infoYear').textContent;
+            const valueElement = document.getElementById('infoTemp');
+            const value = valueElement.textContent;
+            let headlineSize = Math.max(11, Math.min(46, rect.width / 14, rect.height * 0.22));
+            const headlineGap = Math.max(8, rect.width * 0.04);
+
+            context.save();
+            context.textBaseline = 'alphabetic';
+            context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
+            while (headlineSize > 11 && context.measureText(date).width + context.measureText(value).width + headlineGap > rect.width) {
+                headlineSize--;
+                context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
+            }
+
+            const headlineY = rect.y + rect.height * 0.28;
+            context.fillStyle = '#ffffff';
+            context.textAlign = 'left';
+            context.fillText(date, rect.x, headlineY);
+            context.fillStyle = getComputedStyle(valueElement).color;
+            context.textAlign = 'right';
+            context.fillText(value, rect.x + rect.width, headlineY);
+
+            const barY = rect.y + rect.height * 0.47;
+            const barHeight = Math.max(6, Math.min(18, rect.height * 0.075));
+            const gradient = context.createLinearGradient(rect.x, 0, rect.x + rect.width, 0);
+            getVideoLegendStops().forEach(([position, color]) => gradient.addColorStop(position, color));
+            context.fillStyle = gradient;
+            context.fillRect(rect.x, barY, rect.width, barHeight);
+
+            const marker = document.getElementById('legendMarker');
+            if (!marker.hidden) {
+                const markerFraction = Math.max(0, Math.min(1, Number.parseFloat(marker.style.left) / 100));
+                const markerWidth = Math.max(2, Math.round(rect.width * 0.003));
+                context.fillStyle = '#ffffff';
+                context.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                context.shadowBlur = markerWidth * 2;
+                context.fillRect(
+                    Math.round(rect.x + rect.width * markerFraction - markerWidth / 2),
+                    barY - barHeight * 0.45,
+                    markerWidth,
+                    barHeight * 1.9
+                );
+                context.shadowBlur = 0;
+            }
+
+            const labels = Array.from(document.querySelectorAll('.legend-labels span'), element => element.textContent);
+            const labelSize = Math.max(9, Math.min(24, rect.width / Math.max(18, labels.length * 5), rect.height * 0.12));
+            context.font = `600 ${labelSize}px ${FONT_FAMILY}`;
+            context.fillStyle = '#dddddd';
+            const labelY = barY + barHeight + rect.height * 0.16;
+            labels.forEach((label, index) => {
+                const fraction = labels.length === 1 ? 0.5 : index / (labels.length - 1);
+                context.textAlign = index === 0 ? 'left' : index === labels.length - 1 ? 'right' : 'center';
+                context.fillText(label, rect.x + rect.width * fraction, labelY);
+            });
+            context.restore();
         }
 
         function startVideoExport() {
@@ -1896,11 +2036,19 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             const status = document.getElementById('videoExportStatus');
-            const durationInput = document.getElementById('videoDuration');
-            if (!durationInput.reportValidity()) return;
-            const duration = durationInput.valueAsNumber;
-            if (!Number.isFinite(duration)) {
-                setVideoExportStatus('Enter a video length between 5 and 120 seconds.');
+            let dimensions;
+            const cameraMode = document.getElementById('videoCamera').value;
+            let framePlan;
+            try {
+                framePlan = getCurrentVideoFramePlan();
+                dimensions = getVideoDimensions(
+                    document.getElementById('videoResolution').value,
+                    document.getElementById('videoWidth').valueAsNumber,
+                    document.getElementById('videoHeight').valueAsNumber,
+                    renderer.domElement.width, renderer.domElement.height
+                );
+            } catch (error) {
+                setVideoExportStatus(error.message);
                 return;
             }
             const mimeType = getVideoMimeType();
@@ -1911,20 +2059,38 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             let stream;
             try {
-                // Use a fixed, even-sized canvas for encoders, capped at a 1920px long edge.
                 const canvas = document.createElement('canvas');
                 const source = renderer.domElement;
-                const scale = Math.min(1, 1920 / Math.max(source.width, source.height));
-                canvas.width = Math.max(2, Math.floor(source.width * scale / 2) * 2);
-                canvas.height = Math.max(2, Math.floor(source.height * scale / 2) * 2);
+                [canvas.width, canvas.height] = dimensions;
+                const layout = getVideoLayout(
+                    canvas.width, canvas.height, document.getElementById('videoLegendToggle').checked
+                );
                 const context = canvas.getContext('2d', { alpha: false });
                 if (!context) throw new Error('Could not create a recording canvas.');
-                stream = canvas.captureStream(30);
-                const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 });
+                // A zero-rate stream captures only explicitly requested frames.
+                stream = canvas.captureStream(0);
+                const videoTrack = stream.getVideoTracks()[0];
+                if (!videoTrack || typeof videoTrack.requestFrame !== 'function') {
+                    throw new Error('This browser cannot capture video at a fixed frame rate.');
+                }
+                const recorder = new MediaRecorder(stream, getVideoRecorderOptions(mimeType, canvas.width, canvas.height));
                 const session = {
-                    canvas, context, stream, recorder, chunks: [],
-                    durationMs: duration * 1000,
-                    startedAt: null,
+                    canvas, context, stream, videoTrack, recorder, chunks: [],
+                    abortController: new AbortController(),
+                    layout,
+                    cameraMode,
+                    framePlan,
+                    savedCamera: activeCamera.clone(),
+                    target: controls.target.clone(),
+                    dampingEnabled: controls.enableDamping,
+                    rendererSize: renderer.getSize(new THREE.Vector2()),
+                    pixelRatio: renderer.getPixelRatio(),
+                    objectFit: source.style.objectFit,
+                    totalFrames: framePlan.totalFrames,
+                    frameIndex: 0,
+                    nextFrameAt: performance.now(),
+                    captureDue: false,
+                    paused: false,
                     stopping: false,
                     lastPercent: -1,
                     index: animationIndex,
@@ -1934,17 +2100,38 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     disabledControls: []
                 };
 
-                cameraResetAnimation = null;
-                controls.enabled = false;
-                setPlaybackPosition(0);
                 videoExport = session;
+                cameraResetAnimation = null;
+                // Drain any pending OrbitControls motion before locking the recording view.
+                controls.enableDamping = false;
+                controls.update();
+                activeCamera.copy(session.savedCamera, false);
+                controls.target.copy(session.target);
+                controls.update();
+                controls.enabled = false;
+                renderer.setPixelRatio(1);
+                renderer.setSize(layout.scene.width, layout.scene.height, false);
+                source.style.objectFit = 'contain';
+                const aspect = layout.scene.width / layout.scene.height;
+                if (activeCamera.isPerspectiveCamera) {
+                    activeCamera.zoom *= Math.min(1, aspect / activeCamera.aspect);
+                    activeCamera.aspect = aspect;
+                } else {
+                    const halfHeight = Math.max(activeCamera.top, activeCamera.right / aspect);
+                    activeCamera.left = -halfHeight * aspect;
+                    activeCamera.right = halfHeight * aspect;
+                    activeCamera.top = halfHeight;
+                    activeCamera.bottom = -halfHeight;
+                }
+                activeCamera.updateProjectionMatrix();
+                if (cameraMode === 'top-side') initializeVideoOrbit(session);
+                setPlaybackPosition(0);
                 const inputs = document.querySelectorAll(
                     '#settingsPanel input, #settingsPanel select, #settingsPanel button:not(.close-btn):not(#videoExportBtn), #transportGroup button, #timelineSlider'
                 );
                 session.disabledControls = Array.from(inputs, element => ({ element, disabled: element.disabled }));
                 inputs.forEach(element => { element.disabled = true; });
                 document.getElementById('videoExportBtn').textContent = 'Cancel export';
-                document.getElementById('videoDownload').hidden = true;
                 document.getElementById('videoExportProgress').value = 0;
                 document.getElementById('videoExportProgress').hidden = false;
                 setVideoExportStatus('Recording 0%');
@@ -1954,36 +2141,78 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     if (videoExport === session && event.data.size) session.chunks.push(event.data);
                 };
                 recorder.onerror = () => {
-                    if (videoExport === session) cancelVideoExport('Recording failed. Try a smaller window or another browser.');
+                    if (videoExport === session) cancelVideoExport('Recording failed. Try a lower resolution or another browser.');
                 };
-                recorder.onstop = () => {
+                recorder.onstop = async () => {
                     if (videoExport !== session) return;
                     const blob = new Blob(session.chunks, { type: recorder.mimeType || mimeType });
                     if (!session.stopping || !blob.size) {
                         finishVideoExport(session, 'Recording ended before the video was complete.');
                         return;
                     }
-                    finishVideoExport(session, 'Video ready.', blob);
+                    session.chunks.length = 0;
+                    setVideoExportStatus('Finalizing video index...');
+                    try {
+                        const { finalizeVideo } = await import('./video-mux.mjs');
+                        const indexedBlob = await finalizeVideo(blob, session.abortController.signal, VIDEO_EXPORT_FPS);
+                        if (videoExport === session) finishVideoExport(session, 'Download started.', indexedBlob);
+                    } catch (error) {
+                        if (videoExport !== session) return;
+                        console.error('Video finalization failed:', error);
+                        finishVideoExport(session, 'Could not finalize the video. Try a lower resolution or another browser.');
+                    }
                 };
+                recorder.start();
             } catch (error) {
                 console.error('Video export failed:', error);
                 stream?.getTracks().forEach(track => track.stop());
-                if (videoExport) cancelVideoExport('Could not start recording. Try another browser.');
-                else setVideoExportStatus('Could not start recording. Try another browser.');
+                if (videoExport) cancelVideoExport('Could not start recording. Try a lower resolution or another browser.');
+                else setVideoExportStatus('Could not start recording. Try a lower resolution or another browser.');
             }
+        }
+
+        function initializeVideoOrbit(session) {
+            const aspect = session.layout.scene.width / session.layout.scene.height;
+            const { visibleHalfHeight, distance, far } = getVideoOrbitFrame(
+                getYearLabelRadius(currentMaxAnomaly), spiralHeight / 2,
+                aspect, activeCamera.isPerspectiveCamera ? activeCamera.fov : null
+            );
+            // Frame once, then orbit with the same fixed target, distance and projection as a viewport drag.
+            session.orbitDistance = distance;
+            activeCamera.zoom = 1;
+            if (activeCamera.isOrthographicCamera) {
+                activeCamera.left = -visibleHalfHeight * aspect;
+                activeCamera.right = visibleHalfHeight * aspect;
+                activeCamera.top = visibleHalfHeight;
+                activeCamera.bottom = -visibleHalfHeight;
+            }
+            activeCamera.far = Math.max(session.savedCamera.far, far);
+            controls.target.set(0, spiralHeight / 2, 0);
+            activeCamera.updateProjectionMatrix();
+            updateVideoCamera(session, 0);
+        }
+
+        function updateVideoCamera(session, turn) {
+            if (session.cameraMode !== 'top-side') return;
+            const polar = Math.max(0.000001, turn * Math.PI / 2);
+            const distance = session.orbitDistance;
+            activeCamera.position.set(0, controls.target.y + distance * Math.cos(polar), distance * Math.sin(polar));
+            controls.update();
         }
 
         function updateVideoExport() {
             const session = videoExport;
-            if (session.stopping) return;
-            const elapsed = session.startedAt === null ? 0 : performance.now() - session.startedAt;
-            // Hold the first and last frames briefly so both endpoints are visible in the video.
-            const progress = THREE.MathUtils.clamp((elapsed - 250) / (session.durationMs - 750), 0, 1);
-            animationIndex = progress * totalIndices;
+            if (session.stopping || session.paused || session.captureDue) return;
+            const now = performance.now();
+            if (now < session.nextFrameAt) return;
+            const { observationIndex, turn } = getVideoFrameTiming(session.frameIndex, session.framePlan);
+            updateVideoCamera(session, turn);
+            animationIndex = timelineStops[observationIndex];
             updateSpiralVisuals();
             updateTimelineState(animationIndex);
-            document.getElementById('timelineSlider').value = progress * 100;
-            const percent = Math.min(100, Math.floor(elapsed / session.durationMs * 100));
+            document.getElementById('timelineSlider').value = animationIndex / totalIndices * 100;
+            session.captureDue = true;
+            const percent = Math.min(100, Math.floor(session.frameIndex / session.totalFrames * 100));
             if (percent !== session.lastPercent) {
                 session.lastPercent = percent;
                 document.getElementById('videoExportProgress').value = percent;
@@ -1993,21 +2222,48 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function captureVideoFrame() {
             const session = videoExport;
-            if (!session || session.stopping) return;
+            if (!session || session.stopping || session.paused || !session.captureDue) return;
             try {
                 // Copy immediately after rendering, before WebGL clears its drawing buffer.
-                session.context.drawImage(renderer.domElement, 0, 0, session.canvas.width, session.canvas.height);
-                if (session.startedAt === null) {
-                    session.recorder.start(1000);
-                    session.startedAt = performance.now();
-                } else if (performance.now() - session.startedAt >= session.durationMs) {
+                session.context.globalCompositeOperation = 'copy';
+                session.context.fillStyle = '#000000';
+                session.context.fillRect(0, 0, session.canvas.width, session.canvas.height);
+                session.context.globalCompositeOperation = 'source-over';
+                const scene = session.layout.scene;
+                session.context.drawImage(renderer.domElement, scene.x, scene.y, scene.width, scene.height);
+                drawVideoLegend(session);
+                session.videoTrack.requestFrame();
+                session.captureDue = false;
+                session.frameIndex++;
+                session.nextFrameAt = performance.now() + 1000 / VIDEO_EXPORT_FPS;
+                if (session.frameIndex >= session.totalFrames) {
                     session.stopping = true;
+                    document.getElementById('videoExportProgress').value = 100;
                     setVideoExportStatus('Finishing video...');
-                    session.recorder.stop();
+                    // Give the encoder a turn to consume the final requested canvas frame.
+                    setTimeout(() => {
+                        if (videoExport === session && session.recorder.state !== 'inactive') session.recorder.stop();
+                    }, 100);
                 }
             } catch (error) {
                 console.error('Video recording failed:', error);
                 cancelVideoExport('Recording failed. Try another browser.');
+            }
+        }
+
+        function setVideoExportPaused(paused) {
+            const session = videoExport;
+            if (!session || session.stopping || session.paused === paused) return;
+            session.paused = paused;
+            session.captureDue = false;
+            if (paused) {
+                if (session.recorder.state === 'recording') session.recorder.pause();
+                const percent = Math.floor(session.frameIndex / session.totalFrames * 100);
+                setVideoExportStatus('Paused at ' + percent + '%. Return to this page to continue.');
+            } else {
+                if (session.recorder.state === 'paused') session.recorder.resume();
+                session.nextFrameAt = performance.now();
+                setVideoExportStatus('Recording ' + Math.floor(session.frameIndex / session.totalFrames * 100) + '%');
             }
         }
 
@@ -2017,10 +2273,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function finishVideoExport(session, message, blob = null) {
             videoExport = null;
+            session.abortController.abort();
             if (session.recorder.state !== 'inactive') session.recorder.stop();
             session.stream.getTracks().forEach(track => track.stop());
             session.disabledControls.forEach(({ element, disabled }) => { element.disabled = disabled; });
+            activeCamera.copy(session.savedCamera, false);
+            controls.target.copy(session.target);
+            controls.update();
+            controls.enableDamping = session.dampingEnabled;
             controls.enabled = session.controlsEnabled;
+            renderer.setPixelRatio(session.pixelRatio);
+            renderer.setSize(session.rendererSize.x, session.rendererSize.y);
+            renderer.domElement.style.objectFit = session.objectFit;
             setPlaybackPosition(session.index);
             if (session.wasAnimating) toggleAnimation();
 
@@ -2031,16 +2295,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const extension = blob.type.startsWith('video/mp4') ? 'mp4' : 'webm';
                 download.href = videoDownloadUrl;
                 download.download = session.filename + '.' + extension;
-                download.textContent = 'Download .' + extension;
+                download.click();
             }
-            download.hidden = !videoDownloadUrl;
             document.getElementById('videoExportBtn').textContent = 'Export video';
             document.getElementById('videoExportProgress').hidden = true;
             const status = document.getElementById('videoExportStatus');
             setVideoExportStatus(message);
             if (document.getElementById('settingsPanel').classList.contains('visible')
                 && document.getElementById('exportSettings').open) {
-                (blob ? download : status).scrollIntoView({ block: 'nearest' });
+                status.scrollIntoView({ block: 'nearest' });
             }
             session.chunks.length = 0;
             session.canvas.width = session.canvas.height = 0;
@@ -2343,13 +2606,20 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             fetchBtn.addEventListener('click', fetchRemoteData);
             exportBtn.addEventListener('click', exportGLTF);
             document.getElementById('videoExportBtn').addEventListener('click', startVideoExport);
+            document.getElementById('videoResolution').addEventListener('change', event => {
+                document.getElementById('videoCustomSize').hidden = event.target.value !== 'custom';
+            });
+            document.getElementById('videoCamera').addEventListener('change', event => {
+                document.getElementById('videoTransitionRow').hidden = event.target.value !== 'top-side';
+                updateVideoDurationEstimate();
+            });
+            document.getElementById('videoTransition').addEventListener('input', updateVideoDurationEstimate);
             if (!getVideoMimeType()) {
                 document.getElementById('videoExportBtn').disabled = true;
-                document.getElementById('videoDuration').disabled = true;
                 setVideoExportStatus('Video export is unavailable in this browser.');
             }
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) cancelVideoExport('Export cancelled: keep this page visible while recording.');
+                setVideoExportPaused(document.hidden);
             });
             renderer.domElement.addEventListener('webglcontextlost', () => {
                 cancelVideoExport('Export cancelled: the 3D view was interrupted.');
@@ -2396,8 +2666,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             skipEndBtn.addEventListener('click', skipToEnd);
             
             speedSlider.addEventListener('input', (e) => {
-                animationSpeed = parseFloat(e.target.value);
-                document.getElementById('speedValue').innerText = animationSpeed + 'x';
+                monthsPerFrame = Number(e.target.value);
+                document.getElementById('speedValue').textContent = String(monthsPerFrame);
+                updateVideoDurationEstimate();
             });
 
             timelineSlider.addEventListener('input', (e) => {
@@ -2482,6 +2753,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const bottomWrapper = document.getElementById('bottomWrapper');
 
             if (isAnimating) {
+                nextPlaybackFrameAt = performance.now() + 1000 / VIDEO_EXPORT_FPS;
                 playIcon.classList.remove('show-play');
                 
                 playBtn.classList.add('active');
@@ -2535,19 +2807,20 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             document.getElementById('skipEndBtn').disabled = atEnd;
         }
 
-        function getAdjacentTimelineStop(direction) {
+        function getAdjacentTimelineStop(direction, steps = 1) {
             if (!timelineStops.length) return direction < 0 ? 0 : totalIndices;
 
             const epsilon = 0.5;
+            let remaining = steps;
             if (direction < 0) {
                 for (let i = timelineStops.length - 1; i >= 0; i--) {
-                    if (timelineStops[i] < animationIndex - epsilon) return timelineStops[i];
+                    if (timelineStops[i] < animationIndex - epsilon && --remaining === 0) return timelineStops[i];
                 }
                 return timelineStops[0];
             }
 
             for (let i = 0; i < timelineStops.length; i++) {
-                if (timelineStops[i] > animationIndex + epsilon) return timelineStops[i];
+                if (timelineStops[i] > animationIndex + epsilon && --remaining === 0) return timelineStops[i];
             }
             return timelineStops[timelineStops.length - 1];
         }
@@ -3164,6 +3437,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             timelineStops = rawMetaData.map((_, observationIndex) => (
                 Math.min(totalIndices, observationIndex * pointsPerObservation * geometryIndexStride)
             ));
+            updateVideoDurationEstimate();
             
             if (!isAnimating) {
                 // Show full geometry including end cap
@@ -3338,12 +3612,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         
         function updateAnimation() {
             if (!isAnimating || !spiralMesh) return;
-            
-            const baseSpeed = Math.ceil(totalIndices / 600); 
-            const speed = baseSpeed * animationSpeed;
+            const now = performance.now();
+            if (now < nextPlaybackFrameAt) return;
+            const frameInterval = 1000 / VIDEO_EXPORT_FPS;
+            nextPlaybackFrameAt = now - nextPlaybackFrameAt > frameInterval
+                ? now + frameInterval : nextPlaybackFrameAt + frameInterval;
             const wasAtStart = animationIndex <= 0.5;
 
-            animationIndex += speed;
+            animationIndex = getAdjacentTimelineStop(1, monthsPerFrame);
             if (wasAtStart && animationIndex > 0.5) updatePlaybackButtonAvailability();
             
             if (animationIndex >= totalIndices) {
