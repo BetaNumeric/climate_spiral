@@ -4,7 +4,9 @@
 [**Live Demo**](https://betanumeric.github.io/climate_spiral/)
 
 
+<!-- README_VIDEO_TOP_START -->
 https://github.com/user-attachments/assets/4862e111-25a3-417e-994f-fd50bbe4f3ba
+<!-- README_VIDEO_TOP_END -->
 
 
 
@@ -49,7 +51,9 @@ This project is a 3D implementation of the "Climate Spiral" concept originally v
 
 
 
+<!-- README_VIDEO_BOTTOM_START -->
 https://github.com/user-attachments/assets/5eb3508c-af42-4f4c-8416-544912cfbda7
+<!-- README_VIDEO_BOTTOM_END -->
 
 
 
@@ -92,6 +96,10 @@ Sea level uses CU's **seasonal-signals-retained** satellite series, including th
 ENSO is **disabled**, with its `DATASET_CONFIG` registration and workflow step commented out. Its parser, rendering branches, raw snapshot, updater and tests remain available. To restore it, uncomment the registration and workflow step, add `data/Rnino34.ascii.txt` to the workflow's commit paths and service worker's data assets, and bump the cache version. The retained series is NOAA CPC's [monthly relative Nino 3.4 index](https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt), not the three-month ONI/RONI or an official event classification.
 
 The weekly GitHub workflow refreshes all eight active local datasets, including historical revisions. For land and ocean data, it requests all individual months through the current UTC year. For sea ice, it downloads the twelve calendar-month files per hemisphere and validates both complete bundles before writing either. For methane, it validates the global CH4 metadata and requires a complete monthly series from July 1983. For sea level, it discovers the newest release on CU's homepage and downloads its paired seasonal-signals-retained file. A missing link, unexpected format, incomplete reference period, excessive gaps, lost previously available months, fewer samples, or an older endpoint causes the updater to fail without replacing the snapshot. No annual URL edits or credentials are needed. The service worker pre-caches active datasets and parsers for offline use and checks the local data files over the network when online.
+
+The separate **Refresh README videos** workflow runs monthly on the 22nd at 08:37 UTC and can also be started manually from Actions. It renders Global Temperature for the first video and randomly chooses another active dataset for the second, excluding the previous selection. The clips use the checked-in monthly data, 960 x 540 resolution, four months per frame, and a two-second camera turn. They are attached to one dedicated GitHub issue so the README retains inline video players without committing large binaries. The workflow verifies both videos, updates the two README links, and skips a scheduled run if that month's videos were already published. Each upload must stay below GitHub's [10 MB free-plan video attachment limit](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files). Standard GitHub-hosted runners are [free for this public repository](https://docs.github.com/en/billing/concepts/product-billing/github-actions); the workflow does not use AI tokens.
+
+**One-time setup:** Enable Issues for the repository. Create a [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) restricted to this repository with **Contents: Read and write** and **Issues: Read and write**, and add it as an [Actions repository secret](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets) named `README_VIDEO_TOKEN`. The built-in `GITHUB_TOKEN` handles the README commit, but [cannot upload video attachments](https://github.com/cli/cli/issues/14309), so this separate token is needed for the inline players. The "Allow GitHub Actions to create and approve pull requests" setting is not needed. After pushing the workflow, run it once manually to replace the existing examples; renew the secret if the token expires.
 
 To update land data locally, run `node scripts/update-land-data.mjs`; for ocean data, run `node scripts/update-ocean-data.mjs`; for both sea ice datasets, run `node scripts/update-sea-ice-data.mjs`; for methane, run `node scripts/update-methane-data.mjs`; for sea level, run `node scripts/update-sea-level-data.mjs`. To run all parser, updater, and video-setting tests, use `node --test tests/*.test.mjs` (Node.js 20 or newer).
 

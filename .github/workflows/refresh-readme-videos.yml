@@ -1,0 +1,99 @@
+name: Refresh README videos
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run late in the month, after several weekly data refreshes (UTC).
+    - cron: "37 8 22 * *"
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: readme-videos-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Check monthly schedule
+        id: due
+        run: node scripts/check-readme-video-due.mjs
+
+      - name: Check video publishing setup
+        if: steps.due.outputs.render == 'true'
+        env:
+          README_VIDEO_TOKEN: ${{ secrets.README_VIDEO_TOKEN }}
+        run: |
+          if [ -z "$README_VIDEO_TOKEN" ]; then
+            echo "Add the README_VIDEO_TOKEN repository secret before running this workflow."
+            exit 1
+          fi
+          gh issue edit --help | grep -q -- '--attach'
+
+      - name: Install browser dependencies
+        if: steps.due.outputs.render == 'true'
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Test README video metadata
+        if: steps.due.outputs.render == 'true'
+        run: node --test tests/readme-video.test.mjs
+
+      - name: Start local preview server
+        if: steps.due.outputs.render == 'true'
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/climate-readme-server.log 2>&1 &
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent http://127.0.0.1:8765/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/climate-readme-server.log
+          exit 1
+
+      - name: Render and validate videos
+        if: steps.due.outputs.render == 'true'
+        run: node scripts/render-readme-videos.mjs
+
+      - name: Upload videos and update README
+        if: steps.due.outputs.render == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.README_VIDEO_TOKEN }}
+        run: node scripts/publish-readme-videos.mjs
+
+      - name: Commit README links
+        if: steps.due.outputs.render == 'true'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "README videos are unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh README preview videos"
+          git pull --rebase origin "$DEFAULT_BRANCH"
+          git push origin "HEAD:$DEFAULT_BRANCH"
