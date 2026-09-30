@@ -5,8 +5,9 @@
 
 
 <!-- README_VIDEO_TOP_START -->
-https://github.com/user-attachments/assets/4862e111-25a3-417e-994f-fd50bbe4f3ba
+https://github.com/user-attachments/assets/312a2fcb-e551-484a-b31e-5eb468fd86bd
 <!-- README_VIDEO_TOP_END -->
+<!-- README_VIDEO_UPDATED: 2026-09 -->
 
 
 
@@ -52,7 +53,10 @@ This project is a 3D implementation of the "Climate Spiral" concept originally v
 
 
 <!-- README_VIDEO_BOTTOM_START -->
-https://github.com/user-attachments/assets/5eb3508c-af42-4f4c-8416-544912cfbda7
+<!-- README_VIDEO_DATASET: antarctic -->
+**Antarctic Sea Ice**
+
+https://github.com/user-attachments/assets/80a46977-005e-4918-adaa-cc36965f9b53
 <!-- README_VIDEO_BOTTOM_END -->
 
 
