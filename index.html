@@ -790,9 +790,9 @@
                     <div class="setting-row setting-column">
                         <div class="slider-label">
                             <label for="speedSlider">Months per frame</label>
-                            <output id="speedValue" class="slider-val" for="speedSlider">5</output>
+                            <output id="speedValue" class="slider-val" for="speedSlider">7</output>
                         </div>
-                        <input type="range" id="speedSlider" min="1" max="12" step="1" value="5">
+                        <input type="range" id="speedSlider" min="1" max="12" step="1" value="7">
                     </div>
                 </div>
             </details>
@@ -1211,7 +1211,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let timelineStops = [];
         let startYear = 1880;
         let endYear = 2025; 
-        let monthsPerFrame = 5;
+        let monthsPerFrame = 7;
         let nextPlaybackFrameAt = 0;
         const endCapDirection = new THREE.Vector3();
         const endCapTarget = new THREE.Vector3();
@@ -1970,18 +1970,20 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (!rect) return;
 
             const context = session.context;
+            // Keep legend type and strokes proportional to a 1080px short edge.
+            const pixelScale = Math.min(session.canvas.width, session.canvas.height) / 1080;
             const date = document.getElementById('infoMonth').textContent + ' '
                 + document.getElementById('infoYear').textContent;
             const valueElement = document.getElementById('infoTemp');
             const value = valueElement.textContent;
-            let headlineSize = Math.max(11, Math.min(46, rect.width / 14, rect.height * 0.22));
-            const headlineGap = Math.max(8, rect.width * 0.04);
+            let headlineSize = Math.max(11 * pixelScale, Math.min(46 * pixelScale, rect.width / 14, rect.height * 0.22));
+            const headlineGap = Math.max(8 * pixelScale, rect.width * 0.04);
 
             context.save();
             context.textBaseline = 'alphabetic';
             context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
-            while (headlineSize > 11 && context.measureText(date).width + context.measureText(value).width + headlineGap > rect.width) {
-                headlineSize--;
+            while (headlineSize > 11 * pixelScale && context.measureText(date).width + context.measureText(value).width + headlineGap > rect.width) {
+                headlineSize -= pixelScale;
                 context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
             }
 
@@ -1994,7 +1996,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             context.fillText(value, rect.x + rect.width, headlineY);
 
             const barY = rect.y + rect.height * 0.47;
-            const barHeight = Math.max(6, Math.min(18, rect.height * 0.075));
+            const barHeight = Math.max(6 * pixelScale, Math.min(18 * pixelScale, rect.height * 0.075));
             const gradient = context.createLinearGradient(rect.x, 0, rect.x + rect.width, 0);
             getVideoLegendStops().forEach(([position, color]) => gradient.addColorStop(position, color));
             context.fillStyle = gradient;
@@ -2003,7 +2005,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const marker = document.getElementById('legendMarker');
             if (!marker.hidden) {
                 const markerFraction = Math.max(0, Math.min(1, Number.parseFloat(marker.style.left) / 100));
-                const markerWidth = Math.max(2, Math.round(rect.width * 0.003));
+                const markerWidth = Math.max(2 * pixelScale, rect.width * 0.003);
                 context.fillStyle = '#ffffff';
                 context.shadowColor = 'rgba(0, 0, 0, 0.8)';
                 context.shadowBlur = markerWidth * 2;
@@ -2017,7 +2019,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             const labels = Array.from(document.querySelectorAll('.legend-labels span'), element => element.textContent);
-            const labelSize = Math.max(9, Math.min(24, rect.width / Math.max(18, labels.length * 5), rect.height * 0.12));
+            const labelSize = Math.max(9 * pixelScale, Math.min(24 * pixelScale, rect.width / Math.max(18, labels.length * 5), rect.height * 0.12));
             context.font = `600 ${labelSize}px ${FONT_FAMILY}`;
             context.fillStyle = '#dddddd';
             const labelY = barY + barHeight + rect.height * 0.16;
@@ -2390,12 +2392,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             
             ticks.forEach(temp => {
                 const r = getSpiralRadius(temp);
-                const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
-                const points = curve.getPoints(64);
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({ color: 0x666666, transparent:true, opacity:0.3 });
-                
-                const ring = new THREE.LineLoop(geometry, material);
+                const geometry = new THREE.TorusGeometry(r, 0.025, 6, 192);
+                const material = new THREE.MeshBasicMaterial({ color: 0x666666, transparent:true, opacity:0.3 });
+
+                const ring = new THREE.Mesh(geometry, material);
                 ring.rotation.x = -Math.PI / 2;
                 ring.position.y = -2.0; 
                 tempGridGroup.add(ring);
@@ -3481,6 +3481,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             cancelVideoExport('Export cancelled: the window size changed.');
             const aspect = window.innerWidth / window.innerHeight;
 
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             perspectiveCamera.aspect = aspect;

@@ -9,8 +9,10 @@ const baseUrl = process.env.README_VIDEO_BASE_URL || 'http://127.0.0.1:8765';
 const month = new Date().toISOString().slice(0, 7);
 const previous = previousSecondaryDataset(readFileSync('README.md', 'utf8'));
 const secondary = chooseSecondaryDataset(previous, process.env.README_VIDEO_DATASET || null);
-const monthsPerFrame = Number(process.env.README_VIDEO_MONTHS_PER_FRAME || 4);
-if (!Number.isInteger(monthsPerFrame) || monthsPerFrame < 1 || monthsPerFrame > 12) {
+const monthsPerFrameOverride = process.env.README_VIDEO_MONTHS_PER_FRAME
+  ? Number(process.env.README_VIDEO_MONTHS_PER_FRAME) : null;
+if (monthsPerFrameOverride !== null
+    && (!Number.isInteger(monthsPerFrameOverride) || monthsPerFrameOverride < 1 || monthsPerFrameOverride > 12)) {
   throw new Error('README_VIDEO_MONTHS_PER_FRAME must be an integer from 1 to 12.');
 }
 mkdirSync(outputDirectory, { recursive: true });
@@ -66,25 +68,22 @@ async function renderDataset(browser, datasetKey) {
         && status.textContent.trim() === 'Local Data';
     }, datasetKey, { timeout: 60_000 });
 
-    await page.locator('#speedSlider').evaluate((slider, speed) => {
-      slider.value = String(speed);
-      slider.dispatchEvent(new Event('input', { bubbles: true }));
-    }, monthsPerFrame);
+    if (monthsPerFrameOverride !== null) {
+      await page.locator('#speedSlider').evaluate((slider, speed) => {
+        slider.value = String(speed);
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+      }, monthsPerFrameOverride);
+    }
     await page.click('#exportSettings > summary');
     await page.click('#videoAdvanced > summary');
-    await page.selectOption('#videoResolution', 'custom');
-    await page.fill('#videoWidth', '960');
-    await page.fill('#videoHeight', '540');
-    await page.selectOption('#videoCamera', 'top-side');
-    await page.fill('#videoTransition', '2');
-    await page.check('#videoLegendToggle');
+    await page.selectOption('#videoResolution', '1080p');
 
     const downloadPromise = page.waitForEvent('download', { timeout: 10 * 60_000 });
     await page.click('#videoExportBtn');
     const download = await downloadPromise;
     await page.waitForFunction(() => document.getElementById('videoExportStatus').textContent === 'Download started.');
     const preview = await checkDecodedFrame(page);
-    if (preview.width !== 960 || preview.height !== 540 || preview.duration < 2
+    if (preview.width !== 1920 || preview.height !== 1080 || preview.duration < 2
         || preview.visiblePixels.some(count => count < 1000) || errors.length) {
       throw new Error(`Invalid ${datasetKey} render: ${JSON.stringify({ preview, errors })}`);
     }
@@ -99,9 +98,9 @@ async function renderDataset(browser, datasetKey) {
       copyFileSync(rawPath, finalPath);
     } else {
       execFileSync(process.env.README_VIDEO_FFMPEG || 'ffmpeg', [
-        '-y', '-i', rawPath, '-an', '-vf', 'scale=960:540:flags=lanczos', '-r', '30', '-fps_mode', 'cfr',
+        '-y', '-i', rawPath, '-an', '-vf', 'scale=1920:1080:flags=lanczos', '-r', '30', '-fps_mode', 'cfr',
         '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
-        '-b:v', '1800k', '-maxrate', '2200k', '-bufsize', '4400k',
+        '-b:v', '4800k', '-maxrate', '5200k', '-bufsize', '10400k',
         '-movflags', '+faststart', finalPath,
       ], { stdio: 'inherit' });
       const probe = JSON.parse(execFileSync('ffprobe', [
@@ -110,7 +109,7 @@ async function renderDataset(browser, datasetKey) {
         '-show_entries', 'format=duration', '-of', 'json', finalPath,
       ], { encoding: 'utf8' }));
       const videoStream = probe.streams?.[0];
-      if (videoStream?.width !== 960 || videoStream?.height !== 540
+      if (videoStream?.width !== 1920 || videoStream?.height !== 1080
           || videoStream?.avg_frame_rate !== '30/1' || !(Number(probe.format?.duration) >= 2)) {
         throw new Error(`Unexpected ${datasetKey} MP4 format: ${JSON.stringify(probe)}`);
       }
