@@ -434,9 +434,33 @@
         }
         .settings-header h2 { margin: 0; padding: 0; border: 0; font-size: 1rem; }
         .settings-header .close-btn { position: static; width: 32px; height: 32px; padding: 0; }
-        .settings-body { min-height: 0; padding: 0 16px 8px; overflow-y: auto; scroll-padding-block: 12px; }
+        .settings-body {
+            width: 100%;
+            min-height: 0;
+            padding: 0 16px 8px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scroll-padding-block: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: #555 transparent;
+        }
+        .settings-body::-webkit-scrollbar { width: 8px; }
+        .settings-body::-webkit-scrollbar-track { background: transparent; }
+        .settings-body::-webkit-scrollbar-thumb {
+            min-height: 32px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: #555;
+            background-clip: content-box;
+        }
+        .settings-body::-webkit-scrollbar-thumb:hover { background-color: #707070; }
         .settings-dataset { display: grid; gap: 8px; padding: 16px 0; }
         .settings-dataset > label { color: #aaa; font-size: 0.8rem; }
+        .settings-layout { width: 100%; margin: 14px 0 0; box-sizing: border-box; }
+        .settings-layout label { flex: 1; text-align: center; }
+        .settings-layout span { padding-block: 8px; }
+        #settingsPanel input[type=range] { box-sizing: border-box; margin-inline: 0; }
         #datasetSelect, #videoAdvanced select {
             width: 100%;
             min-width: 0;
@@ -451,6 +475,13 @@
             font-size: 16px;
         }
         #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
+        .layout-modes { display: flex; border: 1px solid #555; border-radius: 6px; overflow: hidden; }
+        .layout-modes label { position: relative; cursor: pointer; }
+        .layout-modes input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+        .layout-modes span { display: block; padding: 7px 10px; font-size: 0.8rem; color: #aaa; }
+        .layout-modes input:checked + span { color: #fff; background: #454545; }
+        .layout-modes input:focus-visible + span { outline: 2px solid #8b9be1; outline-offset: -2px; }
+        .layout-modes input:disabled + span { opacity: 0.5; cursor: default; }
         .settings-section { border-top: 1px solid #333; }
         .settings-section > summary {
             display: flex;
@@ -596,6 +627,24 @@
         .video-dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .video-dimensions label { display: grid; gap: 6px; font-size: 0.8rem; color: #ddd; min-width: 0; }
         .video-dimensions .video-number { width: 100%; min-width: 0; }
+        .video-view-list { display: grid; gap: 6px; margin: -5px 0 10px; }
+        .video-view-step { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 34px); gap: 4px; align-items: center; }
+        .video-view-step select { min-width: 0; }
+        .video-pause-duration { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #bbb; font-size: 0.8rem; }
+        .video-pause-duration[hidden] { display: none; }
+        .video-pause-duration input { width: 74px; }
+        .video-path-label { display: block; margin: -4px 0 7px; color: #aaa; font-size: 0.8rem; }
+        .video-step-button {
+            width: 34px; height: 36px; padding: 0; border: 1px solid #444; border-radius: 4px;
+            background: #222; color: #ccc; cursor: pointer; font: inherit;
+        }
+        .video-step-button:hover:not(:disabled) { background: #383838; color: #fff; }
+        .video-step-button:disabled { opacity: 0.3; cursor: default; }
+        .video-add-view { background: transparent; color: #ccc; width: 100%; }
+        .video-path-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        #videoPreviewBar { position: absolute; z-index: 30; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 8px 10px; border: 1px solid #555; border-radius: 6px; background: #111; white-space: nowrap; }
+        #videoPreviewBar[hidden] { display: none; }
+        #videoPreviewTime { min-width: 76px; text-align: center; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
         #videoCustomSize[hidden], #videoTransitionRow[hidden] { display: none; }
         #videoExportProgress { width: 100%; accent-color: #8b9be1; }
         #videoExportStatus {
@@ -777,6 +826,10 @@
             <button class="close-btn" type="button" data-target="settingsPanel" aria-label="Close settings">×</button>
         </div>
         <div class="settings-body">
+            <div class="settings-layout layout-modes" role="radiogroup" aria-label="Layout">
+                <label><input type="radio" name="chartLayout" value="spiral" checked><span>Spiral</span></label>
+                <label><input type="radio" name="chartLayout" value="graph"><span>Unwrapped</span></label>
+            </div>
             <div class="settings-dataset">
                 <label for="datasetSelect">Dataset</label>
                 <select id="datasetSelect"></select>
@@ -822,7 +875,7 @@
                         </span>
                     </div>
                     <div class="setting-row">
-                        <label for="smoothSpiralToggle">Smooth Spiral</label>
+                        <label for="smoothSpiralToggle">Smooth Lines</label>
                         <span class="switch">
                             <input type="checkbox" id="smoothSpiralToggle" checked>
                             <span class="slider-switch"></span>
@@ -830,10 +883,17 @@
                     </div>
                     <div class="setting-row setting-column">
                         <div class="slider-label">
-                            <label for="spacingSlider">Coil Spacing</label>
+                            <label for="spacingSlider">Year Spacing</label>
                             <output id="spacingValue" class="slider-val" for="spacingSlider">0.25</output>
                         </div>
                         <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.25">
+                    </div>
+                    <div class="setting-row setting-column">
+                        <div class="slider-label">
+                            <label for="thicknessSlider">Line Thickness</label>
+                            <output id="thicknessValue" class="slider-val" for="thicknessSlider">100%</output>
+                        </div>
+                        <input type="range" id="thicknessSlider" min="0" max="1.5" step="0.05" value="1" aria-valuetext="100%">
                     </div>
                 </div>
             </details>
@@ -886,14 +946,41 @@
                                 <label for="videoHeight">Height (px)<input id="videoHeight" class="video-number" type="number" min="128" max="3840" step="2" value="1080" inputmode="numeric"></label>
                             </div>
                             <div class="setting-row setting-column">
-                                <label for="videoCamera">Camera animation</label>
+                                <label for="videoCamera">Camera animation · Start view</label>
                                 <select id="videoCamera">
                                     <option value="current">Current view</option>
-                                    <option value="top-side" selected>Top-down to side</option>
+                                    <option value="spiral-top" selected>Spiral · Top</option>
+                                    <option value="spiral-front">Spiral · Front</option>
+                                    <option value="spiral-right">Spiral · Right</option>
+                                    <option value="graph-top">Unwrapped · Top</option>
+                                    <option value="graph-front">Unwrapped · Front</option>
+                                    <option value="graph-right">Unwrapped · Right</option>
                                 </select>
                             </div>
+                            <span class="video-path-label">Then move to</span>
+                            <div id="videoViewList" class="video-view-list" aria-label="Camera path">
+                                <div class="video-view-step">
+                                    <select class="video-step-view" aria-label="View 1">
+                                        <option value="spiral-top">Spiral · Top</option>
+                                        <option value="spiral-front" selected>Spiral · Front</option>
+                                        <option value="spiral-right">Spiral · Right</option>
+                                        <option value="graph-top">Unwrapped · Top</option>
+                                        <option value="graph-front">Unwrapped · Front</option>
+                                        <option value="graph-right">Unwrapped · Right</option>
+                                        <option value="pause">Pause</option>
+                                    </select>
+                                    <button class="video-step-button" type="button" data-action="up" aria-label="Move view up" title="Move view up">↑</button>
+                                    <button class="video-step-button" type="button" data-action="down" aria-label="Move view down" title="Move view down">↓</button>
+                                    <button class="video-step-button" type="button" data-action="remove" aria-label="Remove view" title="Remove view">×</button>
+                                    <label class="video-pause-duration" hidden>Pause length (s)<input class="video-pause-seconds video-number" type="number" min="0.5" max="30" step="0.5" value="2" inputmode="decimal"></label>
+                                </div>
+                            </div>
+                            <div class="setting-row video-path-actions">
+                                <button id="videoAddView" class="upload-label video-add-view" type="button">Add view</button>
+                                <button id="videoAddPause" class="upload-label video-add-view" type="button">Add pause</button>
+                            </div>
                             <div id="videoTransitionRow" class="setting-row">
-                                <label for="videoTransition">Camera turn (s)</label>
+                                <label for="videoTransition">Seconds per move</label>
                                 <input id="videoTransition" class="video-number" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal">
                             </div>
                             <div class="setting-row">
@@ -910,6 +997,10 @@
                         <output id="videoDurationEstimate">--:--</output>
                     </div>
                     <div class="setting-row video-export-row">
+                        <span>Camera path</span>
+                        <button id="videoPreviewBtn" class="upload-label" type="button">Preview</button>
+                    </div>
+                    <div class="setting-row video-export-row">
                         <span>Video</span>
                         <button id="videoExportBtn" class="upload-label" type="button">Export video</button>
                     </div>
@@ -919,6 +1010,11 @@
                 </div>
             </details>
         </div>
+    </div>
+
+    <div id="videoPreviewBar" hidden role="status" aria-live="off">
+        <span id="videoPreviewTime">0:00 / 0:00</span>
+        <button id="videoPreviewStop" class="upload-label" type="button">Stop preview</button>
     </div>
 
     <!-- Bottom Wrapper -->
@@ -985,7 +1081,9 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-        import { VIDEO_EXPORT_FPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming, getVideoLayout,
+        import { calendarYear, monthlyGraphSamples, layoutEase, graphLayout, unrollPolar, unrollFrame,
+            monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition, isConnectedDataSegment } from './spiral-layout.mjs';
+        import { VIDEO_EXPORT_FPS, MAX_VIDEO_PATH_STEPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming, getVideoLayout,
             getVideoOrbitFrame, getVideoRecorderOptions } from './video-export.mjs';
         import { getTemperatureDataUrl, parseTemperatureData } from './temperature-data.mjs';
         import { ENSO_DATA_URL, ENSO_TICKS, parseENSOData, ensoAnomalyToRadius } from './enso-data.mjs';
@@ -997,13 +1095,23 @@
             getMonthlySegments, SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS } from './sea-ice-data.mjs';
 
         // --- Configuration ---
+        const DEFAULT_TUBE_RADIUS = 0.12;
+        const VIDEO_VIEW_PRESETS = {
+            'spiral-top': { label: 'Spiral · Top', layout: 0, polar: 0, azimuth: 0 },
+            'spiral-front': { label: 'Spiral · Front', layout: 0, polar: Math.PI / 2, azimuth: 0 },
+            'spiral-right': { label: 'Spiral · Right', layout: 0, polar: Math.PI / 2, azimuth: Math.PI / 2 },
+            'graph-top': { label: 'Unwrapped · Top', layout: 1, polar: 0, azimuth: 0 },
+            'graph-front': { label: 'Unwrapped · Front', layout: 1, polar: Math.PI / 2, azimuth: 0 },
+            'graph-right': { label: 'Unwrapped · Right', layout: 1, polar: Math.PI / 2, azimuth: Math.PI / 2 }
+        };
         const CONFIG = {
             radiusBase: 10,       
             radiusScale: 5,       
             heightPerYear: 0.25,
-            tubeRadius: 0.12, 
+            tubeRadius: DEFAULT_TUBE_RADIUS,
             radialSegments: 8,
             frustumSize: 45,
+            sceneScale: 1.28, // Increase to enlarge the spiral in both the viewer and video exports.
             colors: {
                 cold: new THREE.Color(0x0000ff),
                 neutral: new THREE.Color(0xffffff),
@@ -1021,9 +1129,13 @@
         
         const FONT_FAMILY = '"Inter", sans-serif';
         const OPACITY_FADE_THRESHOLD = 1.2;
+        const LAYOUT_TRANSITION_MS = 2400;
         const MONTHS_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const DEFAULT_ORTHOGRAPHIC_DISTANCE = 200;
         const CAMERA_RESET_DURATION_MS = 450;
+        const CAMERA_SNAP_DURATION_MS = 260;
+        const CAMERA_SNAP_ANGLE = THREE.MathUtils.degToRad(10);
+        const CAMERA_ROTATION_EPSILON = THREE.MathUtils.degToRad(0.1);
         const DOUBLE_TAP_MAX_DELAY_MS = 500;
         const TAP_MAX_DURATION_MS = 300;
         const TAP_MAX_MOVEMENT_PX = 12;
@@ -1184,13 +1296,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // --- State ---
         let scene, renderer, controls;
         let perspectiveCamera, orthographicCamera, activeCamera;
-        let spiralMesh, endCapMesh; 
+        let spiralMesh, spiralLine, endCapMesh;
         let yearLabelsGroup, monthLabelsGroup; 
-        let tempGridGroup, tempLabelGroup, tempVerticalGroup; 
+        let tempGridGroup, tempLabelGroup, tempVerticalGroup;
         let yearIndicatorMesh, yearIndicatorTexture, yearIndicatorContext;
         let lastDrawnYear = -1; 
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
+        let layoutMix = 0;
+        let layoutTransition = null;
+        let monthlyLayout = graphLayout(5, 20);
+        let layoutFrame = unrollFrame(0, monthlyLayout);
         
         let dirLight; // Global ref for update
 
@@ -1217,8 +1333,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         const endCapTarget = new THREE.Vector3();
         const defaultCameraQuaternion = new THREE.Quaternion();
         let lastCameraResetTime = -Infinity;
+        let lastCameraView = null;
         let cameraResetAnimation = null;
         let videoExport = null;
+        let videoPreview = null;
         let videoDownloadUrl = null;
         
         // UI State
@@ -1484,14 +1602,58 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             nextControls.target.copy(target);
             nextControls.update();
 
+            const startDirection = new THREE.Vector3();
+            const endDirection = new THREE.Vector3();
+            let hasOrbitStart = false;
+            nextControls.addEventListener('start', () => {
+                startDirection.subVectors(nextControls.object.position, nextControls.target).normalize();
+                hasOrbitStart = true;
+            });
+            nextControls.addEventListener('end', () => {
+                if (!hasOrbitStart) return;
+                hasOrbitStart = false;
+                if (nextControls !== controls || videoExport || cameraResetAnimation) return;
+                endDirection.subVectors(nextControls.object.position, nextControls.target).normalize();
+                if (startDirection.angleTo(endDirection) < CAMERA_ROTATION_EPSILON) return;
+                const view = nearestCameraView(endDirection);
+                if (view) requestAnimationFrame(() => {
+                    if (nextControls === controls && !videoExport && !cameraResetAnimation) {
+                        setCameraView(view, { preserveFraming: true, duration: CAMERA_SNAP_DURATION_MS });
+                    }
+                });
+            });
+
             return nextControls;
         }
 
+        function nearestCameraView(direction) {
+            const candidates = [
+                ['top', new THREE.Vector3(0, 1, 0)],
+                ['front', new THREE.Vector3(0, 0, 1)],
+                ['right', new THREE.Vector3(1, 0, 0)]
+            ];
+            let nearest = null;
+            let nearestAngle = Infinity;
+            for (const [view, targetDirection] of candidates) {
+                const angle = direction.angleTo(targetDirection);
+                if (angle < nearestAngle) {
+                    nearest = view;
+                    nearestAngle = angle;
+                }
+            }
+            return nearestAngle <= CAMERA_SNAP_ANGLE ? nearest : null;
+        }
+
         function resetCameraView() {
-            if (videoExport) return;
+            setCameraView('top');
+        }
+
+        function setCameraView(view, { preserveFraming = false, duration = CAMERA_RESET_DURATION_MS } = {}) {
+            if (videoExport || videoPreview) return;
             const now = performance.now();
-            if (now - lastCameraResetTime < 250 || !controls || !activeCamera) return;
+            if (!controls || !activeCamera || (!preserveFraming && view === lastCameraView && now - lastCameraResetTime < 250)) return;
             lastCameraResetTime = now;
+            lastCameraView = view;
 
             const camera = activeCamera;
             const controlsEnabled = cameraResetAnimation?.controlsEnabled ?? controls.enabled;
@@ -1520,24 +1682,31 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const startSpherical = new THREE.Spherical().setFromVector3(
                 startPosition.clone().sub(startTarget)
             );
+            if (preserveFraming) endDistance = startSpherical.radius;
+            const endPolar = view === 'top' ? 0 : Math.PI / 2;
+            const endAzimuth = view === 'right' ? Math.PI / 2 : 0;
             const thetaDelta = Math.atan2(
-                Math.sin(-startSpherical.theta),
-                Math.cos(-startSpherical.theta)
+                Math.sin(endAzimuth - startSpherical.theta),
+                Math.cos(endAzimuth - startSpherical.theta)
             );
 
             cameraResetAnimation = {
                 camera,
                 controlsEnabled,
                 startTime: now,
+                duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : duration,
                 startTarget,
-                endTarget: new THREE.Vector3(0, spiralHeight / 2, 0),
+                endTarget: preserveFraming ? startTarget.clone() : new THREE.Vector3(0, spiralHeight / 2, 0),
                 startZoom,
+                endZoom: preserveFraming ? startZoom : 1,
                 startSpherical,
                 endDistance,
+                endPolar,
                 thetaDelta,
                 currentSpherical: new THREE.Spherical(),
                 currentOffset: new THREE.Vector3()
             };
+            if (cameraResetAnimation.duration === 0) updateCameraResetAnimation();
         }
 
         function updateCameraResetAnimation() {
@@ -1551,8 +1720,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 return;
             }
 
-            const progress = Math.min(
-                (performance.now() - animation.startTime) / CAMERA_RESET_DURATION_MS,
+            const progress = animation.duration === 0 ? 1 : Math.min(
+                (performance.now() - animation.startTime) / animation.duration,
                 1
             );
             const eased = progress * progress * (3 - 2 * progress);
@@ -1560,17 +1729,17 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             controls.target.lerpVectors(animation.startTarget, animation.endTarget, eased);
             animation.currentSpherical.set(
                 THREE.MathUtils.lerp(animation.startSpherical.radius, animation.endDistance, eased),
-                THREE.MathUtils.lerp(animation.startSpherical.phi, 0, eased),
+                THREE.MathUtils.lerp(animation.startSpherical.phi, animation.endPolar, eased),
                 animation.startSpherical.theta + animation.thetaDelta * eased
             );
             animation.currentOffset.setFromSpherical(animation.currentSpherical);
             animation.camera.position.copy(controls.target).add(animation.currentOffset);
-            animation.camera.zoom = THREE.MathUtils.lerp(animation.startZoom, 1, eased);
+            animation.camera.zoom = THREE.MathUtils.lerp(animation.startZoom, animation.endZoom, eased);
             animation.camera.updateProjectionMatrix();
             controls.update();
 
             if (progress === 1) {
-                animation.camera.quaternion.copy(defaultCameraQuaternion);
+                if (animation.endPolar === 0) animation.camera.quaternion.copy(defaultCameraQuaternion);
                 controls.enabled = animation.controlsEnabled;
                 cameraResetAnimation = null;
             }
@@ -1580,13 +1749,31 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const activeTouchPointers = new Set();
             let tapCandidate = null;
             let previousTap = null;
+            let rightClickCandidate = null;
+            let previousRightClick = null;
 
             canvas.addEventListener('dblclick', (event) => {
                 event.preventDefault();
-                resetCameraView();
+                if (event.button === 0) resetCameraView();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.defaultPrevented || event.repeat || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey
+                    || event.target.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]')) return;
+                const view = { '1': 'top', '2': 'front', '3': 'right' }[event.key];
+                if (!view || videoExport || videoPreview) return;
+                event.preventDefault();
+                setCameraView(view);
             });
 
             canvas.addEventListener('pointerdown', (event) => {
+                if (event.pointerType === 'mouse') {
+                    rightClickCandidate = event.button === 2 ? {
+                        pointerId: event.pointerId, startTime: performance.now(),
+                        startX: event.clientX, startY: event.clientY, moved: false
+                    } : null;
+                    if (event.button !== 2) previousRightClick = null;
+                }
                 if (event.pointerType !== 'touch') return;
 
                 activeTouchPointers.add(event.pointerId);
@@ -1606,6 +1793,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }, { passive: true });
 
             canvas.addEventListener('pointermove', (event) => {
+                if (rightClickCandidate && event.pointerId === rightClickCandidate.pointerId
+                    && Math.hypot(event.clientX - rightClickCandidate.startX, event.clientY - rightClickCandidate.startY) > TAP_MAX_MOVEMENT_PX) {
+                    rightClickCandidate.moved = true;
+                }
                 if (!tapCandidate || event.pointerId !== tapCandidate.pointerId) return;
                 const distance = Math.hypot(
                     event.clientX - tapCandidate.startX,
@@ -1615,6 +1806,21 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }, { passive: true });
 
             canvas.addEventListener('pointerup', (event) => {
+                if (event.pointerType === 'mouse' && event.button === 2) {
+                    const now = performance.now();
+                    const isClick = rightClickCandidate && event.pointerId === rightClickCandidate.pointerId
+                        && !rightClickCandidate.moved && now - rightClickCandidate.startTime <= TAP_MAX_DURATION_MS;
+                    if (isClick && previousRightClick && now - previousRightClick.time <= DOUBLE_TAP_MAX_DELAY_MS
+                        && Math.hypot(event.clientX - previousRightClick.x, event.clientY - previousRightClick.y) <= DOUBLE_TAP_MAX_DISTANCE_PX) {
+                        event.preventDefault();
+                        previousRightClick = null;
+                        setCameraView('front');
+                    } else {
+                        previousRightClick = isClick ? { time: now, x: event.clientX, y: event.clientY } : null;
+                    }
+                    rightClickCandidate = null;
+                    return;
+                }
                 if (event.pointerType !== 'touch') return;
 
                 const involvedMultiplePointers = activeTouchPointers.size > 1;
@@ -1652,6 +1858,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }, { passive: false });
 
             canvas.addEventListener('pointercancel', (event) => {
+                rightClickCandidate = null;
+                previousRightClick = null;
                 activeTouchPointers.delete(event.pointerId);
                 tapCandidate = null;
                 previousTap = null;
@@ -1728,7 +1936,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
 
             updateLegendLabels();
-            createTemperatureGrid();
         }
 
         function applyDataText(text, sourceLabel, datasetKey = currentDatasetKey) {
@@ -1888,12 +2095,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         // --- Export Function ---
         function exportGLTF() {
             if (!spiralMesh) return;
+            finishLayoutTransition();
 
             const exporter = new GLTFExporter();
             
             // Clone Spiral with full draw range
-            const spiralClone = spiralMesh.clone();
-            spiralClone.geometry = spiralMesh.geometry.clone();
+            const exportObject = spiralLine ?? spiralMesh;
+            const spiralClone = exportObject.clone();
+            spiralClone.geometry = exportObject.geometry.clone();
             spiralClone.geometry.setDrawRange(0, Infinity);
             
             // Execute Export
@@ -1929,14 +2138,97 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             ].find(type => MediaRecorder.isTypeSupported(type)) || null;
         }
 
-        function getCurrentVideoFramePlan() {
-            const cameraMode = document.getElementById('videoCamera').value;
-            const turnSeconds = cameraMode === 'top-side'
-                ? document.getElementById('videoTransition').valueAsNumber : 0;
-            if (cameraMode === 'top-side' && turnSeconds < 0.5) {
-                throw new Error('Camera turn must be between 0.5 and 10 seconds.');
+        function getConfiguredVideoPath() {
+            const start = document.getElementById('videoCamera').value;
+            const steps = Array.from(document.querySelectorAll('#videoViewList .video-view-step'), row => {
+                const view = row.querySelector('.video-step-view').value;
+                if (view !== 'pause') return { type: 'view', view };
+                const seconds = row.querySelector('.video-pause-seconds').valueAsNumber;
+                if (!Number.isFinite(seconds) || seconds < 0.5 || seconds > 30) {
+                    throw new Error('Pause length must be between 0.5 and 30 seconds.');
+                }
+                return { type: 'pause', seconds };
+            });
+            if (start !== 'current' && !Object.hasOwn(VIDEO_VIEW_PRESETS, start)) throw new Error('Choose a start view.');
+            if (steps.length > MAX_VIDEO_PATH_STEPS || steps.some(step =>
+                step.type === 'view' && !Object.hasOwn(VIDEO_VIEW_PRESETS, step.view))) {
+                throw new Error(`Choose up to ${MAX_VIDEO_PATH_STEPS} camera steps.`);
             }
-            return getVideoFramePlan(timelineStops.length, monthsPerFrame, turnSeconds);
+            return { start, steps };
+        }
+
+        function getCurrentVideoFramePlan() {
+            const { steps } = getConfiguredVideoPath();
+            const hasMoves = steps.some(step => step.type === 'view');
+            const seconds = hasMoves ? document.getElementById('videoTransition').valueAsNumber : 0;
+            if (hasMoves && (!Number.isFinite(seconds) || seconds < 0.5 || seconds > 10)) {
+                throw new Error('Seconds per move must be between 0.5 and 10.');
+            }
+            return getVideoFramePlan(timelineStops.length, monthsPerFrame, seconds,
+                steps.map(step => ({ type: step.type, seconds: step.type === 'pause' ? step.seconds : seconds })));
+        }
+
+        function updateVideoPathControls() {
+            const rows = Array.from(document.querySelectorAll('#videoViewList .video-view-step'));
+            rows.forEach((row, index) => {
+                const select = row.querySelector('select');
+                select.setAttribute('aria-label', `Camera step ${index + 1}`);
+                row.querySelector('.video-pause-duration').hidden = select.value !== 'pause';
+                row.querySelector('.video-pause-seconds').setAttribute('aria-label', `Pause ${index + 1} length in seconds`);
+                for (const [action, unavailable] of [['up', index === 0], ['down', index === rows.length - 1]]) {
+                    const button = row.querySelector(`[data-action="${action}"]`);
+                    button.disabled = unavailable;
+                    button.setAttribute('aria-label', `Move view ${index + 1} ${action}`);
+                    button.title = button.getAttribute('aria-label');
+                }
+                const remove = row.querySelector('[data-action="remove"]');
+                remove.setAttribute('aria-label', `Remove view ${index + 1}`);
+                remove.title = remove.getAttribute('aria-label');
+            });
+            for (const id of ['videoAddView', 'videoAddPause']) {
+                document.getElementById(id).disabled = rows.length >= MAX_VIDEO_PATH_STEPS || Boolean(videoExport || videoPreview);
+            }
+            document.getElementById('videoTransitionRow').hidden = !rows.some(row => row.querySelector('select').value !== 'pause');
+            updateVideoDurationEstimate();
+        }
+
+        function addVideoStep(type = 'view') {
+            const list = document.getElementById('videoViewList');
+            if (list.children.length >= MAX_VIDEO_PATH_STEPS || videoExport || videoPreview) return;
+            const row = document.createElement('div');
+            row.className = 'video-view-step';
+            const select = document.createElement('select');
+            select.className = 'video-step-view';
+            for (const [key, view] of Object.entries(VIDEO_VIEW_PRESETS)) select.add(new Option(view.label, key));
+            select.add(new Option('Pause', 'pause'));
+            const previous = Array.from(list.querySelectorAll('select')).map(element => element.value)
+                .filter(value => value !== 'pause').at(-1)
+                || document.getElementById('videoCamera').value;
+            const keys = Object.keys(VIDEO_VIEW_PRESETS);
+            select.value = type === 'pause' ? 'pause'
+                : previous === 'current' ? 'spiral-front' : keys[(keys.indexOf(previous) + 1) % keys.length];
+            row.append(select);
+            for (const [action, symbol] of [['up', '↑'], ['down', '↓'], ['remove', '×']]) {
+                const button = document.createElement('button');
+                button.className = 'video-step-button';
+                button.type = 'button';
+                button.dataset.action = action;
+                button.textContent = symbol;
+                row.append(button);
+            }
+            const duration = document.createElement('label');
+            duration.className = 'video-pause-duration';
+            duration.textContent = 'Pause length (s)';
+            const input = document.createElement('input');
+            input.className = 'video-pause-seconds video-number';
+            input.type = 'number';
+            input.min = '0.5'; input.max = '30'; input.step = '0.5'; input.value = '2';
+            input.inputMode = 'decimal';
+            duration.append(input);
+            row.append(duration);
+            list.append(row);
+            updateVideoPathControls();
+            (type === 'pause' ? input : select).focus();
         }
 
         function updateVideoDurationEstimate() {
@@ -1948,6 +2240,99 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             } catch {
                 output.textContent = '--:--';
             }
+        }
+
+        function resolveVideoPath(session) {
+            const offset = session.savedCamera.position.clone().sub(session.target);
+            const spherical = new THREE.Spherical().setFromVector3(offset);
+            const startView = session.cameraPath.start === 'current'
+                ? { layout: session.savedLayoutMix, polar: spherical.phi, azimuth: spherical.theta }
+                : VIDEO_VIEW_PRESETS[session.cameraPath.start];
+            session.views = [startView];
+            for (const step of session.cameraPath.steps) {
+                session.views.push(step.type === 'pause'
+                    ? session.views.at(-1) : VIDEO_VIEW_PRESETS[step.view]);
+            }
+            session.isCurrentOnly = session.cameraPath.start === 'current'
+                && session.cameraPath.steps.every(step => step.type === 'pause');
+        }
+
+        function formatVideoTime(seconds) {
+            const whole = Math.floor(seconds);
+            return Math.floor(whole / 60) + ':' + String(whole % 60).padStart(2, '0');
+        }
+
+        function startVideoPreview() {
+            if (videoPreview) { stopVideoPreview(); return; }
+            if (videoExport || !spiralMesh || !timelineStops.length) return;
+            let cameraPath, framePlan;
+            try {
+                cameraPath = getConfiguredVideoPath();
+                framePlan = getCurrentVideoFramePlan();
+            } catch (error) {
+                setVideoExportStatus(error.message);
+                return;
+            }
+            finishLayoutTransition();
+            const session = {
+                cameraPath, framePlan, savedLayoutMix: layoutMix,
+                savedCamera: activeCamera.clone(), target: controls.target.clone(),
+                dampingEnabled: controls.enableDamping,
+                controlsEnabled: cameraResetAnimation?.controlsEnabled ?? controls.enabled,
+                index: animationIndex, wasAnimating: isAnimating,
+                settingsVisible: document.getElementById('settingsPanel').classList.contains('visible'),
+                transportVisibility: document.getElementById('bottomWrapper').style.visibility,
+                layout: { scene: { width: renderer.domElement.width, height: renderer.domElement.height } },
+                startedAt: performance.now(),
+                totalFrames: framePlan.startHoldFrames + framePlan.turnFrames + framePlan.endHoldFrames
+            };
+            resolveVideoPath(session);
+            if (isAnimating) toggleAnimation();
+            videoPreview = session;
+            cameraResetAnimation = null;
+            controls.enableDamping = false;
+            controls.update();
+            controls.enabled = false;
+            if (!session.isCurrentOnly) initializeVideoOrbit(session);
+            setPlaybackPosition(totalIndices);
+            document.getElementById('settingsPanel').classList.remove('visible');
+            document.getElementById('bottomWrapper').style.visibility = 'hidden';
+            document.getElementById('videoPreviewBar').hidden = false;
+            document.getElementById('videoPreviewBtn').textContent = 'Stop preview';
+            updateVideoPathControls();
+        }
+
+        function updateVideoPreview() {
+            const session = videoPreview;
+            const elapsedFrames = Math.floor((performance.now() - session.startedAt) * VIDEO_EXPORT_FPS / 1000);
+            if (elapsedFrames >= session.totalFrames) { stopVideoPreview(); return; }
+            const frame = Math.min(session.totalFrames - 1, elapsedFrames);
+            const timing = getVideoFrameTiming(frame + session.framePlan.drawSteps, session.framePlan);
+            updateVideoCamera(session, timing.moveIndex, timing.turn);
+            document.getElementById('videoPreviewTime').textContent =
+                `${formatVideoTime(frame / VIDEO_EXPORT_FPS)} / ${formatVideoTime(Math.ceil(session.totalFrames / VIDEO_EXPORT_FPS))}`;
+        }
+
+        function stopVideoPreview() {
+            const session = videoPreview;
+            if (!session) return;
+            videoPreview = null;
+            if (layoutMix !== session.savedLayoutMix) {
+                layoutMix = session.savedLayoutMix;
+                applyLayout(false);
+            }
+            activeCamera.copy(session.savedCamera, false);
+            controls.target.copy(session.target);
+            controls.update();
+            controls.enableDamping = session.dampingEnabled;
+            controls.enabled = session.controlsEnabled;
+            setPlaybackPosition(session.index);
+            if (session.wasAnimating) toggleAnimation();
+            document.getElementById('bottomWrapper').style.visibility = session.transportVisibility;
+            document.getElementById('videoPreviewBar').hidden = true;
+            document.getElementById('videoPreviewBtn').textContent = 'Preview';
+            if (session.settingsVisible) document.getElementById('settingsPanel').classList.add('visible');
+            updateVideoPathControls();
         }
 
         function setVideoExportStatus(message) {
@@ -2032,6 +2417,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function startVideoExport() {
+            if (videoPreview) stopVideoPreview();
             if (videoExport) {
                 cancelVideoExport();
                 return;
@@ -2039,9 +2425,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             const status = document.getElementById('videoExportStatus');
             let dimensions;
-            const cameraMode = document.getElementById('videoCamera').value;
+            let cameraPath;
             let framePlan;
             try {
+                cameraPath = getConfiguredVideoPath();
                 framePlan = getCurrentVideoFramePlan();
                 dimensions = getVideoDimensions(
                     document.getElementById('videoResolution').value,
@@ -2058,6 +2445,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 setVideoExportStatus(mimeType ? 'No animation is available to export.' : 'Video export is unavailable in this browser.');
                 return;
             }
+            finishLayoutTransition();
 
             let stream;
             try {
@@ -2080,7 +2468,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     canvas, context, stream, videoTrack, recorder, chunks: [],
                     abortController: new AbortController(),
                     layout,
-                    cameraMode,
+                    cameraPath,
+                    savedLayoutMix: layoutMix,
                     framePlan,
                     savedCamera: activeCamera.clone(),
                     target: controls.target.clone(),
@@ -2101,6 +2490,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     filename: 'climate-spiral-' + currentDatasetKey + '-' + startYear + '-' + endYear,
                     disabledControls: []
                 };
+
+                resolveVideoPath(session);
 
                 videoExport = session;
                 cameraResetAnimation = null;
@@ -2126,7 +2517,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     activeCamera.bottom = -halfHeight;
                 }
                 activeCamera.updateProjectionMatrix();
-                if (cameraMode === 'top-side') initializeVideoOrbit(session);
+                if (!session.isCurrentOnly) initializeVideoOrbit(session);
                 setPlaybackPosition(0);
                 const inputs = document.querySelectorAll(
                     '#settingsPanel input, #settingsPanel select, #settingsPanel button:not(.close-btn):not(#videoExportBtn), #transportGroup button, #timelineSlider'
@@ -2175,9 +2566,19 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function initializeVideoOrbit(session) {
             const aspect = session.layout.scene.width / session.layout.scene.height;
+            const layouts = session.views.map(view => view.layout);
+            let radius = layouts.includes(1) ? monthlyLayout.radius : getYearLabelRadius(currentMaxAnomaly);
+            if (Math.min(...layouts) < Math.max(...layouts)) {
+                // Reserve the entire unfolding envelope once; no frame-to-frame camera refitting.
+                radius = Math.max(getYearLabelRadius(currentMaxAnomaly), monthlyLayout.radius);
+                for (let step = 0; step <= 40; step++) {
+                    radius = Math.max(radius, unrollFrame(step / 40, monthlyLayout).radius);
+                }
+            }
             const { visibleHalfHeight, distance, far } = getVideoOrbitFrame(
-                getYearLabelRadius(currentMaxAnomaly), spiralHeight / 2,
-                aspect, activeCamera.isPerspectiveCamera ? activeCamera.fov : null
+                radius, spiralHeight / 2,
+                aspect, activeCamera.isPerspectiveCamera ? activeCamera.fov : null,
+                CONFIG.sceneScale
             );
             // Frame once, then orbit with the same fixed target, distance and projection as a viewport drag.
             session.orbitDistance = distance;
@@ -2191,14 +2592,27 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             activeCamera.far = Math.max(session.savedCamera.far, far);
             controls.target.set(0, spiralHeight / 2, 0);
             activeCamera.updateProjectionMatrix();
-            updateVideoCamera(session, 0);
+            updateVideoCamera(session, 0, 0);
         }
 
-        function updateVideoCamera(session, turn) {
-            if (session.cameraMode !== 'top-side') return;
-            const polar = Math.max(0.000001, turn * Math.PI / 2);
+        function updateVideoCamera(session, moveIndex, turn) {
+            if (session.isCurrentOnly) return;
+            const from = session.views[moveIndex];
+            const to = session.views[Math.min(moveIndex + 1, session.views.length - 1)];
+            const mix = THREE.MathUtils.lerp(from.layout, to.layout, turn);
+            if (layoutMix !== mix) {
+                layoutMix = mix;
+                applyLayout(false);
+            }
+            const polar = Math.max(0.000001, THREE.MathUtils.lerp(from.polar, to.polar, turn));
+            const delta = Math.atan2(Math.sin(to.azimuth - from.azimuth), Math.cos(to.azimuth - from.azimuth));
+            const azimuth = from.azimuth + delta * turn;
             const distance = session.orbitDistance;
-            activeCamera.position.set(0, controls.target.y + distance * Math.cos(polar), distance * Math.sin(polar));
+            activeCamera.position.set(
+                controls.target.x + distance * Math.sin(polar) * Math.sin(azimuth),
+                controls.target.y + distance * Math.cos(polar),
+                controls.target.z + distance * Math.sin(polar) * Math.cos(azimuth)
+            );
             controls.update();
         }
 
@@ -2207,8 +2621,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (session.stopping || session.paused || session.captureDue) return;
             const now = performance.now();
             if (now < session.nextFrameAt) return;
-            const { observationIndex, turn } = getVideoFrameTiming(session.frameIndex, session.framePlan);
-            updateVideoCamera(session, turn);
+            const { observationIndex, moveIndex, turn } = getVideoFrameTiming(session.frameIndex, session.framePlan);
+            updateVideoCamera(session, moveIndex, turn);
             animationIndex = timelineStops[observationIndex];
             updateSpiralVisuals();
             updateTimelineState(animationIndex);
@@ -2279,6 +2693,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (session.recorder.state !== 'inactive') session.recorder.stop();
             session.stream.getTracks().forEach(track => track.stop());
             session.disabledControls.forEach(({ element, disabled }) => { element.disabled = disabled; });
+            if (layoutMix !== session.savedLayoutMix) {
+                layoutMix = session.savedLayoutMix;
+                applyLayout(false);
+            }
             activeCamera.copy(session.savedCamera, false);
             controls.target.copy(session.target);
             controls.update();
@@ -2373,6 +2791,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             yearIndicatorTexture.needsUpdate = true;
         }
         
+        function getReferenceValues() {
+            return currentDatasetKey === 'enso' ? ENSO_TICKS
+                : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(seaLevelMmToSpiralValue)
+                : currentDatasetKey === 'methane' ? METHANE_TICKS.map(methanePpbToSpiralValue)
+                : getActiveDataset().kind === 'sea-ice' ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue)
+                : currentDatasetKey === 'co2' ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
+                : [0, 1, -1];
+        }
+
         function createTemperatureGrid() {
             if(tempGridGroup) { disposeHierarchy(tempGridGroup); scene.remove(tempGridGroup); }
             if(tempLabelGroup) { disposeHierarchy(tempLabelGroup); scene.remove(tempLabelGroup); }
@@ -2381,23 +2808,31 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempGridGroup = new THREE.Group();
             tempLabelGroup = new THREE.Group();
             tempVerticalGroup = new THREE.Group();
+            for (const group of [tempGridGroup, tempLabelGroup, tempVerticalGroup]) {
+                group.visible = document.getElementById('helpersToggle').checked;
+            }
             
             const isSeaIce = getActiveDataset().kind === 'sea-ice';
-            const ticks = currentDatasetKey === 'enso' ? ENSO_TICKS
-                : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(seaLevelMmToSpiralValue)
-                : currentDatasetKey === 'methane' ? METHANE_TICKS.map(methanePpbToSpiralValue)
-                : isSeaIce ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue) : currentDatasetKey === "co2"
-                ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
-                : [0, 1, -1];
+            const ticks = getReferenceValues();
             
             ticks.forEach(temp => {
                 const r = getSpiralRadius(temp);
-                const geometry = new THREE.TorusGeometry(r, 0.025, 6, 192);
+                const path = new THREE.Curve();
+                path.getPoint = (t, target = new THREE.Vector3()) => target.set(
+                    r * Math.sin(t * Math.PI * 2), -2, -r * Math.cos(t * Math.PI * 2)
+                );
+                // Duplicate the January endpoint so the closed ring can open into a line.
+                const geometry = new THREE.TubeGeometry(path, 192, 0.025, 6, false);
+                const graphPath = new THREE.LineCurve3(
+                    new THREE.Vector3(-monthlyLayout.width / 2, -2, monthlyLayout.center - r),
+                    new THREE.Vector3(monthlyLayout.width / 2, -2, monthlyLayout.center - r)
+                );
+                const graphGeometry = new THREE.TubeGeometry(graphPath, 192, 0.025, 6, false);
+                prepareLayoutMorph(geometry, graphGeometry, vertex => Math.floor(vertex / 7) / 192);
+                graphGeometry.dispose();
                 const material = new THREE.MeshBasicMaterial({ color: 0x666666, transparent:true, opacity:0.3 });
 
                 const ring = new THREE.Mesh(geometry, material);
-                ring.rotation.x = -Math.PI / 2;
-                ring.position.y = -2.0; 
                 tempGridGroup.add(ring);
                 
                 const canvas = document.createElement('canvas');
@@ -2427,32 +2862,27 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const labelAngle = Math.PI / 4; 
                 mesh.position.set(Math.cos(labelAngle)*r, -1.9, Math.sin(labelAngle)*r);
                 mesh.rotation.x = -Math.PI / 2;
+                mesh.referenceRadius = r;
                 
                 tempLabelGroup.add(mesh);
 
                 const vertGeo = new THREE.CylinderGeometry(0.03, 0.03, 1, 8);
-                const vertMat = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0 });
-                
-                const v1 = new THREE.Mesh(vertGeo, vertMat.clone());
-                v1.position.set(r, 0.5, 0);
-                tempVerticalGroup.add(v1);
-                
-                const vSpriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
-                const vLabel = new THREE.Sprite(vSpriteMat);
-                vLabel.scale.set(6, 3, 1);
-                vLabel.position.set(r, 1, 0);
-                vLabel.name = "vLabel";
-                tempVerticalGroup.add(vLabel);
-
-                const v2 = new THREE.Mesh(vertGeo, vertMat.clone());
-                v2.position.set(-r, 0.5, 0);
-                tempVerticalGroup.add(v2);
-                
-                const vLabel2 = new THREE.Sprite(vSpriteMat.clone());
-                vLabel2.scale.set(6, 3, 1);
-                vLabel2.position.set(-r, 1, 0);
-                vLabel2.name = "vLabel";
-                tempVerticalGroup.add(vLabel2);
+                for (const side of [1, -1]) {
+                    const line = new THREE.Mesh(vertGeo, new THREE.MeshBasicMaterial({
+                        color: 0x666666, transparent: true, opacity: 0, depthWrite: false
+                    }));
+                    const label = new THREE.Mesh(geometryPlane, meshMat.clone());
+                    label.material.depthWrite = false;
+                    label.material.opacity = 0;
+                    label.name = 'vLabel';
+                    label.textWidth = ctx.measureText(labelText).width * 6 / canvas.width;
+                    label.textHeight = parseFloat(ctx.font) * 3 / canvas.height;
+                    for (const child of [line, label]) {
+                        child.referenceRadius = r;
+                        child.guideSide = side;
+                        tempVerticalGroup.add(child);
+                    }
+                }
             });
             
             const azimuth = controls.getAzimuthalAngle();
@@ -2461,13 +2891,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const inverseOpacity = 1 - opacity;
 
             tempLabelGroup.rotation.y = azimuth;
-            tempVerticalGroup.rotation.y = azimuth;
             
             tempLabelGroup.children.forEach(c => c.material.opacity = inverseOpacity * 0.6);
-            tempVerticalGroup.children.forEach(c => {
-                if(c.name === "vLabel") c.material.opacity = opacity * 0.9;
-                else c.material.opacity = opacity * 0.4;
-            });
             tempGridGroup.children.forEach(c => {
                  if(c.material) c.material.opacity = inverseOpacity * 0.3;
             });
@@ -2476,6 +2901,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             scene.add(tempLabelGroup);
             scene.add(tempVerticalGroup);
             updateTemperatureVerticals(spiralHeight);
+            updateVerticalGuides(azimuth, opacity);
         }
 
         function updateTemperatureVerticals(height) {
@@ -2562,6 +2988,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
 
             orthoSwitch.addEventListener('change', (e) => switchCamera(e.target.checked));
+            document.querySelectorAll('input[name="chartLayout"]').forEach(input => {
+                input.addEventListener('change', () => {
+                    if (!input.checked || videoExport) return;
+                    const to = input.value === 'graph' ? 1 : 0;
+                    layoutTransition = { from: layoutMix, to, start: performance.now(), duration: LAYOUT_TRANSITION_MS * Math.abs(to - layoutMix) };
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishLayoutTransition();
+                });
+            });
             
             helpersSwitch.addEventListener('change', (e) => {
                 const visible = e.target.checked;
@@ -2609,10 +3043,32 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             document.getElementById('videoResolution').addEventListener('change', event => {
                 document.getElementById('videoCustomSize').hidden = event.target.value !== 'custom';
             });
-            document.getElementById('videoCamera').addEventListener('change', event => {
-                document.getElementById('videoTransitionRow').hidden = event.target.value !== 'top-side';
-                updateVideoDurationEstimate();
+            document.getElementById('videoCamera').addEventListener('change', updateVideoDurationEstimate);
+            const videoViewList = document.getElementById('videoViewList');
+            videoViewList.addEventListener('change', event => {
+                if (event.target.classList.contains('video-step-view')) updateVideoPathControls();
+                else updateVideoDurationEstimate();
             });
+            videoViewList.addEventListener('input', event => {
+                if (event.target.classList.contains('video-pause-seconds')) updateVideoDurationEstimate();
+            });
+            videoViewList.addEventListener('click', event => {
+                const button = event.target.closest('[data-action]');
+                if (!button || videoExport || videoPreview) return;
+                const row = button.closest('.video-view-step');
+                if (button.dataset.action === 'up') row.previousElementSibling?.before(row);
+                if (button.dataset.action === 'down') row.nextElementSibling?.after(row);
+                if (button.dataset.action === 'remove') row.remove();
+                updateVideoPathControls();
+            });
+            document.getElementById('videoAddView').addEventListener('click', () => addVideoStep('view'));
+            document.getElementById('videoAddPause').addEventListener('click', () => addVideoStep('pause'));
+            document.getElementById('videoPreviewBtn').addEventListener('click', startVideoPreview);
+            document.getElementById('videoPreviewStop').addEventListener('click', stopVideoPreview);
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && videoPreview) { event.preventDefault(); stopVideoPreview(); }
+            });
+            updateVideoPathControls();
             document.getElementById('videoTransition').addEventListener('input', updateVideoDurationEstimate);
             if (!getVideoMimeType()) {
                 document.getElementById('videoExportBtn').disabled = true;
@@ -2620,9 +3076,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             document.addEventListener('visibilitychange', () => {
                 setVideoExportPaused(document.hidden);
+                if (document.hidden) stopVideoPreview();
             });
             renderer.domElement.addEventListener('webglcontextlost', () => {
                 cancelVideoExport('Export cancelled: the 3D view was interrupted.');
+                stopVideoPreview();
             });
 
             const timelineContainerEl = document.getElementById('timelineContainer');
@@ -2678,10 +3136,23 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
             
             spacingSlider.addEventListener('input', (e) => {
+                const previousIndex = animationIndex;
                 const val = parseFloat(e.target.value);
                 CONFIG.heightPerYear = val;
                 document.getElementById('spacingValue').innerText = val.toFixed(2);
                 updateDataVisualization(); 
+                setPlaybackPosition(previousIndex, false);
+            });
+
+            document.getElementById('thicknessSlider').addEventListener('input', (event) => {
+                const previousIndex = animationIndex;
+                const scale = event.target.valueAsNumber;
+                CONFIG.tubeRadius = DEFAULT_TUBE_RADIUS * scale;
+                const label = scale === 0 ? 'Line' : `${Math.round(scale * 100)}%`;
+                document.getElementById('thicknessValue').textContent = label;
+                event.target.setAttribute('aria-valuetext', label);
+                updateDataVisualization();
+                setPlaybackPosition(previousIndex, false);
             });
 
             applyDatasetUI();
@@ -2697,7 +3168,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 
                 if (ptData) {
                     const exactYear = ptData.decimalYear;
-                    const displayYear = Math.floor(exactYear);
+                    const displayYear = calendarYear(exactYear);
                     const currentAnomaly = ptData.anomaly || 0;
                     const currentDisplayValue = Number.isFinite(ptData.displayValue) ? ptData.displayValue : currentAnomaly;
                     
@@ -2714,8 +3185,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     const monthIndex = Math.min(11, Math.max(0, Math.floor((exactYear - displayYear) * 12 + 1e-6)));
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
-                    document.getElementById('infoTemp').innerText = ptData.missing ? 'No data' : formatMetricValue(currentDisplayValue);
-                    document.getElementById('legendMarker').hidden = Boolean(ptData.missing);
+                    document.getElementById('infoTemp').innerText = ptData.spiralMissing ? 'No data' : formatMetricValue(currentDisplayValue);
+                    document.getElementById('legendMarker').hidden = Boolean(ptData.spiralMissing);
                     
                     // Update legend marker position
                     let percent;
@@ -2903,7 +3374,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const ringValue = getOuterRingValue(currentMaxAnomaly);
             const monthLabelOffset = getMonthLabelOffset();
             createMonthRing(getSpiralRadius(ringValue) + monthLabelOffset); 
-            updateOrthographicFrustum();
+            createTemperatureGrid();
+            applyLayout();
             updateLegendLabels();
             return true;
         }
@@ -2916,7 +3388,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const visible = document.getElementById('helpersToggle').checked;
             monthLabelsGroup.visible = visible;
 
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const months = MONTHS_NAMES;
             
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
@@ -2947,6 +3419,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const material = new THREE.MeshBasicMaterial({ 
                     map: texture, 
                     transparent: true,
+                    depthWrite: false,
                     side: THREE.DoubleSide
                 });
                 
@@ -2956,13 +3429,96 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 mesh.position.set(x, 0, z);
                 mesh.rotation.x = -Math.PI / 2;
                 mesh.position.y = -2.0;
+                mesh.layoutSource = mesh.position.clone();
+                mesh.layoutTarget = new THREE.Vector3(monthlyLayout.width * ((index + 0.5) / 12 - 0.5), -2, monthlyLayout.monthZ);
+                mesh.layoutPhase = index / 12;
+                mesh.textWidth = ctx.measureText(month).width / canvas.width * 6;
                 
                 mesh.material.opacity = inverseOpacity;
                 mesh.rotation.z = azimuthAngle;
 
                 monthLabelsGroup.add(mesh);
             });
+            const widestLabel = Math.max(...monthLabelsGroup.children.map(label => label.textWidth));
+            monthLabelsGroup.graphLabelScale = Math.min(1.25, monthlyLayout.width / 12 * 0.84 / widestLabel);
             scene.add(monthLabelsGroup);
+        }
+
+        function updateMonthLabels(azimuth, spiralOpacity) {
+            if (!monthLabelsGroup) return;
+            const bend = getLayoutBend();
+            activeCamera.updateMatrixWorld();
+            monthLabelsGroup.children.forEach(label => {
+                label.rotation.set(-Math.PI / 2, 0, azimuth);
+                label.quaternion.slerp(activeCamera.quaternion, bend);
+            });
+            const graphOpacity = bend === 0 ? 1 : projectedLabelOpacity(monthLabelsGroup.children);
+            const opacity = THREE.MathUtils.lerp(spiralOpacity, graphOpacity, bend) * 0.6;
+            monthLabelsGroup.children.forEach(label => { label.material.opacity = opacity; });
+        }
+
+        function projectedLabelOpacity(labels, horizontalOnly = false) {
+            const corner = new THREE.Vector3();
+            const boxes = labels.map(label => {
+                label.updateWorldMatrix(true, false);
+                const box = { left: Infinity, right: -Infinity, top: -Infinity, bottom: Infinity };
+                // Use the visible glyph bounds, not the transparent padding of the label plane.
+                for (const x of [-label.textWidth / 2, label.textWidth / 2]) {
+                    const halfHeight = (label.textHeight ?? 1.2) / 2;
+                    for (const y of [-halfHeight, halfHeight]) {
+                        corner.set(x, y, 0).applyMatrix4(label.matrixWorld).project(activeCamera);
+                        box.left = Math.min(box.left, corner.x); box.right = Math.max(box.right, corner.x);
+                        box.bottom = Math.min(box.bottom, corner.y); box.top = Math.max(box.top, corner.y);
+                    }
+                }
+                return box;
+            });
+            let opacity = 1;
+            for (let i = 1; i < boxes.length; i++) {
+                for (let j = 0; j < i; j++) {
+                    const a = boxes[j], b = boxes[i];
+                    const xGap = Math.abs(a.left + a.right - b.left - b.right) / Math.max(1e-9, a.right - a.left + b.right - b.left);
+                    const yGap = Math.abs(a.top + a.bottom - b.top - b.bottom) / Math.max(1e-9, a.top - a.bottom + b.top - b.bottom);
+                    opacity = Math.min(opacity, monthLabelOpacity(horizontalOnly ? xGap : Math.max(xGap, yGap)));
+                }
+            }
+            return opacity;
+        }
+
+        function updateVerticalGuides(azimuth, sideOpacity) {
+            if (!tempVerticalGroup) return;
+            const bend = getLayoutBend();
+            activeCamera.updateMatrixWorld();
+            tempVerticalGroup.position.set(layoutFrame.x, 0, layoutFrame.z);
+            const point = {};
+            const primaryLabels = [], secondaryLabels = [];
+            tempVerticalGroup.children.forEach(child => {
+                verticalGuidePosition(child.referenceRadius, child.guideSide, azimuth, bend, monthlyLayout, point);
+                child.position.x = point.x;
+                child.position.z = point.z;
+                if (child.name === 'vLabel') {
+                    child.quaternion.copy(activeCamera.quaternion);
+                    (child.guideSide === 1 ? primaryLabels : secondaryLabels).push(child);
+                }
+            });
+            // Perspective can separate label heights even when the vertical guides overlap.
+            const primaryOpacity = sideOpacity * THREE.MathUtils.lerp(1, projectedLabelOpacity(primaryLabels, true), bend);
+            const secondaryOpacity = sideOpacity * THREE.MathUtils.lerp(1, projectedLabelOpacity(secondaryLabels, true), bend);
+            const preferPrimary = layoutEase((Math.sin(azimuth) / 0.2 + 1) / 2);
+            const mergeMix = layoutEase(bend * 2);
+            for (let i = 0; i < primaryLabels.length; i++) {
+                // Also fade crossings between different values as the two sets converge.
+                const primaryClearance = Math.min(...secondaryLabels.map(label => projectedLabelOpacity([primaryLabels[i], label])));
+                const secondaryClearance = Math.min(...primaryLabels.map(label => projectedLabelOpacity([secondaryLabels[i], label])));
+                for (let childIndex = 0; childIndex < 4; childIndex++) {
+                    const child = tempVerticalGroup.children[i * 4 + childIndex];
+                    const primary = child.guideSide === 1;
+                    const merge = mergeMix * (1 - (primary ? primaryClearance : secondaryClearance));
+                    child.material.opacity = (primary ? primaryOpacity : secondaryOpacity)
+                        * (child.name === 'vLabel' ? 0.6 : 0.4)
+                        * (1 - merge * (primary ? 1 - preferPrimary : preferPrimary));
+                }
+            }
         }
 
         function parseGISSData(text) {
@@ -3070,13 +3626,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         // --- Custom Geometry Generator ---
-        function createDataTubeGeometry(points, colors, radius, radialSegments, metadata = null) {
+        function createDataTubeGeometry(points, colors, radius, radialSegments, metadata = null, flat = false) {
             const numPoints = points.length;
             const numSegments = numPoints - 1;
-            const visibleSegments = Array.from({ length: numSegments }, (_, i) => !metadata || (
-                !metadata[i].missing && !metadata[i + 1].missing
-                && metadata[i + 1].decimalYear - metadata[i].decimalYear <= 1 / 12 + 1e-6
-            ));
+            const visibleSegments = Array.from({ length: numSegments }, (_, i) => !metadata
+                || isConnectedDataSegment(metadata[i], metadata[i + 1], flat));
             
             // Vertices for the tube: numPoints * radialSegments
             const vertexCount = (numPoints * radialSegments) + 2;
@@ -3096,20 +3650,24 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // --- 1. Generate Tube Vertices ---
             for (let i = 0; i < numPoints; i++) {
                 P.copy(points[i]);
+                let previous = i - 1, next = i + 1;
+                while (previous > 0 && visibleSegments[previous] && P.distanceToSquared(points[previous]) < 1e-12) previous--;
+                while (next < numPoints - 1 && visibleSegments[next - 1] && P.distanceToSquared(points[next]) < 1e-12) next++;
                 
                 if (visibleSegments[i] && (i === 0 || !visibleSegments[i - 1])) {
-                    T.subVectors(points[i + 1], points[i]).normalize();
+                    T.subVectors(points[next], points[i]).normalize();
                 } else if (i > 0 && visibleSegments[i - 1] && !visibleSegments[i]) {
-                    T.subVectors(points[i], points[i-1]).normalize();
+                    T.subVectors(points[i], points[previous]).normalize();
                 } else if (visibleSegments[i] && visibleSegments[i - 1]) {
-                    T1.subVectors(points[i], points[i-1]);
-                    T2.subVectors(points[i+1], points[i]);
+                    T1.subVectors(points[i], points[previous]);
+                    T2.subVectors(points[next], points[i]);
                     T.addVectors(T1, T2).normalize();
                 } else {
                     T.set(0, 1, 0);
                 }
 
-                N.set(P.x, 0, P.z);
+                if (flat) N.set(0, 0, -1);
+                else N.set(P.x, 0, P.z);
                 if (N.lengthSq() < 0.001) N.set(1, 0, 0); 
                 N.normalize();
 
@@ -3207,7 +3765,217 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return geometry;
         }
 
+        function createMonthlyGraph(metadata, samplesPerMonth, smooth) {
+            const plan = monthlyGraphSamples(metadata.map(point => point.decimalYear), samplesPerMonth);
+            const graphPoint = ({ decimalYear, anomaly }, year) => new THREE.Vector3(
+                    monthlyLayout.width * (decimalYear - year - 0.5),
+                    (decimalYear - startYear) * CONFIG.heightPerYear,
+                    monthlyLayout.center - getSpiralRadius(anomaly)
+                );
+            const curves = plan.strips.map(strip => strip.end > strip.start
+                ? new THREE.CatmullRomCurve3(metadata.slice(strip.start, strip.end + 1)
+                    .map(point => graphPoint(point, strip.year)), false, 'centripetal') : null);
+            const points = [], resultMetadata = [];
+            for (const sample of plan.samples) {
+                const a = Math.floor(sample.sourceIndex / samplesPerMonth);
+                const curve = curves[sample.strip];
+                const point = smooth && curve && !sample.missing ? curve.getPoint(sample.t)
+                    : graphPoint(metadata[a], sample.year);
+                if (!sample.missing) {
+                    point.x = monthlyLayout.width * (sample.phase - 0.5);
+                    point.y = (sample.year + sample.phase - startYear) * CONFIG.heightPerYear;
+                }
+                points.push(point);
+                resultMetadata.push({ decimalYear: sample.year + sample.phase, stripYear: sample.year, missing: sample.missing });
+            }
+            return { ...plan, points, metadata: resultMetadata };
+        }
+
+        function createDataLineGeometry(tubeGeometry, sourceMetadata, graphMetadata) {
+            const geometry = new THREE.BufferGeometry();
+            // At zero radius each tube ring is one point. Share its morph and highlight buffers.
+            geometry.setAttribute('position', tubeGeometry.attributes.position);
+            geometry.setAttribute('color', tubeGeometry.attributes.color);
+            const indices = (metadata, splitYears) => {
+                const result = [];
+                for (let i = 0; i < graphMetadata.length - 1; i++) {
+                    const connected = !metadata || isConnectedDataSegment(metadata[i], metadata[i + 1], splitYears);
+                    const start = i * CONFIG.radialSegments;
+                    result.push(start, connected ? start + CONFIG.radialSegments : start);
+                }
+                return new Uint32Array(result);
+            };
+            geometry.layoutIndices = {
+                source: indices(sourceMetadata, false), target: indices(graphMetadata, true)
+            };
+            geometry.setIndex(new THREE.BufferAttribute(geometry.layoutIndices.source.slice(), 1));
+            return geometry;
+        }
+
+        function prepareLayoutMorph(geometry, graphGeometry, phaseAtVertex) {
+            const source = geometry.attributes.position.array.slice();
+            const target = graphGeometry.attributes.position.array.slice();
+            const groups = [];
+            const ringSize = geometry.parameters ? geometry.parameters.radialSegments + 1 : CONFIG.radialSegments;
+            const point = {};
+            for (let vertex = 0; vertex < source.length / 3;) {
+                const count = vertex + ringSize <= source.length / 3 ? ringSize : 1;
+                const unique = geometry.parameters ? count - 1 : count;
+                const from = [0, 0, 0], to = [0, 0, 0];
+                for (let j = 0; j < unique; j++) {
+                    for (let axis = 0; axis < 3; axis++) {
+                        from[axis] += source[(vertex + j) * 3 + axis] / unique;
+                        to[axis] += target[(vertex + j) * 3 + axis] / unique;
+                    }
+                }
+                const radius = Math.hypot(from[0], from[2]);
+                const angle = Math.atan2(from[0], -from[2]) / (Math.PI * 2);
+                const phase = angle + Math.round(phaseAtVertex(vertex) - angle);
+                unrollPolar(radius, phase, 1, monthlyLayout, point);
+                groups.push({ start: vertex * 3, end: (vertex + count) * 3, from, to, radius, phase,
+                    dx: to[0] - point.x, dz: to[2] - point.z, position: [0, 0, 0] });
+                vertex += count;
+            }
+            // Keep render-only buffers outside userData so GLTF doesn't serialize them.
+            geometry.layoutMorph = {
+                source, target, groups,
+                sourceNormals: geometry.attributes.normal.array.slice(),
+                targetNormals: graphGeometry.attributes.normal.array.slice(),
+                sourceIndex: geometry.index.array.slice(), targetIndex: graphGeometry.index.array.slice(),
+                graphTopology: false,
+            };
+            geometry.attributes.position.setUsage(THREE.DynamicDrawUsage);
+            geometry.attributes.normal.setUsage(THREE.DynamicDrawUsage);
+        }
+
+        function morphGeometry(geometry, bend) {
+            const morph = geometry.layoutMorph;
+            const position = geometry.attributes.position;
+            if (bend === 0 || bend === 1) {
+                position.array.set(bend === 0 ? morph.source : morph.target);
+                geometry.attributes.normal.array.set(bend === 0 ? morph.sourceNormals : morph.targetNormals);
+                geometry.attributes.normal.needsUpdate = true;
+            } else {
+                const point = {};
+                const normal = geometry.attributes.normal.array;
+                const correction = bend * bend;
+                const weight = 1 - correction;
+                const { source, target, sourceNormals, targetNormals } = morph;
+                // Bend each cross-section once; rotate and blend its cached normals instead of rebuilding every triangle.
+                for (const group of morph.groups) {
+                    unrollPolar(group.radius, group.phase, bend, monthlyLayout, point);
+                    const center = group.position;
+                    center[0] = point.x + correction * group.dx + layoutFrame.x;
+                    center[1] = THREE.MathUtils.lerp(group.from[1], group.to[1], bend);
+                    center[2] = point.z + correction * group.dz + layoutFrame.z;
+                    const angle = group.phase * Math.PI * 2 * bend, cos = Math.cos(angle), sin = Math.sin(angle);
+                    for (let i = group.start; i < group.end; i += 3) {
+                        const x = source[i] - group.from[0], z = source[i + 2] - group.from[2];
+                        position.array[i] = center[0] + weight * (x * cos + z * sin) + correction * (target[i] - group.to[0]);
+                        position.array[i + 1] = center[1] + weight * (source[i + 1] - group.from[1]) + correction * (target[i + 1] - group.to[1]);
+                        position.array[i + 2] = center[2] + weight * (z * cos - x * sin) + correction * (target[i + 2] - group.to[2]);
+                        const nx = weight * (sourceNormals[i] * cos + sourceNormals[i + 2] * sin) + correction * targetNormals[i];
+                        const ny = weight * sourceNormals[i + 1] + correction * targetNormals[i + 1];
+                        const nz = weight * (sourceNormals[i + 2] * cos - sourceNormals[i] * sin) + correction * targetNormals[i + 2];
+                        const length = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        normal[i] = nx / length; normal[i + 1] = ny / length; normal[i + 2] = nz / length;
+                    }
+                }
+                geometry.attributes.normal.needsUpdate = true;
+            }
+            position.needsUpdate = true;
+            if (bend === 0 || bend === 1) geometry.computeBoundingSphere();
+            else {
+                geometry.boundingSphere ??= new THREE.Sphere();
+                geometry.boundingSphere.center.set(0, spiralHeight / 2, 0);
+                geometry.boundingSphere.radius = Math.hypot(monthlyLayout.width + 2 * monthlyLayout.maxRadius, spiralHeight / 2 + 4);
+            }
+        }
+
+        function morphPoint(source, target, phase, bend, result) {
+            if (bend === 0 || bend === 1) return result.copy(bend === 0 ? source : target);
+            const radius = Math.hypot(source.x, source.z);
+            const angle = Math.atan2(source.x, -source.z) / (Math.PI * 2);
+            phase = angle + Math.round(phase - angle);
+            const point = unrollPolar(radius, phase, bend, monthlyLayout);
+            const flat = unrollPolar(radius, phase, 1, monthlyLayout);
+            return result.set(point.x + bend * bend * (target.x - flat.x) + layoutFrame.x,
+                THREE.MathUtils.lerp(source.y, target.y, bend),
+                point.z + bend * bend * (target.z - flat.z) + layoutFrame.z);
+        }
+
+        function getLayoutBend() {
+            return layoutMix;
+        }
+
+        function applyLayout(updateCamera = true) {
+            if (!spiralMesh?.geometry.layoutMorph) return;
+            const bend = getLayoutBend();
+            layoutFrame = unrollFrame(bend, monthlyLayout);
+            const geometry = spiralMesh.geometry;
+            const morph = geometry.layoutMorph;
+            const graphTopology = layoutMix > 0;
+            if (graphTopology !== morph.graphTopology) {
+                geometry.index.array.set(graphTopology ? morph.targetIndex : morph.sourceIndex);
+                geometry.index.needsUpdate = true;
+                morph.graphTopology = graphTopology;
+            }
+            if (spiralLine) {
+                const lineGeometry = spiralLine.geometry;
+                lineGeometry.index.array.set(graphTopology ? lineGeometry.layoutIndices.target : lineGeometry.layoutIndices.source);
+                lineGeometry.index.needsUpdate = true;
+            }
+            morphGeometry(geometry, bend);
+            if (spiralLine) spiralLine.geometry.boundingSphere = geometry.boundingSphere.clone();
+            generatedGeometryData.forEach((data, index) => {
+                if (bend === 0 || bend === 1) data.point.copy(bend === 0 ? data.spiralPoint : data.graphPoint);
+                else data.point.fromArray(morph.groups[index].position);
+                data.missing = graphTopology ? data.graphMissing : data.spiralMissing;
+            });
+            tempGridGroup?.children.forEach(ring => morphGeometry(ring.geometry, bend));
+            monthLabelsGroup?.children.forEach(label => {
+                morphPoint(label.layoutSource, label.layoutTarget, label.layoutPhase, bend, label.position);
+                label.scale.setScalar(THREE.MathUtils.lerp(1, monthLabelsGroup.graphLabelScale, bend));
+            });
+            tempLabelGroup?.children.forEach(label => {
+                // Travel along the guides, keeping their value-axis spacing throughout the bend.
+                const point = unrollPolar(label.referenceRadius, 0.375 * (1 - bend), bend, monthlyLayout);
+                label.position.set(point.x - 3.4 * bend + layoutFrame.x, -1.9, point.z + layoutFrame.z);
+                label.scale.setScalar(1 + 0.25 * bend);
+            });
+            if (yearIndicatorMesh) {
+                yearIndicatorMesh.position.x = layoutFrame.x;
+                yearIndicatorMesh.position.z = monthlyLayout.yearZ * bend + layoutFrame.z;
+            }
+            if (updateCamera) {
+                const previousTop = orthographicCamera.top;
+                updateOrthographicFrustum();
+                if (layoutTransition && activeCamera.isPerspectiveCamera) {
+                    activeCamera.position.sub(controls.target).multiplyScalar(orthographicCamera.top / previousTop).add(controls.target);
+                }
+            }
+            updateSpiralVisuals();
+            updateTimelineState(animationIndex);
+        }
+
+        function updateLayoutTransition() {
+            if (!layoutTransition) return;
+            const transition = layoutTransition;
+            const progress = transition.duration === 0 ? 1 : Math.min(1, (performance.now() - transition.start) / transition.duration);
+            layoutMix = THREE.MathUtils.lerp(transition.from, transition.to, layoutEase(progress));
+            applyLayout();
+            if (progress === 1) layoutTransition = null;
+        }
+
+        function finishLayoutTransition() {
+            if (!layoutTransition) return;
+            layoutMix = layoutTransition.to;
+            applyLayout();
+            layoutTransition = null;
+        }
+
         function createSpiral(data) {
+            if (spiralLine) { disposeHierarchy(spiralLine); scene.remove(spiralLine); spiralLine = null; }
             if (spiralMesh) { disposeHierarchy(spiralMesh); scene.remove(spiralMesh); }
             if (endCapMesh) { disposeHierarchy(endCapMesh); scene.remove(endCapMesh); }
             if (yearLabelsGroup) { disposeHierarchy(yearLabelsGroup); scene.remove(yearLabelsGroup); }
@@ -3380,9 +4148,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 finalMetaData = rawMetaData;
             }
 
+            const radii = [...rawMetaData.map(point => getSpiralRadius(point.anomaly)), ...getReferenceValues().map(getSpiralRadius)];
+            monthlyLayout = graphLayout(Math.min(...radii), Math.max(...radii));
+            const graphData = createMonthlyGraph(rawMetaData, pointsPerObservation, isSmooth);
+            finalPoints = graphData.samples.map(sample => finalPoints[sample.sourceIndex]);
+            finalColors = graphData.samples.map(sample => finalColors[sample.sourceIndex]);
+            finalMetaData = graphData.samples.map(sample => finalMetaData[sample.sourceIndex]);
+            const graphGeometry = createDataTubeGeometry(graphData.points, finalColors,
+                CONFIG.tubeRadius, CONFIG.radialSegments, graphData.metadata, true);
+
             // 3. Generate Custom Geometry with Caps
             const geometry = createDataTubeGeometry(finalPoints, finalColors, CONFIG.tubeRadius, CONFIG.radialSegments,
                 getActiveDataset().preserveMonthlyGaps ? finalMetaData : null);
+            prepareLayoutMorph(geometry, graphGeometry, vertex => {
+                const point = vertex >= finalPoints.length * CONFIG.radialSegments
+                    ? (vertex === finalPoints.length * CONFIG.radialSegments ? 0 : finalPoints.length - 1)
+                    : Math.floor(vertex / CONFIG.radialSegments);
+                return graphData.samples[point].phase;
+            });
+            graphGeometry.dispose();
             
             // Store original colors for highlight effect.
             const colorAttr = geometry.attributes.color;
@@ -3391,7 +4175,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             // Store data for animation mapping
             generatedGeometryData = finalPoints.map((p, i) => ({
-                point: p,
+                point: p.clone(),
+                spiralPoint: p.clone(),
+                graphPoint: graphData.points[i],
+                phase: graphData.samples[i].phase,
+                stripYear: graphData.samples[i].year,
+                spiralMissing: finalMetaData[i].missing,
+                graphMissing: graphData.metadata[i].missing,
                 color: finalColors[i],
                 decimalYear: finalMetaData[i].decimalYear,
                 anomaly: finalMetaData[i].anomaly,
@@ -3406,10 +4196,20 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
 
             spiralMesh = new THREE.Mesh(geometry, material);
+            spiralMesh.visible = CONFIG.tubeRadius > 0;
             scene.add(spiralMesh);
+            if (CONFIG.tubeRadius === 0) {
+                const lineGeometry = createDataLineGeometry(geometry,
+                    getActiveDataset().preserveMonthlyGaps ? finalMetaData : null, graphData.metadata);
+                spiralLine = new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({ vertexColors: true }));
+                scene.add(spiralLine);
+            }
 
             scene.add(yearLabels);
             yearLabelsGroup = yearLabels;
+            yearLabels.children.forEach(label => {
+                label.layoutSource = label.position.clone();
+            });
             
             // Moving End Cap (Lid) - Separate Mesh for Animation
             // CircleGeometry(radius, 8) creates an octagon
@@ -3435,7 +4235,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             totalIndices = bodyIndices; // For animation progress calculation
             const geometryIndexStride = CONFIG.radialSegments * 6;
             timelineStops = rawMetaData.map((_, observationIndex) => (
-                Math.min(totalIndices, observationIndex * pointsPerObservation * geometryIndexStride)
+                graphData.observationIndices[observationIndex] * geometryIndexStride
             ));
             updateVideoDurationEstimate();
             
@@ -3478,6 +4278,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function onWindowResize() {
+            stopVideoPreview();
             cancelVideoExport('Export cancelled: the window size changed.');
             const aspect = window.innerWidth / window.innerHeight;
 
@@ -3495,7 +4296,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const outerRadius = getSpiralRadius(getOuterRingValue(currentMaxAnomaly)) + getMonthLabelOffset();
             // Fit the full 3D envelope so long, wide spirals stay in frame when rotated.
             const padding = getActiveDataset().framingPadding ?? 2;
-            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * (outerRadius + padding), spiralHeight + 8));
+            const radius = THREE.MathUtils.lerp(outerRadius + padding, layoutFrame.radius, getLayoutBend());
+            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * radius, spiralHeight + 8))
+                / CONFIG.sceneScale;
             const adjustedFrustum = aspect < 1 ? frustumSize / aspect : frustumSize;
 
             orthographicCamera.left = -adjustedFrustum * aspect / 2;
@@ -3512,6 +4315,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
+            if (spiralLine) spiralLine.geometry.setDrawRange(0, snappedIndex / stride * 2);
             const startCapIndices = CONFIG.radialSegments * 3;
             
             // Draw Start Cap + Current Body
@@ -3585,7 +4389,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const data = generatedGeometryData[ptIndex];
                 
                 if (data) {
-                    endCapMesh.visible = !data.missing;
+                    endCapMesh.visible = CONFIG.tubeRadius > 0 && !data.missing;
                     endCapMesh.position.copy(data.point);
                     endCapMesh.material.color.setHex(0xffffff); // Highlight tip white
                     
@@ -3594,10 +4398,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     let targetPoint;
                     const next = generatedGeometryData[ptIndex + 1];
                     const prev = generatedGeometryData[ptIndex - 1];
-                    if (next && !next.missing && (!getActiveDataset().preserveMonthlyGaps
+                    if (next && !next.missing && (layoutMix === 0 || next.stripYear === data.stripYear)
+                        && (!getActiveDataset().preserveMonthlyGaps
                         || next.decimalYear - data.decimalYear <= 1 / 12 + 1e-6)) {
                         targetPoint = next.point;
-                    } else if (prev && !prev.missing && (!getActiveDataset().preserveMonthlyGaps
+                    } else if (prev && !prev.missing && (layoutMix === 0 || prev.stripYear === data.stripYear)
+                        && (!getActiveDataset().preserveMonthlyGaps
                         || data.decimalYear - prev.decimalYear <= 1 / 12 + 1e-6)) {
                         // Extrapolate from the current run, including at a data gap.
                         endCapDirection.subVectors(data.point, prev.point);
@@ -3646,7 +4452,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             requestAnimationFrame(animate);
             if (videoExport) {
                 updateVideoExport();
+            } else if (videoPreview) {
+                updateVideoPreview();
             } else {
+                updateLayoutTransition();
                 updateAnimation();
                 if (cameraResetAnimation) updateCameraResetAnimation();
                 else controls.update();
@@ -3663,35 +4472,25 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const azimuthAngle = controls.getAzimuthalAngle();
 
             if (yearLabelsGroup) {
+                const bend = getLayoutBend();
+                const graphOffset = graphYearLabelOffset(azimuthAngle, monthlyLayout);
                 yearLabelsGroup.children.forEach(sprite => {
                     sprite.material.opacity = opacityFade;
+                    sprite.position.x = THREE.MathUtils.lerp(sprite.layoutSource.x, graphOffset, bend);
+                    sprite.position.z = 0;
                 });
+                yearLabelsGroup.position.set(layoutFrame.x, 0, layoutFrame.z);
                 yearLabelsGroup.rotation.y = azimuthAngle;
             }
             
-            if (tempVerticalGroup) {
-                tempVerticalGroup.rotation.y = azimuthAngle;
-                
-                tempVerticalGroup.children.forEach(child => {
-                    if (child.name === "vLabel") {
-                         child.material.opacity = opacityFade * 0.6;
-                    } else {
-                         child.material.opacity = opacityFade * 0.4;
-                    }
-                });
-            }
             
             if (yearIndicatorMesh) {
                 yearIndicatorMesh.material.opacity = inverseOpacity;
                 yearIndicatorMesh.rotation.z = azimuthAngle;
             }
             
-            if (monthLabelsGroup) {
-                monthLabelsGroup.children.forEach(mesh => {
-                    mesh.material.opacity = inverseOpacity * 0.6;
-                    mesh.rotation.z = azimuthAngle;
-                });
-            }
+            updateMonthLabels(azimuthAngle, inverseOpacity);
+            updateVerticalGuides(azimuthAngle, opacityFade);
             
             if(tempGridGroup) {
                 tempGridGroup.children.forEach(child => {
@@ -3700,9 +4499,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             
             if(tempLabelGroup) {
-                 tempLabelGroup.rotation.y = azimuthAngle;
+                 tempLabelGroup.rotation.y = azimuthAngle * (1 - getLayoutBend());
                  tempLabelGroup.children.forEach(sprite => {
                      sprite.material.opacity = inverseOpacity * 0.6;
+                     sprite.rotation.z = azimuthAngle * getLayoutBend();
                  });
             }
 

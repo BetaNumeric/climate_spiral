@@ -59,6 +59,13 @@ test('fixed orbit framing contains the scene at every angle without zooming or d
       assert.ok(frame.far > frame.distance + Math.hypot(radius, halfHeight));
     }
   }
+  const normal = getVideoOrbitFrame(22, 26, 16 / 9);
+  const enlarged = getVideoOrbitFrame(22, 26, 16 / 9, null, 1.12);
+  assert.ok(enlarged.visibleHalfHeight < normal.visibleHalfHeight);
+  assert.equal(enlarged.distance, normal.distance);
+  assert.ok(getVideoOrbitFrame(22, 26, 16 / 9, 45, 1.12).distance
+    < getVideoOrbitFrame(22, 26, 16 / 9, 45).distance);
+  assert.throws(() => getVideoOrbitFrame(22, 26, 16 / 9, null, 0));
 });
 
 test('recording requests frequent keyframes and a resolution-scaled bitrate', () => {
@@ -89,10 +96,54 @@ test('each drawing frame ends on a real month and the last partial step reaches 
     [...Array(plan.startHoldFrames).fill(0), 2, 4, 6]);
   assert.ok(observations.slice(plan.startHoldFrames + plan.drawSteps).every(index => index === 6));
   assert.equal(getVideoFrameTiming(plan.startHoldFrames + plan.drawSteps, plan).turn, 0);
+  assert.equal(getVideoFrameTiming(plan.startHoldFrames + plan.drawSteps, plan).transition, 0);
   assert.equal(getVideoFrameTiming(plan.totalFrames - plan.endHoldFrames - 1, plan).turn, 1);
   assert.equal(getVideoFrameTiming(plan.totalFrames - 1, plan).turn, 1);
+  assert.equal(getVideoFrameTiming(plan.totalFrames - 1, plan).transition, 1);
 
   const partial = getVideoFramePlan(8, 3, 0);
   assert.equal(getVideoFrameTiming(partial.startHoldFrames + partial.drawSteps - 1, partial).observationIndex, 7);
   assert.equal(getVideoFrameTiming(partial.totalFrames - 1, partial).turn, 0);
+});
+
+test('camera path advances through moves at fixed frame boundaries', () => {
+  const plan = getVideoFramePlan(13, 1, 1, 3);
+  assert.equal(plan.framesPerMove, VIDEO_EXPORT_FPS);
+  assert.equal(plan.turnFrames, 3 * VIDEO_EXPORT_FPS);
+  const first = plan.startHoldFrames + plan.drawSteps;
+  for (let move = 0; move < 3; move++) {
+    const start = getVideoFrameTiming(first + move * plan.framesPerMove, plan);
+    const end = getVideoFrameTiming(first + (move + 1) * plan.framesPerMove - 1, plan);
+    assert.equal(start.moveIndex, move);
+    assert.equal(start.turn, 0);
+    assert.equal(end.moveIndex, move);
+    assert.equal(end.turn, 1);
+    assert.equal(start.observationIndex, 12);
+  }
+  const hold = getVideoFrameTiming(plan.totalFrames - 1, plan);
+  assert.equal(hold.moveIndex, 2);
+  assert.equal(hold.turn, 1);
+
+  const still = getVideoFramePlan(13, 1, 0, 0);
+  assert.equal(still.turnFrames, 0);
+  assert.equal(getVideoFrameTiming(still.totalFrames - 1, still).turn, 0);
+  assert.equal(getVideoFramePlan(13, 1, 1, 8).moveCount, 8);
+  assert.throws(() => getVideoFramePlan(13, 1, 1, 21));
+  assert.throws(() => getVideoFramePlan(13, 1, 1, -1));
+});
+
+test('pause steps hold the last camera view for their exact duration', () => {
+  const plan = getVideoFramePlan(13, 1, 2, [
+    { type: 'view', seconds: 2 }, { type: 'pause', seconds: 3 }, { type: 'view', seconds: 1 },
+  ]);
+  assert.deepEqual(plan.stepFrames, [60, 90, 30]);
+  assert.deepEqual(plan.stepTypes, ['view', 'pause', 'view']);
+  assert.equal(plan.turnFrames, 180);
+  const start = plan.startHoldFrames + plan.drawSteps;
+  assert.equal(getVideoFrameTiming(start + 59, plan).moveIndex, 0);
+  assert.equal(getVideoFrameTiming(start + 60, plan).moveIndex, 1);
+  assert.equal(getVideoFrameTiming(start + 149, plan).moveIndex, 1);
+  assert.equal(getVideoFrameTiming(start + 150, plan).moveIndex, 2);
+  assert.equal(getVideoFrameTiming(start + 179, plan).turn, 1);
+  assert.throws(() => getVideoFramePlan(13, 1, 2, [{ type: 'pause', seconds: 31 }]));
 });

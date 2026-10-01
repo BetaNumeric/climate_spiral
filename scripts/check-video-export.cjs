@@ -128,9 +128,9 @@ async function checkSeeking(page) {
     await page.goto('http://127.0.0.1:8000/index.html');
     await page.waitForFunction(() => window.exportTest?.ready());
     await page.evaluate(() => window.exportTest.pause());
-    assert.equal(await page.locator('#speedSlider').inputValue(), '1');
+    assert.equal(await page.locator('#speedSlider').inputValue(), '7');
     assert.equal((await page.evaluate(() => window.exportTest.framePlan())).drawSteps,
-      (await page.evaluate(() => window.exportTest.stops())) - 1);
+      Math.ceil(((await page.evaluate(() => window.exportTest.stops())) - 1) / 7));
     await page.locator('#speedSlider').evaluate(slider => {
       slider.value = '12';
       slider.dispatchEvent(new Event('input', { bubbles: true }));
@@ -140,24 +140,25 @@ async function checkSeeking(page) {
     assert.equal((await page.evaluate(() => window.exportTest.preview())).ordinal % 12, 0);
     await page.evaluate(() => window.exportTest.pause());
     await page.click('#settingsBtn');
-    for (const id of ['viewSettings', 'animationSettings', 'dataSettings', 'exportSettings']) {
+    for (const id of ['viewSettings', 'dataSettings', 'exportSettings']) {
       assert.equal(await page.locator('#' + id).getAttribute('open'), null, id + ' should start collapsed');
     }
+    assert.equal(await page.locator('#animationSettings').getAttribute('open'), '');
     await page.click('#exportSettings > summary');
     assert.equal(await page.locator('#videoAdvanced').getAttribute('open'), null);
     await page.click('#videoAdvanced > summary');
-    assert.equal(await page.locator('#videoCamera').inputValue(), 'top-side');
+    assert.equal(await page.locator('#videoCamera').inputValue(), 'spiral-top');
     await page.check('#videoLegendToggle');
     assert.equal(await page.locator('#videoTransitionRow').isVisible(), true);
     assert.deepEqual(await page.locator('#videoResolution option').evaluateAll(options => options.map(option => option.value)),
-      ['window', '1080p', 'portrait', 'square', 'custom']);
+      ['1080p', 'portrait', 'square', 'window', 'custom']);
     await page.selectOption('#videoResolution', 'custom');
     await page.fill('#videoWidth', '641');
     await page.fill('#videoHeight', '360');
     await page.click('#videoExportBtn');
     assert.match(await page.locator('#videoExportStatus').textContent(), /even numbers/);
     await page.fill('#videoWidth', '640');
-    await page.selectOption('#videoCamera', 'top-side');
+    await page.selectOption('#videoCamera', 'spiral-top');
     await page.fill('#videoTransition', '2');
     const expectedPlan = await page.evaluate(() => window.exportTest.framePlan());
     assert.equal(await page.locator('#videoDurationEstimate').textContent(),
@@ -245,6 +246,7 @@ async function checkSeeking(page) {
     assert.equal(await page.locator('#videoDownload').isVisible(), false);
 
     await page.selectOption('#videoCamera', 'current');
+    await page.click('#videoViewList [data-action="remove"]');
     await page.fill('#videoWidth', '360');
     await page.fill('#videoHeight', '640');
     await page.click('#videoExportBtn');
@@ -285,7 +287,9 @@ async function checkSeeking(page) {
     await page.locator('#viewSettings > summary').scrollIntoViewIfNeeded();
     await page.click('#viewSettings > summary');
     await page.uncheck('#orthoToggle');
-    await page.selectOption('#videoCamera', 'top-side');
+    await page.selectOption('#videoCamera', 'spiral-top');
+    await page.click('#videoAddView');
+    await page.locator('#videoViewList .video-step-view').selectOption('spiral-front');
     await page.selectOption('#videoResolution', '1080p');
     const perspectiveBefore = await page.evaluate(() => window.exportTest.snapshot());
     await page.click('#videoExportBtn');

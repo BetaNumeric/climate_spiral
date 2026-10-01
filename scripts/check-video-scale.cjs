@@ -37,7 +37,7 @@ mkdirSync(output, { recursive: true });
             rings() {
               return tempGridGroup.children.map(ring => ({
                 mesh: ring.isMesh, type: ring.geometry.type,
-                tube: ring.geometry.parameters.tube,
+                tube: ring.geometry.parameters.radius,
               }));
             },
             rendererState() {
@@ -65,7 +65,7 @@ mkdirSync(output, { recursive: true });
       await page.screenshot({ path: join(output, `${name}.png`) });
       assert.deepEqual(errors, []);
       assert.ok((await page.evaluate(() => window.scaleTest.rings()))
-        .every(ring => ring.mesh && ring.type === 'TorusGeometry' && ring.tube > 0));
+        .every(ring => ring.mesh && ring.type === 'TubeGeometry' && ring.tube > 0));
 
       if (name === 'desktop') {
         const comparisons = await page.evaluate(() => {
