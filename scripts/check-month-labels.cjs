@@ -64,6 +64,7 @@ window.monthTest = {
         top: child.name === 'vLabel' ? child.position.y : child.position.y + child.scale.y / 2,
       })),
       guideTop: spiralHeight + 2,
+      framingHeight: getFramingHeight(),
       labels: monthLabelsGroup.children.map(label => ({
         x: label.position.x, opacity: label.material.opacity,
         facing: Math.abs(label.quaternion.dot(activeCamera.quaternion)),
@@ -203,7 +204,9 @@ window.monthTest = {
             assert.ok(Math.abs(guide.z - state.guideTargets[Math.floor(index / 2)]) < 1e-8);
             assert.ok(guide.opacity > 0.35, dataset + ': value guide ' + guide.opacity);
           });
-          assert.ok(await page.evaluate(() => monthTest.pixels()) > 150);
+          const minPixels = Math.max(30, 150 * (state.guideTop - 2) / state.framingHeight);
+          assert.ok(await page.evaluate(() => monthTest.pixels()) > minPixels,
+            dataset + ': side-view graph is blank or unexpectedly small');
           await page.screenshot({ path: join(output, name + '-values-' + dataset + '.png') });
         }
       }

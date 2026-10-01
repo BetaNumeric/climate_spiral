@@ -1112,6 +1112,10 @@
             radialSegments: 8,
             frustumSize: 45,
             sceneScale: 1.28, // Increase to enlarge the spiral in both the viewer and video exports.
+            outerRadius: 20,
+            monthLabelOffset: 2,
+            framingPadding: 4,
+            framingStartYear: 1850,
             colors: {
                 cold: new THREE.Color(0x0000ff),
                 neutral: new THREE.Color(0xffffff),
@@ -1250,7 +1254,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 id: "sealevel",
                 title: "Global Sea Level",
                 metricLabel: "Change since 1993",
-                framingPadding: 4,
                 localPath: "data/global-sea-level.json",
                 fetchRemote: fetchSeaLevelData,
                 sourceLabel: "CU Sea Level Research Group",
@@ -1291,8 +1294,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         const CO2_BASELINE_PPM = 280;
         const CO2_RING_STEP_PPM = 50;
         const CO2_REFERENCE_RINGS_PPM = [330, 380, 430];
-        const CO2_MONTH_LABEL_OFFSET = 2.85;
-
         // --- State ---
         let scene, renderer, controls;
         let perspectiveCamera, orthographicCamera, activeCamera;
@@ -1303,6 +1304,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let lastDrawnYear = -1; 
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
+        let datasetRadiusScale = 1;
         let layoutMix = 0;
         let layoutTransition = null;
         let monthlyLayout = graphLayout(5, 20);
@@ -1544,9 +1546,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
         }
 
-        function getSpiralRadius(value) {
+        function getUnscaledSpiralRadius(value) {
             if (currentDatasetKey === 'enso') return ensoAnomalyToRadius(value);
             return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
+        }
+
+        function getSpiralRadius(value) {
+            return getUnscaledSpiralRadius(value) * datasetRadiusScale;
         }
 
         function getNextMonthlyDecimalYear(decimalYear) {
@@ -1580,14 +1586,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return maxValue;
         }
 
-        function getMonthLabelOffset() {
-            if (getActiveDataset().kind === 'sea-ice') return 2;
-            return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' ? CO2_MONTH_LABEL_OFFSET : 0.5;
+        function getYearLabelRadius(maxValue) {
+            return getSpiralRadius(getOuterRingValue(maxValue)) + CONFIG.monthLabelOffset + 2.5;
         }
 
-        function getYearLabelRadius(maxValue) {
-            // Keep the same relative spacing between month labels and year labels across datasets.
-            return getSpiralRadius(getOuterRingValue(maxValue)) + getMonthLabelOffset() + 2.5;
+        function getFramingHeight() {
+            const referenceHeight = (new Date().getUTCFullYear() - CONFIG.framingStartYear + 1) * CONFIG.heightPerYear;
+            return Math.max(spiralHeight, referenceHeight);
         }
 
         function createOrbitControls(camera, target) {
@@ -2575,8 +2580,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     radius = Math.max(radius, unrollFrame(step / 40, monthlyLayout).radius);
                 }
             }
+            const framingHeight = layouts.every(layout => layout === 1) ? spiralHeight : getFramingHeight();
             const { visibleHalfHeight, distance, far } = getVideoOrbitFrame(
-                radius, spiralHeight / 2,
+                radius, framingHeight / 2,
                 aspect, activeCamera.isPerspectiveCamera ? activeCamera.fov : null,
                 CONFIG.sceneScale
             );
@@ -3370,10 +3376,15 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             document.getElementById('timelineStart').innerText = startYear;
             document.getElementById('timelineEnd').innerText = endYear;
 
+            currentMaxAnomaly = -Infinity;
+            processedData.forEach(entry => entry.anomalies.forEach(value => {
+                if (value > currentMaxAnomaly) currentMaxAnomaly = value;
+            }));
+            // Normalize display radii, leaving values and labeled reference ticks in their source units.
+            datasetRadiusScale = CONFIG.outerRadius / getUnscaledSpiralRadius(getOuterRingValue(currentMaxAnomaly));
             createSpiral(processedData);
             const ringValue = getOuterRingValue(currentMaxAnomaly);
-            const monthLabelOffset = getMonthLabelOffset();
-            createMonthRing(getSpiralRadius(ringValue) + monthLabelOffset); 
+            createMonthRing(getSpiralRadius(ringValue) + CONFIG.monthLabelOffset);
             createTemperatureGrid();
             applyLayout();
             updateLegendLabels();
@@ -3990,14 +4001,6 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             yearLabels.visible = visible;
 
             const startYearData = data[0].year;
-            currentMaxAnomaly = -Infinity;
-
-            data.forEach((entry) => {
-                entry.anomalies.forEach((val) => {
-                    if (val > currentMaxAnomaly) currentMaxAnomaly = val;
-                });
-            });
-            
             const azimuthAngle = controls.getAzimuthalAngle();
             const polarAngle = controls.getPolarAngle();
             const opacityFade = Math.min(1, Math.max(0, polarAngle / OPACITY_FADE_THRESHOLD));
@@ -4293,11 +4296,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function updateOrthographicFrustum() {
             const aspect = window.innerWidth / window.innerHeight;
-            const outerRadius = getSpiralRadius(getOuterRingValue(currentMaxAnomaly)) + getMonthLabelOffset();
-            // Fit the full 3D envelope so long, wide spirals stay in frame when rotated.
-            const padding = getActiveDataset().framingPadding ?? 2;
-            const radius = THREE.MathUtils.lerp(outerRadius + padding, layoutFrame.radius, getLayoutBend());
-            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * radius, spiralHeight + 8))
+            const monthRadius = CONFIG.outerRadius + CONFIG.monthLabelOffset;
+            // Use the longest supported timeline so changing datasets does not change the zoom.
+            const radius = THREE.MathUtils.lerp(monthRadius + CONFIG.framingPadding, layoutFrame.radius, getLayoutBend());
+            const framingHeight = THREE.MathUtils.lerp(getFramingHeight(), spiralHeight, getLayoutBend());
+            const frustumSize = Math.max(CONFIG.frustumSize, Math.hypot(2 * radius, framingHeight + 8))
                 / CONFIG.sceneScale;
             const adjustedFrustum = aspect < 1 ? frustumSize / aspect : frustumSize;
 
