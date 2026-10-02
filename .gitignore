@@ -1,2 +1,6 @@
 node_modules/
 readme-videos/
+.venv-oras5/
+.cache/oras5/
+__pycache__/
+.cdsapirc

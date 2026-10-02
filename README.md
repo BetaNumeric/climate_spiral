@@ -28,13 +28,16 @@ https://github.com/user-attachments/assets/baa470a0-12b8-49a9-b5e6-a125154b423b
 | Global Temperature | Combined land and ocean temperature anomaly, °C | [NASA GISTEMP](https://data.giss.nasa.gov/gistemp/) | 1880 |
 | Ocean Temperature | Sea surface temperature anomaly, °C | [NOAA NCEI](https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series) | 1850 |
 | Land Temperature | Land surface air temperature anomaly, °C | [NOAA NCEI](https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series) | 1850 |
-| Arctic Sea Ice | Extent, million km² | [NOAA/NSIDC](https://nsidc.org/data/g02135/versions/4) | 1978 |
-| Antarctic Sea Ice | Extent, million km² | [NOAA/NSIDC](https://nsidc.org/data/g02135/versions/4) | 1978 |
+| Arctic Sea Ice Extent | Extent, million km² | [NOAA/NSIDC](https://nsidc.org/data/g02135/versions/4) | 1978 |
+| Antarctic Sea Ice Extent | Extent, million km² | [NOAA/NSIDC](https://nsidc.org/data/g02135/versions/4) | 1978 |
+| Arctic Sea Ice Volume (PIOMAS) | Model-estimated volume, 10³ km³ | [PIOMAS](https://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/) | 1979 |
 | Global CO2 | Atmospheric concentration at Mauna Loa, ppm | [NOAA GML](https://gml.noaa.gov/ccgg/trends/mlo.html) | 1958 |
 | Global Methane | Globally averaged marine surface concentration, ppb | [NOAA GML](https://gml.noaa.gov/ccgg/trends_ch4/) | 1983 |
 | Global Sea Level | Change in global mean sea level, mm | [CU Sea Level Research Group](https://sealevel.colorado.edu/) | 1993 |
 
-Temperature values are anomalies relative to 1951-1980; the NOAA land and ocean series are rebased from their original reference period. Sea ice shows **extent**, not volume or an anomaly. CO2 and methane show concentrations, not emissions. Sea level shows change relative to 1993. Units and display scales differ across dataset types, so equal radii or colors do not imply comparable climate effects. See [Data Sources and Methods](docs/data-methods.md) for sources, processing, missing-month handling, and scientific limitations.
+Temperature values are anomalies relative to 1951-1980; the NOAA land and ocean series are rebased from their original reference period. Sea ice **extent** measures ice-covered ocean area, while PIOMAS **volume** includes thickness and is model-estimated. CO2 and methane show concentrations, not emissions. Sea level shows change relative to 1993. Units and display scales differ across dataset types, so equal radii or colors do not imply comparable climate effects. See [Data Sources and Methods](docs/data-methods.md) for sources, processing, missing-month handling, and scientific limitations.
+
+Optional **Arctic and Antarctic ORAS5 sea ice volume** series can be generated from monthly reanalysis fields starting in 1958. They appear automatically after the first complete download; see [ORAS5 setup and methods](docs/oras5-setup.md) for Copernicus access and monthly automation.
 
 ## Using the App
 

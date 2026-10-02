@@ -1,13 +1,33 @@
 import { randomInt } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { ORAS5_DATA_PATH, parseOras5VolumeData } from '../oras5-data.mjs';
+
+export function oras5VideoDatasets(text) {
+  if (!parseOras5VolumeData(text, 'north').length || !parseOras5VolumeData(text, 'south').length) return [];
+  return [
+    { key: 'arcticoras5', title: 'Arctic Sea Ice Volume (ORAS5)' },
+    { key: 'antarcticoras5', title: 'Antarctic Sea Ice Volume (ORAS5)' },
+  ];
+}
+
+function publishedOras5Datasets() {
+  try { return oras5VideoDatasets(readFileSync(new URL('../' + ORAS5_DATA_PATH, import.meta.url), 'utf8')); }
+  catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    return [];
+  }
+}
 
 export const SECONDARY_DATASETS = [
   { key: 'ocean', title: 'Ocean Temperature' },
   { key: 'land', title: 'Land Temperature' },
-  { key: 'arctic', title: 'Arctic Sea Ice' },
-  { key: 'antarctic', title: 'Antarctic Sea Ice' },
+  { key: 'arctic', title: 'Arctic Sea Ice Extent' },
+  { key: 'antarctic', title: 'Antarctic Sea Ice Extent' },
+  { key: 'arcticvolume', title: 'Arctic Sea Ice Volume (PIOMAS)' },
   { key: 'co2', title: 'Global CO2' },
   { key: 'methane', title: 'Global Methane' },
   { key: 'sealevel', title: 'Global Sea Level' },
+  ...publishedOras5Datasets(),
 ];
 
 const TOP_START = '<!-- README_VIDEO_TOP_START -->';
@@ -17,7 +37,7 @@ const BOTTOM_END = '<!-- README_VIDEO_BOTTOM_END -->';
 const ATTACHMENT_URL = /^https:\/\/github\.com\/user-attachments\/assets\/[a-f0-9-]+$/i;
 
 export function previousSecondaryDataset(readme) {
-  return readme.match(/<!-- README_VIDEO_DATASET: ([a-z]+) -->/)?.[1] ?? null;
+  return readme.match(/<!-- README_VIDEO_DATASET: ([a-z][a-z0-9]*) -->/)?.[1] ?? null;
 }
 
 export function videoMonth(readme) {

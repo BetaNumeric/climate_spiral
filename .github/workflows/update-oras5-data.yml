@@ -1,0 +1,99 @@
+name: Update ORAS5 sea ice volume
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_years:
+        description: 'Maximum yearly requests per run (0 = all pending years)'
+        type: number
+        default: 0
+  schedule:
+    - cron: '43 6 18 * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: oras5-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Copernicus access
+        id: access
+        env:
+          CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+        run: |
+          if [ -n "$CDSAPI_KEY" ]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo '::notice::Add the CDSAPI_KEY repository secret to enable ORAS5. See docs/oras5-setup.md.'
+          fi
+
+      - uses: actions/setup-python@v7
+        if: steps.access.outputs.enabled == 'true'
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements-oras5.txt
+
+      - name: Install processing dependencies
+        if: steps.access.outputs.enabled == 'true'
+        run: python -m pip install -r scripts/requirements-oras5.txt
+
+      - name: Test ORAS5 processing
+        if: steps.access.outputs.enabled == 'true'
+        run: |
+          python -m unittest discover -s tests -p 'test_oras5*.py'
+          node --test tests/oras5-data.test.mjs
+
+      - name: Restore grid and unfinished processing
+        if: steps.access.outputs.enabled == 'true'
+        id: cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            .cache/oras5/grid.npz
+            .cache/oras5/progress.json
+          key: oras5-v1-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: oras5-v1-${{ runner.os }}-${{ github.ref_name }}-
+
+      - name: Download and reduce monthly fields
+        if: steps.access.outputs.enabled == 'true'
+        timeout-minutes: 150
+        env:
+          CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+          MAX_YEARS: ${{ inputs.max_years || 0 }}
+        run: python -u scripts/update_oras5_data.py --max-years "$MAX_YEARS"
+
+      - name: Save processing checkpoint
+        if: ${{ !cancelled() && steps.cache.outcome == 'success' && hashFiles('.cache/oras5/grid.npz') != '' }}
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            .cache/oras5/grid.npz
+            .cache/oras5/progress.json
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+
+      - name: Commit validated snapshot
+        if: success() && steps.access.outputs.enabled == 'true'
+        run: |
+          if [ ! -f data/oras5-sea-ice-volume.json ]; then
+            echo 'Initial processing is not complete. Rerun to resume from the checkpoint.'
+            exit 0
+          fi
+          git add data/oras5-sea-ice-volume.json
+          if git diff --cached --quiet; then
+            echo 'No published data changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update ORAS5 sea ice volume'
+          git pull --rebase
+          git push

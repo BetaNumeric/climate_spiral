@@ -12,9 +12,9 @@ The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls
 
 ## Data Updates
 
-The [Update climate data](../.github/workflows/update-climate-data.yml) workflow runs weekly on Fridays at 07:23 UTC and can be started manually. It refreshes the eight active datasets, runs the tests, and commits changed snapshots. The service worker caches the active data and parsers for offline use and checks local data files over the network when online.
+The [Update climate data](../.github/workflows/update-climate-data.yml) workflow runs weekly on Fridays at 07:23 UTC and can be started manually. It refreshes the nine active datasets, runs the tests, and commits changed snapshots. The service worker caches the active data and parsers for offline use and checks local data files over the network when online.
 
-The land and ocean updaters request individual months through the current UTC year and validate the baseline and source metadata. The sea ice updater downloads twelve calendar-month files per hemisphere and validates both bundles before replacing either. The methane updater validates global CH4 metadata and the complete series since July 1983. The sea-level updater discovers the latest paired seasonal-signals-retained release and checks its data before replacing the snapshot. Invalid formats, missing links, incomplete reference periods, lost observations, or older endpoints stop the relevant updater without replacing its local file.
+The land and ocean updaters request individual months through the current UTC year and validate the baseline and source metadata. The sea ice extent updater downloads twelve calendar-month files per hemisphere and validates both bundles before replacing either. The Arctic volume updater checks PIOMAS's complete monthly history since January 1979 and excludes unavailable-month placeholders. The methane updater validates global CH4 metadata and the complete series since July 1983. The sea-level updater discovers the latest paired seasonal-signals-retained release and checks its data before replacing the snapshot. Invalid formats, missing links, incomplete reference periods, lost observations, or older endpoints stop the relevant updater without replacing its local file.
 
 To run an updater locally:
 
@@ -22,11 +22,14 @@ To run an updater locally:
 | --- | --- |
 | Ocean temperature | `node scripts/update-ocean-data.mjs` |
 | Land temperature | `node scripts/update-land-data.mjs` |
-| Arctic and Antarctic sea ice | `node scripts/update-sea-ice-data.mjs` |
+| Arctic and Antarctic sea ice extent | `node scripts/update-sea-ice-data.mjs` |
+| Arctic sea ice volume | `node scripts/update-sea-ice-volume-data.mjs` |
 | Global methane | `node scripts/update-methane-data.mjs` |
 | Global sea level | `node scripts/update-sea-level-data.mjs` |
 
-NASA GISTEMP and Mauna Loa CO2 are downloaded directly by the workflow. The other updaters validate their source downloads before saving local snapshots. No credentials are needed for data updates.
+NASA GISTEMP and Mauna Loa CO2 are downloaded directly by the workflow. The other updaters validate their source downloads before saving local snapshots. These nine datasets do not require credentials.
+
+The separate [ORAS5 workflow](../.github/workflows/update-oras5-data.yml) optionally adds both hemispheres' sea ice volume estimates. It runs monthly on the 18th, requires a `CDSAPI_KEY` secret and accepted Copernicus dataset terms, and skips when unconfigured. Its Python updater keeps resumable checkpoints and publishes only a complete, validated JSON history. See [ORAS5 setup](oras5-setup.md) for installation, tests, scientific methods, and first-run download costs. Once published, both ORAS5 datasets also enter the README video rotation. Run `node scripts/check-oras5-data.cjs` against the local server for desktop/mobile integration checks using clearly synthetic test data; the script never writes a production snapshot.
 
 ENSO remains disabled in the selector and workflow. Its parser, raw snapshot, updater, rendering branches, and tests are retained. To restore it, uncomment its `DATASET_CONFIG` registration and workflow step, add `data/Rnino34.ascii.txt` to the workflow commit paths and service worker assets, and bump the cache version. The retained source is NOAA CPC's [monthly relative Nino 3.4 index](https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt), not the three-month ONI/RONI or an official event classification.
 

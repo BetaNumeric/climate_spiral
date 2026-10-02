@@ -38,6 +38,9 @@ jobs:
       - name: Download and validate sea ice data
         run: node scripts/update-sea-ice-data.mjs
 
+      - name: Download and validate Arctic sea ice volume data
+        run: node scripts/update-sea-ice-volume-data.mjs
+
       - name: Download and validate global methane data
         run: node scripts/update-methane-data.mjs
 
@@ -53,13 +56,13 @@ jobs:
 
       - name: Commit changed data files
         run: |
-          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json; then
+          if git diff --quiet -- data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json data/piomas-monthly.txt; then
             echo "No data changes."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json
+          git add data/GLB.Ts+dSST.txt data/co2_mm_mlo.txt data/ch4_mm_gl.txt data/global-sea-level.json data/ocean-temperature.json data/land-temperature.json data/sea-ice-north.json data/sea-ice-south.json data/piomas-monthly.txt
           git commit -m "Update climate data"
           git push

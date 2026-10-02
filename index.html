@@ -1093,9 +1093,22 @@
             methanePpbToSpiralValue, spiralValueToMethanePpb } from './methane-data.mjs';
         import { fetchSeaIceData, parseSeaIceData, seaIceExtentToSpiralValue, spiralValueToSeaIceExtent,
             getMonthlySegments, SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS } from './sea-ice-data.mjs';
+        import { SEA_ICE_VOLUME_DATA_URL, parseSeaIceVolumeData, seaIceVolumeToSpiralValue,
+            spiralValueToSeaIceVolume, SEA_ICE_MAX_VOLUME, SEA_ICE_VOLUME_TICKS } from './sea-ice-volume-data.mjs';
+        import { ORAS5_DATA_PATH, ORAS5_SOURCE_URL, parseOras5VolumeData } from './oras5-data.mjs';
 
         // --- Configuration ---
+        const SEA_ICE_EXTENT_SCALE = {
+            max: SEA_ICE_MAX_EXTENT, ticks: SEA_ICE_TICKS,
+            toSpiralValue: seaIceExtentToSpiralValue, fromSpiralValue: spiralValueToSeaIceExtent,
+            unit: 'M km\u00b2'
+        };
         const DEFAULT_TUBE_RADIUS = 0.12;
+        const SEA_ICE_VOLUME_SCALE = {
+            max: SEA_ICE_MAX_VOLUME, ticks: SEA_ICE_VOLUME_TICKS,
+            toSpiralValue: seaIceVolumeToSpiralValue, fromSpiralValue: spiralValueToSeaIceVolume,
+            unit: '10\u00b3 km\u00b3'
+        };
         const VIDEO_VIEW_PRESETS = {
             'spiral-top': { label: 'Spiral · Top', layout: 0, polar: 0, azimuth: 0 },
             'spiral-front': { label: 'Spiral · Front', layout: 0, polar: Math.PI / 2, azimuth: 0 },
@@ -1206,7 +1219,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             },
             arctic: {
                 id: "arctic",
-                title: "Arctic Sea Ice",
+                title: "Arctic Sea Ice Extent",
                 metricLabel: "Extent (million km\u00b2)",
                 localPath: "data/sea-ice-north.json",
                 fetchRemote: fetchText => fetchSeaIceData('north', fetchText),
@@ -1221,7 +1234,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             },
             antarctic: {
                 id: "antarctic",
-                title: "Antarctic Sea Ice",
+                title: "Antarctic Sea Ice Extent",
                 metricLabel: "Extent (million km\u00b2)",
                 localPath: "data/sea-ice-south.json",
                 fetchRemote: fetchText => fetchSeaIceData('south', fetchText),
@@ -1234,6 +1247,40 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 parse: text => parseSeaIceData(text, 'south'),
                 description: "Antarctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
             },
+            arcticvolume: {
+                id: "arcticvolume",
+                title: "Arctic Sea Ice Volume (PIOMAS)",
+                metricLabel: "Volume (10\u00b3 km\u00b3)",
+                localPath: "data/piomas-monthly.txt",
+                remoteUrl: SEA_ICE_VOLUME_DATA_URL,
+                sourceLabel: "PIOMAS / Polar Science Center",
+                sourceHref: "https://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/",
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                kind: "sea-ice",
+                seaIceScale: SEA_ICE_VOLUME_SCALE,
+                parse: parseSeaIceVolumeData,
+                description: "Arctic monthly sea ice volume since January 1979, in thousands of km\u00b3. PIOMAS combines a sea ice/ocean model with observations; volume is not directly measured. The provider reported an update interruption in March 2026. Missing months are not estimated."
+            },
+            ...Object.fromEntries([
+                ['arcticoras5', 'Arctic', 'north'],
+                ['antarcticoras5', 'Antarctic', 'south']
+            ].map(([id, region, hemisphere]) => [id, {
+                id,
+                title: `${region} Sea Ice Volume (ORAS5)`,
+                metricLabel: "Volume (10\u00b3 km\u00b3)",
+                localPath: ORAS5_DATA_PATH,
+                sourceLabel: "ECMWF / Copernicus ORAS5",
+                sourceHref: ORAS5_SOURCE_URL,
+                requiresSnapshot: true,
+                supportsInterpolation: false,
+                preserveMonthlyGaps: true,
+                kind: "sea-ice",
+                seaIceScale: SEA_ICE_VOLUME_SCALE,
+                fileExtension: ".json",
+                parse: text => parseOras5VolumeData(text, hemisphere),
+                description: `${region} sea ice volume estimated from ORAS5 monthly mean thickness and ice concentration on the native ocean grid, in thousands of km\u00b3. A model-based estimate, not a direct measurement or an exact monthly mean volume. Atmospheric forcing changes in 2015. Source: ECMWF / Copernicus Climate Change Service.`
+            }])),
             // ENSO is disabled for now. Uncomment this registration to restore it.
             /*
             enso: {
@@ -1523,10 +1570,14 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             });
         }
 
+        function getSeaIceScale() {
+            return getActiveDataset().seaIceScale ?? SEA_ICE_EXTENT_SCALE;
+        }
+
         function formatMetricValue(displayValue) {
             if (currentDatasetKey === 'sealevel') return (displayValue > 0 ? '+' : '') + displayValue.toFixed(1) + ' mm';
             if (currentDatasetKey === 'methane') return displayValue.toFixed(2) + ' ppb';
-            if (getActiveDataset().kind === 'sea-ice') return displayValue.toFixed(2) + ' M km\u00b2';
+            if (getActiveDataset().kind === 'sea-ice') return displayValue.toFixed(2) + ' ' + getSeaIceScale().unit;
             if (currentDatasetKey === "co2") {
                 return displayValue.toFixed(2) + " ppm";
             }
@@ -1578,7 +1629,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             if (currentDatasetKey === 'sealevel') return Math.max(maxValue, seaLevelMmToSpiralValue(SEA_LEVEL_TICKS.at(-1)));
             if (currentDatasetKey === 'enso') return Math.max(maxValue, ENSO_TICKS.at(-1));
             if (currentDatasetKey === 'methane') return Math.max(maxValue, methanePpbToSpiralValue(METHANE_TICKS.at(-1)));
-            if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, seaIceExtentToSpiralValue(SEA_ICE_MAX_EXTENT));
+            if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, getSeaIceScale().toSpiralValue(getSeaIceScale().max));
             if (currentDatasetKey === "co2") {
                 const co2RefMax = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
                 return Math.max(maxValue, co2RefMax);
@@ -1885,7 +1936,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function updateLegendLabels() {
             const isSeaIce = getActiveDataset().kind === 'sea-ice';
-            const values = isSeaIce ? [0, ...SEA_ICE_TICKS].map(String)
+            const values = isSeaIce ? [0, ...getSeaIceScale().ticks].map(String)
                 : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(value => value + ' mm')
                 : currentDatasetKey === 'enso' ? ENSO_TICKS.map(value => (value > 0 ? '+' : '') + value + '\u00b0C')
                 : currentDatasetKey === 'methane' ? [METHANE_AXIS_MIN, ...METHANE_TICKS].map(value => value + ' ppb')
@@ -1934,7 +1985,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
             if (smoothSpiralToggle) smoothSpiralToggle.disabled = false;
             if (infoTemp) {
-                infoTemp.innerText = dataset.kind === 'sea-ice' ? '-- M km\u00b2'
+                infoTemp.innerText = dataset.kind === 'sea-ice' ? '-- ' + getSeaIceScale().unit
                     : currentDatasetKey === 'sealevel' ? '-- mm'
                     : currentDatasetKey === 'methane' ? '-- ppb'
                     : currentDatasetKey === "co2" ? "-- ppm" : "-- °C";
@@ -2018,8 +2069,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         
         async function fetchRemoteData() {
             const datasetKey = currentDatasetKey;
-            const token = beginDataLoad();
             const dataset = getDatasetByKey(datasetKey);
+            // ORAS5 is processed by the updater; credentials never enter the browser.
+            if (dataset.requiresSnapshot) return loadLocalData(true);
+            const token = beginDataLoad();
             updateDataStatus("Fetching " + dataset.title + "...");
 
             const directUrl = typeof dataset.remoteUrl === 'function' ? dataset.remoteUrl() : dataset.remoteUrl;
@@ -2056,23 +2109,34 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             }
         }
         
-        function loadLocalData() {
+        function loadLocalData(refresh = false) {
             const datasetKey = currentDatasetKey;
             const token = beginDataLoad();
             const dataset = getDatasetByKey(datasetKey);
             updateDataStatus("Checking local...");
 
-            fetchText(dataset.localPath, { cache: "no-store" })
+            const request = dataset.snapshotText && !refresh
+                ? Promise.resolve(dataset.snapshotText)
+                : fetchText(dataset.localPath, { cache: "no-store" });
+            request
                 .then(text => {
                     if (!isCurrentDataLoad(datasetKey, token)) return;
                     if (!applyDataText(text, "Local Data", datasetKey)) {
                         throw new Error("Local data has no usable records");
+                    }
+                    if (dataset.requiresSnapshot) {
+                        Object.values(DATASET_CONFIG).filter(item => item.localPath === dataset.localPath)
+                            .forEach(item => { item.snapshotText = text; });
                     }
                     updateDataStatus("Local Data", "#2ecc71", 3000);
                 })
                 .catch(error => {
                     if (!isCurrentDataLoad(datasetKey, token)) return;
                     console.log("Local fetch failed.", error);
+                    if (dataset.snapshotText) {
+                        updateDataStatus("Refresh failed; previous data retained", "#e74c3c");
+                        return;
+                    }
                     if (dataset.id === "temperature") {
                         if (applyDataText(INITIAL_DATA_SOURCE, "Embedded Data", datasetKey)) {
                             updateDataStatus("");
@@ -2801,7 +2865,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return currentDatasetKey === 'enso' ? ENSO_TICKS
                 : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(seaLevelMmToSpiralValue)
                 : currentDatasetKey === 'methane' ? METHANE_TICKS.map(methanePpbToSpiralValue)
-                : getActiveDataset().kind === 'sea-ice' ? SEA_ICE_TICKS.map(seaIceExtentToSpiralValue)
+                : getActiveDataset().kind === 'sea-ice' ? getSeaIceScale().ticks.map(getSeaIceScale().toSpiralValue)
                 : currentDatasetKey === 'co2' ? CO2_REFERENCE_RINGS_PPM.map(co2PpmToSpiralValue)
                 : [0, 1, -1];
         }
@@ -2851,7 +2915,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 ctx.textBaseline = 'middle';
                 const labelText = currentDatasetKey === 'methane' ? Math.round(spiralValueToMethanePpb(temp)) + ' ppb'
                     : currentDatasetKey === 'sealevel' ? Math.round(spiralValueToSeaLevelMm(temp)) + ' mm'
-                    : isSeaIce ? Math.round(spiralValueToSeaIceExtent(temp)) + ' M km\u00b2' : currentDatasetKey === "co2"
+                    : isSeaIce ? Math.round(getSeaIceScale().fromSpiralValue(temp)) + ' ' + getSeaIceScale().unit : currentDatasetKey === "co2"
                     ? `${Math.round(spiralValueToCo2Ppm(temp))} ppm`
                     : (temp > 0 ? `+${temp}°C` : `${temp}°C`);
                 ctx.fillText(labelText, 256, 128);
@@ -2934,6 +2998,23 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return new THREE.Color().lerpColors(c1, c2, alpha);
         }
 
+        async function enableOptionalDatasets(select) {
+            try {
+                const response = await fetch(ORAS5_DATA_PATH, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+                if (response.status === 404) return; // Not published until the first complete download.
+                if (!response.ok) throw new Error('ORAS5 snapshot request failed');
+                const text = await response.text();
+                const datasets = Object.values(DATASET_CONFIG).filter(dataset => dataset.requiresSnapshot);
+                if (datasets.some(dataset => !dataset.parse(text).length)) throw new Error('Invalid ORAS5 snapshot');
+                datasets.forEach(dataset => {
+                    dataset.snapshotText = text;
+                    select.add(new Option(dataset.title, dataset.id));
+                });
+            } catch (error) {
+                console.warn('Optional ORAS5 datasets unavailable.', error);
+            }
+        }
+
         function setupUI() {
             const toggleBtn = document.getElementById('infoBtn');
             const settingsBtn = document.getElementById('settingsBtn');
@@ -2963,10 +3044,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const transportGroup = document.getElementById('transportGroup');
             const buttonGroup = document.getElementById('buttonGroup');
 
-            Object.entries(DATASET_CONFIG).forEach(([key, dataset]) => {
+            Object.entries(DATASET_CONFIG).filter(([, dataset]) => !dataset.requiresSnapshot).forEach(([key, dataset]) => {
                 datasetSelect.add(new Option(dataset.title, key));
             });
             datasetSelect.value = currentDatasetKey;
+            enableOptionalDatasets(datasetSelect);
 
             const setInfoDetailsExpanded = (expanded) => {
                 infoPanel.classList.toggle('details-expanded', expanded);
@@ -3203,7 +3285,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     } else if (currentDatasetKey === 'methane') {
                         percent = (currentDisplayValue - METHANE_AXIS_MIN) / (METHANE_TICKS.at(-1) - METHANE_AXIS_MIN) * 100;
                     } else if (getActiveDataset().kind === 'sea-ice') {
-                        percent = currentDisplayValue / SEA_ICE_MAX_EXTENT * 100;
+                        percent = currentDisplayValue / getSeaIceScale().max * 100;
                     } else if (currentDatasetKey === "co2") {
                         const minValue = co2PpmToSpiralValue(CO2_BASELINE_PPM);
                         const maxValue = co2PpmToSpiralValue(CO2_REFERENCE_RINGS_PPM[CO2_REFERENCE_RINGS_PPM.length - 1]);
@@ -3951,7 +4033,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             tempLabelGroup?.children.forEach(label => {
                 // Travel along the guides, keeping their value-axis spacing throughout the bend.
                 const point = unrollPolar(label.referenceRadius, 0.375 * (1 - bend), bend, monthlyLayout);
-                label.position.set(point.x - 3.4 * bend + layoutFrame.x, -1.9, point.z + layoutFrame.z);
+                label.position.set(point.x - 2.6 * bend + layoutFrame.x, -1.9, point.z + layoutFrame.z);
                 label.scale.setScalar(1 + 0.25 * bend);
             });
             if (yearIndicatorMesh) {
@@ -4048,7 +4130,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                         const fraction = THREE.MathUtils.clamp((displayValue - METHANE_AXIS_MIN) / (METHANE_TICKS.at(-1) - METHANE_AXIS_MIN), 0, 1);
                         c.lerpColors(CONFIG.colors.methaneLow, CONFIG.colors.methaneHigh, fraction);
                     } else if (getActiveDataset().kind === 'sea-ice') {
-                        c.lerpColors(CONFIG.colors.iceLow, CONFIG.colors.iceHigh, Math.min(1, displayValue / SEA_ICE_MAX_EXTENT));
+                        c.lerpColors(CONFIG.colors.iceLow, CONFIG.colors.iceHigh, Math.min(1, displayValue / getSeaIceScale().max));
                     } else if (colorValue < 0) {
                         const t = Math.min(1, Math.abs(colorValue));
                         c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);

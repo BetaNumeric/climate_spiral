@@ -22,7 +22,14 @@ test('monthly selection excludes the previous active dataset', () => {
     }
   }
   assert.equal(chooseSecondaryDataset(null, 'co2').key, 'co2');
+  assert.equal(chooseSecondaryDataset(null, 'arcticvolume').title, 'Arctic Sea Ice Volume (PIOMAS)');
   assert.throws(() => chooseSecondaryDataset(null, 'enso'));
+});
+
+test('previous video markers retain dataset keys containing digits', () => {
+  for (const key of ['co2', 'arcticoras5', 'antarcticoras5']) {
+    assert.equal(previousSecondaryDataset(`<!-- README_VIDEO_DATASET: ${key} -->`), key);
+  }
 });
 
 test('README update replaces only the two video slots and tracks the month and lower dataset', () => {
@@ -47,6 +54,17 @@ test('README update replaces only the two video slots and tracks the month and l
   assert.equal((next.match(/README_VIDEO_UPDATED/g) ?? []).length, 1);
   assert.equal(previousSecondaryDataset(next), 'land');
   assert.doesNotMatch(next, /assets\/aaaa/);
+});
+
+test('volume can be published as the secondary README example', () => {
+  const updated = updateReadmeVideos(original, {
+    topUrl: 'https://github.com/user-attachments/assets/aaaa',
+    bottomUrl: 'https://github.com/user-attachments/assets/bbbb',
+    dataset: chooseSecondaryDataset(null, 'arcticvolume'),
+    month: '2026-10',
+  });
+  assert.equal(previousSecondaryDataset(updated), 'arcticvolume');
+  assert.match(updated, /\*\*Arctic Sea Ice Volume \(PIOMAS\)\*\*/);
 });
 
 test('README update rejects unexpected video URLs and broken markers', () => {

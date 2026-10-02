@@ -11,6 +11,9 @@ const hooks = `
 window.framingTest = {
   ready: () => Boolean(spiralMesh && monthLabelsGroup?.children.length === 12),
   topView() {
+    layoutTransition = null;
+    layoutMix = 0;
+    applyLayout();
     cameraResetAnimation = null;
     controls.enableDamping = false;
     if (isAnimating) toggleAnimation();
@@ -19,6 +22,36 @@ window.framingTest = {
     activeCamera.position.copy(controls.target).add(new THREE.Vector3(0, 120, 0));
     activeCamera.updateProjectionMatrix();
     controls.update();
+  },
+  graphView() {
+    layoutMix = 1;
+    applyLayout();
+    setSpiralTargetY(spiralHeight / 2);
+    activeCamera.position.copy(controls.target).add(new THREE.Vector3(0, 120, 0.0001));
+    controls.update();
+  },
+  graphState() {
+    renderer.render(scene, activeCamera);
+    const canvas = document.createElement('canvas');
+    canvas.width = 320; canvas.height = 240;
+    const context = canvas.getContext('2d');
+    context.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let litPixels = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) > 20) litPixels++;
+    }
+    const scale = getSeaIceScale();
+    const values = getReferenceValues();
+    const labelEdges = tempLabelGroup.children.map((label, index) => {
+      const text = Math.round(scale.fromSpiralValue(values[index])) + ' ' + scale.unit;
+      const image = label.material.map.image;
+      const width = image.getContext('2d').measureText(text).width * 6 / image.width * label.scale.x;
+      return new THREE.Vector3(label.position.x - width / 2, label.position.y, label.position.z)
+        .project(activeCamera).x;
+    });
+    return { litPixels, leftLabelEdge: Math.min(...labelEdges),
+      finite: spiralMesh.geometry.attributes.position.array.every(Number.isFinite) };
   },
   state() {
     renderer.render(scene, activeCamera);
@@ -42,6 +75,10 @@ window.framingTest = {
       videoHalfHeight: getVideoOrbitFrame(getYearLabelRadius(currentMaxAnomaly),
         getFramingHeight() / 2, 16 / 9, null, CONFIG.sceneScale).visibleHalfHeight,
       height: spiralHeight,
+      metric: document.getElementById('infoTemp').textContent,
+      legend: Array.from(document.querySelectorAll('.legend-labels span'), label => label.textContent),
+      referenceValues: getActiveDataset().kind === 'sea-ice'
+        ? getReferenceValues().map(getSeaIceScale().fromSpiralValue) : null,
       litPixels,
     };
   },
@@ -80,8 +117,27 @@ window.framingTest = {
         states.push(state);
         assert.equal(state.dataset, dataset);
         assert.ok(state.litPixels > 0, dataset + ' has a blank canvas');
-        if (dataset === 'temperature' || dataset === datasets.at(-1)) {
+        if (dataset === 'temperature' || dataset === datasets.at(-1) || dataset === 'arcticvolume') {
           await page.screenshot({ path: join(output, name + '-' + dataset + '.png') });
+        }
+        if (dataset === 'arcticvolume') {
+          assert.match(state.metric, /10\u00b3 km\u00b3/);
+          assert.deepEqual(state.legend, ['0', '10', '20', '30', '40']);
+          assert.deepEqual(state.referenceValues, [10, 20, 30, 40]);
+          await page.click('#infoBtn');
+          await page.screenshot({ path: join(output, name + '-arcticvolume-legend.png') });
+          await page.evaluate(() => framingTest.graphView());
+          await page.waitForTimeout(150);
+          const graph = await page.evaluate(() => framingTest.graphState());
+          assert.ok(graph.finite && graph.litPixels > 300, 'Volume graph is blank or invalid');
+          assert.ok(graph.leftLabelEdge >= -1, 'Volume guide labels are clipped');
+          await page.screenshot({ path: join(output, name + '-arcticvolume-unwrapped.png') });
+          await page.click('#infoBtn');
+          await page.evaluate(() => framingTest.topView());
+        } else if (dataset === 'arctic' || dataset === 'antarctic') {
+          assert.match(state.metric, /M km\u00b2/);
+          assert.deepEqual(state.legend, ['0', '5', '10', '15', '20']);
+          assert.deepEqual(state.referenceValues, [5, 10, 15, 20]);
         }
       }
       console.log(name + ': ' + JSON.stringify(states.map(({ dataset, outerRadius, dataRadius, monthRadius, graphWidth, cameraTop, height }) =>
