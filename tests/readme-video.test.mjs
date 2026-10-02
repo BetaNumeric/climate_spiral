@@ -27,8 +27,22 @@ test('monthly selection excludes the previous active dataset', () => {
 });
 
 test('previous video markers retain dataset keys containing digits', () => {
-  for (const key of ['co2', 'arcticoras5', 'antarcticoras5']) {
+  for (const key of ['co2', 'dataset2']) {
     assert.equal(previousSecondaryDataset(`<!-- README_VIDEO_DATASET: ${key} -->`), key);
+  }
+});
+
+test('README rotation excludes archived models and still accepts their previous video markers', () => {
+  assert.equal(SECONDARY_DATASETS.length, 8);
+  for (const key of ['arcticoras5', 'antarcticoras5', 'arcticgiomas', 'antarcticgiomas']) {
+    assert.throws(() => chooseSecondaryDataset(null, key), /Unknown secondary dataset/);
+    const previous = previousSecondaryDataset(`<!-- README_VIDEO_DATASET: ${key} -->`);
+    assert(SECONDARY_DATASETS.some(dataset => dataset.key === chooseSecondaryDataset(previous, null, () => 0).key));
+    assert.throws(() => updateReadmeVideos(original, {
+      topUrl: 'https://github.com/user-attachments/assets/aaaa',
+      bottomUrl: 'https://github.com/user-attachments/assets/bbbb',
+      dataset: { key, title: 'Archived Sea Ice Volume' }, month: '2026-10',
+    }), /not active/);
   }
 });
 

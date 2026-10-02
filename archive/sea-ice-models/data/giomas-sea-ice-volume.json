@@ -1,0 +1,3637 @@
+{
+  "version": 1,
+  "source": "PSC GIOMAS",
+  "sourceUrl": "https://psc.apl.uw.edu/data/global-sea-ice-giomas-data-sets/",
+  "method": "monthly-mean-effective-thickness-area-v1",
+  "units": "1000 km3",
+  "grid": {
+    "shape": [
+      276,
+      360
+    ],
+    "sha256": "087cceafd1cde6339436801091cf184ae0a879cf15f79755bb156c7f26b31cba"
+  },
+  "releases": [
+    {
+      "year": 1979,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1979.nc.gz",
+      "sha256": "f89bb814d389aad87b92f4ab79f99e84fd83e5ce38265e012596d86c81ed2744"
+    },
+    {
+      "year": 1980,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1980.nc.gz",
+      "sha256": "42f9d20d8ce5bfc00a9f3ea834d713c2a73c0ea78e7519daf3bc231c1ff9e2ef"
+    },
+    {
+      "year": 1981,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1981.nc.gz",
+      "sha256": "b9bdbb49c7bd02ed1e79bf0cff037e1c1e49d7acfd497aa1fd5cdd3f489ae5c6"
+    },
+    {
+      "year": 1982,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1982.nc.gz",
+      "sha256": "cc8dfa28eb9dc5c18b28165d10aa41160124f89549cff6ca365a1054b24dfa13"
+    },
+    {
+      "year": 1983,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1983.nc.gz",
+      "sha256": "b339a0ba3ebde1c8f82db3c9c72ac76b44d91e03e9b59f36781547b1a6fe347f"
+    },
+    {
+      "year": 1984,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1984.nc.gz",
+      "sha256": "a15b0bf9a6497c00ffa4bdad7169f5d89d085057db4f46a9764e3d83b21457c2"
+    },
+    {
+      "year": 1985,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1985.nc.gz",
+      "sha256": "fe12d0e489fddc304e4d700cda2ef6fce14e37f1720b4824a4d07e2df148ba40"
+    },
+    {
+      "year": 1986,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1986.nc.gz",
+      "sha256": "09572a159cd79faccdd7cb85e6ced31c7667500e33e66acf71edd5d9c0cbf248"
+    },
+    {
+      "year": 1987,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1987.nc.gz",
+      "sha256": "f34cdb337746359f00aa2821a9b4fd193cc8bf56f1a8bf1cf2253c33173459b4"
+    },
+    {
+      "year": 1988,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1988.nc.gz",
+      "sha256": "6d23fff23d3b03b1380ffe1b2a683cd5e10fac5fddcca7de5acef447377938b1"
+    },
+    {
+      "year": 1989,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1989.nc.gz",
+      "sha256": "2c69a9d7c3e7e6564a77e61e408783d817e890107595ffee7ba0eb1ccc90ac5f"
+    },
+    {
+      "year": 1990,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1990.nc.gz",
+      "sha256": "805a39c97c7589479659498cc53defe69a672d34938dcd19afcd1bf199cf2b2e"
+    },
+    {
+      "year": 1991,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1991.nc.gz",
+      "sha256": "9b95c4c47e2676adac19361c478aea9f3a9029d8c0180754768e3f11ab7a51c5"
+    },
+    {
+      "year": 1992,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1992.nc.gz",
+      "sha256": "aa4abf698ed0723b07cd338104c7f9a92e978e3506b1b47c61c50ff64a6bade6"
+    },
+    {
+      "year": 1993,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1993.nc.gz",
+      "sha256": "08ba88a9396b43dfbbf10911a8356515738fd684ffa9d30d6dc12a9756bbda2b"
+    },
+    {
+      "year": 1994,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1994.nc.gz",
+      "sha256": "87944ba13c4f6ca4d3b40fd0769656938f36cc270185de2d5388d50cef361177"
+    },
+    {
+      "year": 1995,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1995.nc.gz",
+      "sha256": "dbef378756191f7c0bbd9d60365f9f3e3fb86c64b2751ba4bdf384330aa09e37"
+    },
+    {
+      "year": 1996,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1996.nc.gz",
+      "sha256": "a07019b7bac8d62c07fd8ac6eb63f47d9efa9e7336f0589066a35b0d8bb59617"
+    },
+    {
+      "year": 1997,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1997.nc.gz",
+      "sha256": "b6fbc1d4f8e262ae56b72df1bfa6d9adbd655c53228a9b1d02a2d41e713fa5d0"
+    },
+    {
+      "year": 1998,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1998.nc.gz",
+      "sha256": "731b58b15535b3881fec3b89988dd489ba0ae94120b0c98010944156189ec228"
+    },
+    {
+      "year": 1999,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H1999.nc.gz",
+      "sha256": "f27a1b37827460ce52c4f7e943f00bcfcde026bc4535c3822b8a5c743231f555"
+    },
+    {
+      "year": 2000,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2000.nc.gz",
+      "sha256": "38209a1b46e4c71379aac7a222f983b02cdb8abdefaae6926c63946997978aed"
+    },
+    {
+      "year": 2001,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2001.nc.gz",
+      "sha256": "2ec9ff31a1c3b8f51cf4324dbb6f9144a5f3c05ea263d9f1f1187e298ed263d3"
+    },
+    {
+      "year": 2002,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2002.nc.gz",
+      "sha256": "f2a15b847081ca9f688b1750309b5c14f4755803db150963de0d7019466f0eca"
+    },
+    {
+      "year": 2003,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2003.nc.gz",
+      "sha256": "b0cac728aa5bd9043969d0921de09da18eaeb1f4c3d6a0a0ae7a670c35f434ce"
+    },
+    {
+      "year": 2004,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2004.nc.gz",
+      "sha256": "3de1d3d58fbe314ba203b7f8f162bf1d9dec3603e191708ef1e366cf9b884200"
+    },
+    {
+      "year": 2005,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2005.nc.gz",
+      "sha256": "b782b66f25d959fb84cb672f485aeba7b6316ae8e547055e28668e800500c03a"
+    },
+    {
+      "year": 2006,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2006.nc.gz",
+      "sha256": "14bd486c22070f1262a2c77d7a4c9fb99c0a9268316badd52266544615c15065"
+    },
+    {
+      "year": 2007,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2007.nc.gz",
+      "sha256": "102014ef9a5dff554b43ae7febcd4cb64d0cbefba9a2014512ca05980db0a254"
+    },
+    {
+      "year": 2008,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2008.nc.gz",
+      "sha256": "f7d1162c90c2e0d2c6a7a1e013550084680e7f958e95e8ca8ac41620309facb7"
+    },
+    {
+      "year": 2009,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2009.nc.gz",
+      "sha256": "83be277b79925b990f248290cb5b099993ab9c80ebc6f1bce4e9b992dd5e5cc0"
+    },
+    {
+      "year": 2010,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2010.nc.gz",
+      "sha256": "f3fe46fd7e56250e6ad9036d68bcc63d5777e678fe41da138faeca23c203a71b"
+    },
+    {
+      "year": 2011,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2011.nc.gz",
+      "sha256": "5b34cb495107ea878d4794d959e19c13c0640035051d51f774b6eb8a23da378f"
+    },
+    {
+      "year": 2012,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2012.nc.gz",
+      "sha256": "6d50b1fb403e6530b999fbbd80e2151cc0304a07b54c01033f923a6c0f1a4e2e"
+    },
+    {
+      "year": 2013,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2013.nc.gz",
+      "sha256": "4383737582b158b4f7c080d7c6d2e250d71191f46242395bf973215e79706346"
+    },
+    {
+      "year": 2014,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2014.nc.gz",
+      "sha256": "d1193d467552e08d2a59a1d7fd5e10d70d71c97b8677f33cfda3e11ce0c44144"
+    },
+    {
+      "year": 2015,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2015.nc.gz",
+      "sha256": "ddb655665c1add03d5631745f59e54c7cee0daef6d4bc23e812256ffdb347f47"
+    },
+    {
+      "year": 2016,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2016.nc.gz",
+      "sha256": "43ca7694dd4909066a179831c7341fea03db0ca98839b68d66c59541ceb7f3c5"
+    },
+    {
+      "year": 2017,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2017.nc.gz",
+      "sha256": "8e109de36d82d5706dd7d739c22140a4df75fc177b40e681844c59c1d2dcb081"
+    },
+    {
+      "year": 2018,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2018.nc.gz",
+      "sha256": "4f428eb5049c9df68b4fa62ac44ad1967bb9f558c8f6500386e241415a224cbe"
+    },
+    {
+      "year": 2019,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2019.nc.gz",
+      "sha256": "01b8baadc2acf2508904ad4ad774b917ae8fecacc1e99448fa0d42e9931af96f"
+    },
+    {
+      "year": 2020,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2020.nc.gz",
+      "sha256": "feb4c5524113fae0eb5a2b787e8ef0e2634ac83168a1097872035a918d58a04e"
+    },
+    {
+      "year": 2021,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2021.nc.gz",
+      "sha256": "0d9f35b27ad6c21b44709494a913148f74ea1cea8de96946e042bbae5094f94a"
+    },
+    {
+      "year": 2022,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2022.nc.gz",
+      "sha256": "a1a4ec0c8e6bfe3450e6c6cfd8f3176b78a1a917e73fbd4841d1e63f7beaa73f"
+    },
+    {
+      "year": 2023,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2023.nc.gz",
+      "sha256": "9c558be3ae775103b34a479439f74bfbaa9e8c7a801be2fce79d3cc3320d60ee"
+    },
+    {
+      "year": 2024,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2024.nc.gz",
+      "sha256": "54054673c26a59c237fa0b570a94630cdfd7e7b405126a13a3bbfeedfb065baa"
+    },
+    {
+      "year": 2025,
+      "url": "https://pscfiles.apl.washington.edu/zhang/Global_seaice/heff.H2025.nc.gz",
+      "sha256": "3ba042a34dda99e293b6247b565e129e8b6f9fddf382d74c68ace8f1c56339dc"
+    }
+  ],
+  "records": [
+    {
+      "year": 1979,
+      "month": 1,
+      "north": 31.33826,
+      "south": 5.722091
+    },
+    {
+      "year": 1979,
+      "month": 2,
+      "north": 33.899639,
+      "south": 2.890686
+    },
+    {
+      "year": 1979,
+      "month": 3,
+      "north": 35.526947,
+      "south": 2.903329
+    },
+    {
+      "year": 1979,
+      "month": 4,
+      "north": 36.046145,
+      "south": 5.670811
+    },
+    {
+      "year": 1979,
+      "month": 5,
+      "north": 34.917464,
+      "south": 9.913643
+    },
+    {
+      "year": 1979,
+      "month": 6,
+      "north": 31.563021,
+      "south": 14.038551
+    },
+    {
+      "year": 1979,
+      "month": 7,
+      "north": 23.877688,
+      "south": 17.411743
+    },
+    {
+      "year": 1979,
+      "month": 8,
+      "north": 17.923511,
+      "south": 18.541236
+    },
+    {
+      "year": 1979,
+      "month": 9,
+      "north": 16.136129,
+      "south": 19.009898
+    },
+    {
+      "year": 1979,
+      "month": 10,
+      "north": 17.767616,
+      "south": 18.194205
+    },
+    {
+      "year": 1979,
+      "month": 11,
+      "north": 21.040471,
+      "south": 15.797432
+    },
+    {
+      "year": 1979,
+      "month": 12,
+      "north": 24.966669,
+      "south": 9.188763
+    },
+    {
+      "year": 1980,
+      "month": 1,
+      "north": 28.692433,
+      "south": 3.482442
+    },
+    {
+      "year": 1980,
+      "month": 2,
+      "north": 31.439256,
+      "south": 1.885294
+    },
+    {
+      "year": 1980,
+      "month": 3,
+      "north": 33.364054,
+      "south": 1.899744
+    },
+    {
+      "year": 1980,
+      "month": 4,
+      "north": 34.311383,
+      "south": 3.383376
+    },
+    {
+      "year": 1980,
+      "month": 5,
+      "north": 33.276135,
+      "south": 6.583718
+    },
+    {
+      "year": 1980,
+      "month": 6,
+      "north": 29.630592,
+      "south": 10.387031
+    },
+    {
+      "year": 1980,
+      "month": 7,
+      "north": 22.172755,
+      "south": 13.792329
+    },
+    {
+      "year": 1980,
+      "month": 8,
+      "north": 16.465215,
+      "south": 15.818825
+    },
+    {
+      "year": 1980,
+      "month": 9,
+      "north": 14.963021,
+      "south": 17.055295
+    },
+    {
+      "year": 1980,
+      "month": 10,
+      "north": 16.83191,
+      "south": 17.140725
+    },
+    {
+      "year": 1980,
+      "month": 11,
+      "north": 19.92494,
+      "south": 14.518441
+    },
+    {
+      "year": 1980,
+      "month": 12,
+      "north": 23.944346,
+      "south": 8.472589
+    },
+    {
+      "year": 1981,
+      "month": 1,
+      "north": 27.295378,
+      "south": 3.037689
+    },
+    {
+      "year": 1981,
+      "month": 2,
+      "north": 29.917005,
+      "south": 1.452356
+    },
+    {
+      "year": 1981,
+      "month": 3,
+      "north": 31.812395,
+      "south": 1.541978
+    },
+    {
+      "year": 1981,
+      "month": 4,
+      "north": 32.666663,
+      "south": 3.696944
+    },
+    {
+      "year": 1981,
+      "month": 5,
+      "north": 31.723824,
+      "south": 7.796164
+    },
+    {
+      "year": 1981,
+      "month": 6,
+      "north": 27.89368,
+      "south": 12.033652
+    },
+    {
+      "year": 1981,
+      "month": 7,
+      "north": 20.25099,
+      "south": 15.335161
+    },
+    {
+      "year": 1981,
+      "month": 8,
+      "north": 14.026774,
+      "south": 17.056772
+    },
+    {
+      "year": 1981,
+      "month": 9,
+      "north": 12.198255,
+      "south": 18.149099
+    },
+    {
+      "year": 1981,
+      "month": 10,
+      "north": 14.193591,
+      "south": 17.846986
+    },
+    {
+      "year": 1981,
+      "month": 11,
+      "north": 17.208158,
+      "south": 15.282278
+    },
+    {
+      "year": 1981,
+      "month": 12,
+      "north": 20.998467,
+      "south": 9.501781
+    },
+    {
+      "year": 1982,
+      "month": 1,
+      "north": 25.131922,
+      "south": 3.855457
+    },
+    {
+      "year": 1982,
+      "month": 2,
+      "north": 28.115165,
+      "south": 1.56775
+    },
+    {
+      "year": 1982,
+      "month": 3,
+      "north": 30.219337,
+      "south": 2.167132
+    },
+    {
+      "year": 1982,
+      "month": 4,
+      "north": 31.398528,
+      "south": 5.504413
+    },
+    {
+      "year": 1982,
+      "month": 5,
+      "north": 30.368679,
+      "south": 9.542115
+    },
+    {
+      "year": 1982,
+      "month": 6,
+      "north": 27.00693,
+      "south": 12.946208
+    },
+    {
+      "year": 1982,
+      "month": 7,
+      "north": 19.678674,
+      "south": 15.456493
+    },
+    {
+      "year": 1982,
+      "month": 8,
+      "north": 14.230508,
+      "south": 18.01332
+    },
+    {
+      "year": 1982,
+      "month": 9,
+      "north": 12.709923,
+      "south": 18.855405
+    },
+    {
+      "year": 1982,
+      "month": 10,
+      "north": 15.059926,
+      "south": 18.163615
+    },
+    {
+      "year": 1982,
+      "month": 11,
+      "north": 19.139468,
+      "south": 15.71316
+    },
+    {
+      "year": 1982,
+      "month": 12,
+      "north": 23.189755,
+      "south": 9.110212
+    },
+    {
+      "year": 1983,
+      "month": 1,
+      "north": 26.956439,
+      "south": 3.726033
+    },
+    {
+      "year": 1983,
+      "month": 2,
+      "north": 30.035654,
+      "south": 1.619009
+    },
+    {
+      "year": 1983,
+      "month": 3,
+      "north": 32.16679,
+      "south": 1.952849
+    },
+    {
+      "year": 1983,
+      "month": 4,
+      "north": 32.926894,
+      "south": 4.578698
+    },
+    {
+      "year": 1983,
+      "month": 5,
+      "north": 31.949534,
+      "south": 8.115525
+    },
+    {
+      "year": 1983,
+      "month": 6,
+      "north": 28.670718,
+      "south": 11.722106
+    },
+    {
+      "year": 1983,
+      "month": 7,
+      "north": 21.714622,
+      "south": 15.412886
+    },
+    {
+      "year": 1983,
+      "month": 8,
+      "north": 15.929893,
+      "south": 17.66303
+    },
+    {
+      "year": 1983,
+      "month": 9,
+      "north": 14.15791,
+      "south": 18.721731
+    },
+    {
+      "year": 1983,
+      "month": 10,
+      "north": 16.402515,
+      "south": 18.041895
+    },
+    {
+      "year": 1983,
+      "month": 11,
+      "north": 19.950793,
+      "south": 15.508806
+    },
+    {
+      "year": 1983,
+      "month": 12,
+      "north": 23.749811,
+      "south": 9.587809
+    },
+    {
+      "year": 1984,
+      "month": 1,
+      "north": 26.936148,
+      "south": 3.76654
+    },
+    {
+      "year": 1984,
+      "month": 2,
+      "north": 29.430947,
+      "south": 1.819752
+    },
+    {
+      "year": 1984,
+      "month": 3,
+      "north": 31.387322,
+      "south": 1.982209
+    },
+    {
+      "year": 1984,
+      "month": 4,
+      "north": 32.318758,
+      "south": 4.22184
+    },
+    {
+      "year": 1984,
+      "month": 5,
+      "north": 31.269068,
+      "south": 7.911428
+    },
+    {
+      "year": 1984,
+      "month": 6,
+      "north": 27.958288,
+      "south": 12.206778
+    },
+    {
+      "year": 1984,
+      "month": 7,
+      "north": 20.746766,
+      "south": 16.102895
+    },
+    {
+      "year": 1984,
+      "month": 8,
+      "north": 15.183025,
+      "south": 18.176657
+    },
+    {
+      "year": 1984,
+      "month": 9,
+      "north": 13.228219,
+      "south": 18.700757
+    },
+    {
+      "year": 1984,
+      "month": 10,
+      "north": 15.069091,
+      "south": 18.065258
+    },
+    {
+      "year": 1984,
+      "month": 11,
+      "north": 18.485388,
+      "south": 16.388889
+    },
+    {
+      "year": 1984,
+      "month": 12,
+      "north": 22.461792,
+      "south": 10.745404
+    },
+    {
+      "year": 1985,
+      "month": 1,
+      "north": 26.202748,
+      "south": 4.016593
+    },
+    {
+      "year": 1985,
+      "month": 2,
+      "north": 29.040712,
+      "south": 2.009534
+    },
+    {
+      "year": 1985,
+      "month": 3,
+      "north": 31.14093,
+      "south": 2.355858
+    },
+    {
+      "year": 1985,
+      "month": 4,
+      "north": 32.504191,
+      "south": 4.88512
+    },
+    {
+      "year": 1985,
+      "month": 5,
+      "north": 31.75668,
+      "south": 9.001492
+    },
+    {
+      "year": 1985,
+      "month": 6,
+      "north": 27.732019,
+      "south": 12.9897
+    },
+    {
+      "year": 1985,
+      "month": 7,
+      "north": 19.966481,
+      "south": 16.064482
+    },
+    {
+      "year": 1985,
+      "month": 8,
+      "north": 14.692306,
+      "south": 18.31528
+    },
+    {
+      "year": 1985,
+      "month": 9,
+      "north": 13.107987,
+      "south": 19.538755
+    },
+    {
+      "year": 1985,
+      "month": 10,
+      "north": 15.26645,
+      "south": 19.203553
+    },
+    {
+      "year": 1985,
+      "month": 11,
+      "north": 18.716914,
+      "south": 17.079819
+    },
+    {
+      "year": 1985,
+      "month": 12,
+      "north": 22.336053,
+      "south": 11.724054
+    },
+    {
+      "year": 1986,
+      "month": 1,
+      "north": 26.198372,
+      "south": 5.188571
+    },
+    {
+      "year": 1986,
+      "month": 2,
+      "north": 29.14781,
+      "south": 2.545294
+    },
+    {
+      "year": 1986,
+      "month": 3,
+      "north": 31.392898,
+      "south": 2.228548
+    },
+    {
+      "year": 1986,
+      "month": 4,
+      "north": 32.25813,
+      "south": 4.51895
+    },
+    {
+      "year": 1986,
+      "month": 5,
+      "north": 31.285181,
+      "south": 8.15949
+    },
+    {
+      "year": 1986,
+      "month": 6,
+      "north": 27.665613,
+      "south": 11.942238
+    },
+    {
+      "year": 1986,
+      "month": 7,
+      "north": 20.306252,
+      "south": 15.688623
+    },
+    {
+      "year": 1986,
+      "month": 8,
+      "north": 15.069265,
+      "south": 17.554412
+    },
+    {
+      "year": 1986,
+      "month": 9,
+      "north": 13.847801,
+      "south": 18.574316
+    },
+    {
+      "year": 1986,
+      "month": 10,
+      "north": 16.153093,
+      "south": 18.044284
+    },
+    {
+      "year": 1986,
+      "month": 11,
+      "north": 19.814793,
+      "south": 15.266183
+    },
+    {
+      "year": 1986,
+      "month": 12,
+      "north": 23.651866,
+      "south": 9.689966
+    },
+    {
+      "year": 1987,
+      "month": 1,
+      "north": 27.29713,
+      "south": 4.509702
+    },
+    {
+      "year": 1987,
+      "month": 2,
+      "north": 30.51912,
+      "south": 2.338462
+    },
+    {
+      "year": 1987,
+      "month": 3,
+      "north": 32.175065,
+      "south": 2.628055
+    },
+    {
+      "year": 1987,
+      "month": 4,
+      "north": 33.141935,
+      "south": 5.352179
+    },
+    {
+      "year": 1987,
+      "month": 5,
+      "north": 32.219239,
+      "south": 9.16461
+    },
+    {
+      "year": 1987,
+      "month": 6,
+      "north": 28.930882,
+      "south": 12.9656
+    },
+    {
+      "year": 1987,
+      "month": 7,
+      "north": 21.431229,
+      "south": 16.459454
+    },
+    {
+      "year": 1987,
+      "month": 8,
+      "north": 15.261258,
+      "south": 19.344516
+    },
+    {
+      "year": 1987,
+      "month": 9,
+      "north": 13.956538,
+      "south": 20.314472
+    },
+    {
+      "year": 1987,
+      "month": 10,
+      "north": 16.263059,
+      "south": 20.117681
+    },
+    {
+      "year": 1987,
+      "month": 11,
+      "north": 19.811534,
+      "south": 17.390576
+    },
+    {
+      "year": 1987,
+      "month": 12,
+      "north": 23.554358,
+      "south": 11.390123
+    },
+    {
+      "year": 1988,
+      "month": 1,
+      "north": 27.39054,
+      "south": 4.478075
+    },
+    {
+      "year": 1988,
+      "month": 2,
+      "north": 30.14479,
+      "south": 2.112579
+    },
+    {
+      "year": 1988,
+      "month": 3,
+      "north": 32.282161,
+      "south": 2.196663
+    },
+    {
+      "year": 1988,
+      "month": 4,
+      "north": 32.867885,
+      "south": 4.224565
+    },
+    {
+      "year": 1988,
+      "month": 5,
+      "north": 31.277072,
+      "south": 7.81708
+    },
+    {
+      "year": 1988,
+      "month": 6,
+      "north": 27.310479,
+      "south": 12.072268
+    },
+    {
+      "year": 1988,
+      "month": 7,
+      "north": 20.17114,
+      "south": 15.723069
+    },
+    {
+      "year": 1988,
+      "month": 8,
+      "north": 15.040783,
+      "south": 18.492663
+    },
+    {
+      "year": 1988,
+      "month": 9,
+      "north": 13.645365,
+      "south": 19.599328
+    },
+    {
+      "year": 1988,
+      "month": 10,
+      "north": 15.733004,
+      "south": 19.594438
+    },
+    {
+      "year": 1988,
+      "month": 11,
+      "north": 19.614766,
+      "south": 16.95932
+    },
+    {
+      "year": 1988,
+      "month": 12,
+      "north": 23.866978,
+      "south": 10.525053
+    },
+    {
+      "year": 1989,
+      "month": 1,
+      "north": 27.627255,
+      "south": 3.759409
+    },
+    {
+      "year": 1989,
+      "month": 2,
+      "north": 30.146196,
+      "south": 1.908387
+    },
+    {
+      "year": 1989,
+      "month": 3,
+      "north": 31.737038,
+      "south": 2.184392
+    },
+    {
+      "year": 1989,
+      "month": 4,
+      "north": 32.227819,
+      "south": 4.424658
+    },
+    {
+      "year": 1989,
+      "month": 5,
+      "north": 31.063748,
+      "south": 8.916559
+    },
+    {
+      "year": 1989,
+      "month": 6,
+      "north": 27.732391,
+      "south": 13.373037
+    },
+    {
+      "year": 1989,
+      "month": 7,
+      "north": 20.463401,
+      "south": 16.449039
+    },
+    {
+      "year": 1989,
+      "month": 8,
+      "north": 15.271127,
+      "south": 18.466603
+    },
+    {
+      "year": 1989,
+      "month": 9,
+      "north": 13.590992,
+      "south": 19.407198
+    },
+    {
+      "year": 1989,
+      "month": 10,
+      "north": 15.564615,
+      "south": 18.52686
+    },
+    {
+      "year": 1989,
+      "month": 11,
+      "north": 19.734965,
+      "south": 15.807474
+    },
+    {
+      "year": 1989,
+      "month": 12,
+      "north": 23.921597,
+      "south": 9.733339
+    },
+    {
+      "year": 1990,
+      "month": 1,
+      "north": 27.456179,
+      "south": 4.23725
+    },
+    {
+      "year": 1990,
+      "month": 2,
+      "north": 30.133384,
+      "south": 2.194525
+    },
+    {
+      "year": 1990,
+      "month": 3,
+      "north": 31.931052,
+      "south": 2.498023
+    },
+    {
+      "year": 1990,
+      "month": 4,
+      "north": 31.860109,
+      "south": 5.222884
+    },
+    {
+      "year": 1990,
+      "month": 5,
+      "north": 30.155243,
+      "south": 8.570228
+    },
+    {
+      "year": 1990,
+      "month": 6,
+      "north": 25.852066,
+      "south": 12.921421
+    },
+    {
+      "year": 1990,
+      "month": 7,
+      "north": 19.047274,
+      "south": 16.286022
+    },
+    {
+      "year": 1990,
+      "month": 8,
+      "north": 13.989577,
+      "south": 19.015148
+    },
+    {
+      "year": 1990,
+      "month": 9,
+      "north": 12.675207,
+      "south": 20.113326
+    },
+    {
+      "year": 1990,
+      "month": 10,
+      "north": 14.832032,
+      "south": 20.033495
+    },
+    {
+      "year": 1990,
+      "month": 11,
+      "north": 19.385596,
+      "south": 17.456451
+    },
+    {
+      "year": 1990,
+      "month": 12,
+      "north": 23.476363,
+      "south": 10.811405
+    },
+    {
+      "year": 1991,
+      "month": 1,
+      "north": 27.104342,
+      "south": 4.817558
+    },
+    {
+      "year": 1991,
+      "month": 2,
+      "north": 29.998486,
+      "south": 2.523222
+    },
+    {
+      "year": 1991,
+      "month": 3,
+      "north": 32.042721,
+      "south": 2.709032
+    },
+    {
+      "year": 1991,
+      "month": 4,
+      "north": 32.894866,
+      "south": 5.285768
+    },
+    {
+      "year": 1991,
+      "month": 5,
+      "north": 31.727076,
+      "south": 8.871756
+    },
+    {
+      "year": 1991,
+      "month": 6,
+      "north": 27.41836,
+      "south": 12.154426
+    },
+    {
+      "year": 1991,
+      "month": 7,
+      "north": 19.668755,
+      "south": 15.609856
+    },
+    {
+      "year": 1991,
+      "month": 8,
+      "north": 14.384514,
+      "south": 18.338637
+    },
+    {
+      "year": 1991,
+      "month": 9,
+      "north": 12.671761,
+      "south": 19.424047
+    },
+    {
+      "year": 1991,
+      "month": 10,
+      "north": 14.857666,
+      "south": 18.752851
+    },
+    {
+      "year": 1991,
+      "month": 11,
+      "north": 18.727712,
+      "south": 16.011423
+    },
+    {
+      "year": 1991,
+      "month": 12,
+      "north": 22.678901,
+      "south": 9.782777
+    },
+    {
+      "year": 1992,
+      "month": 1,
+      "north": 26.398766,
+      "south": 4.050917
+    },
+    {
+      "year": 1992,
+      "month": 2,
+      "north": 29.522467,
+      "south": 2.178112
+    },
+    {
+      "year": 1992,
+      "month": 3,
+      "north": 31.121325,
+      "south": 2.463711
+    },
+    {
+      "year": 1992,
+      "month": 4,
+      "north": 31.891096,
+      "south": 5.262726
+    },
+    {
+      "year": 1992,
+      "month": 5,
+      "north": 30.741977,
+      "south": 8.95249
+    },
+    {
+      "year": 1992,
+      "month": 6,
+      "north": 27.588339,
+      "south": 12.542203
+    },
+    {
+      "year": 1992,
+      "month": 7,
+      "north": 20.644534,
+      "south": 15.986798
+    },
+    {
+      "year": 1992,
+      "month": 8,
+      "north": 14.950599,
+      "south": 18.85649
+    },
+    {
+      "year": 1992,
+      "month": 9,
+      "north": 13.835206,
+      "south": 19.733146
+    },
+    {
+      "year": 1992,
+      "month": 10,
+      "north": 16.407179,
+      "south": 19.644178
+    },
+    {
+      "year": 1992,
+      "month": 11,
+      "north": 20.002827,
+      "south": 16.732635
+    },
+    {
+      "year": 1992,
+      "month": 12,
+      "north": 23.953834,
+      "south": 9.969952
+    },
+    {
+      "year": 1993,
+      "month": 1,
+      "north": 27.435261,
+      "south": 3.31015
+    },
+    {
+      "year": 1993,
+      "month": 2,
+      "north": 30.147221,
+      "south": 1.201199
+    },
+    {
+      "year": 1993,
+      "month": 3,
+      "north": 32.00729,
+      "south": 1.510157
+    },
+    {
+      "year": 1993,
+      "month": 4,
+      "north": 32.572751,
+      "south": 4.422131
+    },
+    {
+      "year": 1993,
+      "month": 5,
+      "north": 31.162908,
+      "south": 8.96207
+    },
+    {
+      "year": 1993,
+      "month": 6,
+      "north": 26.432847,
+      "south": 13.070079
+    },
+    {
+      "year": 1993,
+      "month": 7,
+      "north": 18.223124,
+      "south": 16.738209
+    },
+    {
+      "year": 1993,
+      "month": 8,
+      "north": 12.715073,
+      "south": 19.125628
+    },
+    {
+      "year": 1993,
+      "month": 9,
+      "north": 11.398632,
+      "south": 20.612536
+    },
+    {
+      "year": 1993,
+      "month": 10,
+      "north": 13.862841,
+      "south": 20.692614
+    },
+    {
+      "year": 1993,
+      "month": 11,
+      "north": 18.089896,
+      "south": 18.290519
+    },
+    {
+      "year": 1993,
+      "month": 12,
+      "north": 22.117522,
+      "south": 11.296579
+    },
+    {
+      "year": 1994,
+      "month": 1,
+      "north": 26.082677,
+      "south": 4.761998
+    },
+    {
+      "year": 1994,
+      "month": 2,
+      "north": 28.961534,
+      "south": 2.50232
+    },
+    {
+      "year": 1994,
+      "month": 3,
+      "north": 30.839724,
+      "south": 3.028514
+    },
+    {
+      "year": 1994,
+      "month": 4,
+      "north": 31.480852,
+      "south": 5.676595
+    },
+    {
+      "year": 1994,
+      "month": 5,
+      "north": 30.471257,
+      "south": 9.639458
+    },
+    {
+      "year": 1994,
+      "month": 6,
+      "north": 26.596259,
+      "south": 13.390699
+    },
+    {
+      "year": 1994,
+      "month": 7,
+      "north": 19.203875,
+      "south": 17.094984
+    },
+    {
+      "year": 1994,
+      "month": 8,
+      "north": 13.537067,
+      "south": 19.57312
+    },
+    {
+      "year": 1994,
+      "month": 9,
+      "north": 12.283725,
+      "south": 20.79582
+    },
+    {
+      "year": 1994,
+      "month": 10,
+      "north": 14.494292,
+      "south": 20.365123
+    },
+    {
+      "year": 1994,
+      "month": 11,
+      "north": 18.579515,
+      "south": 17.558928
+    },
+    {
+      "year": 1994,
+      "month": 12,
+      "north": 22.473505,
+      "south": 10.716107
+    },
+    {
+      "year": 1995,
+      "month": 1,
+      "north": 25.961202,
+      "south": 4.632161
+    },
+    {
+      "year": 1995,
+      "month": 2,
+      "north": 28.264848,
+      "south": 2.213032
+    },
+    {
+      "year": 1995,
+      "month": 3,
+      "north": 29.863778,
+      "south": 2.483841
+    },
+    {
+      "year": 1995,
+      "month": 4,
+      "north": 30.027397,
+      "south": 5.306049
+    },
+    {
+      "year": 1995,
+      "month": 5,
+      "north": 28.439156,
+      "south": 9.2862
+    },
+    {
+      "year": 1995,
+      "month": 6,
+      "north": 23.934718,
+      "south": 12.978639
+    },
+    {
+      "year": 1995,
+      "month": 7,
+      "north": 16.495259,
+      "south": 16.386651
+    },
+    {
+      "year": 1995,
+      "month": 8,
+      "north": 11.40034,
+      "south": 19.236801
+    },
+    {
+      "year": 1995,
+      "month": 9,
+      "north": 10.255075,
+      "south": 19.769105
+    },
+    {
+      "year": 1995,
+      "month": 10,
+      "north": 11.678395,
+      "south": 18.555645
+    },
+    {
+      "year": 1995,
+      "month": 11,
+      "north": 15.837794,
+      "south": 16.262151
+    },
+    {
+      "year": 1995,
+      "month": 12,
+      "north": 20.032207,
+      "south": 10.558227
+    },
+    {
+      "year": 1996,
+      "month": 1,
+      "north": 23.902983,
+      "south": 5.000535
+    },
+    {
+      "year": 1996,
+      "month": 2,
+      "north": 26.838043,
+      "south": 2.186737
+    },
+    {
+      "year": 1996,
+      "month": 3,
+      "north": 28.593485,
+      "south": 2.168112
+    },
+    {
+      "year": 1996,
+      "month": 4,
+      "north": 29.374491,
+      "south": 5.077298
+    },
+    {
+      "year": 1996,
+      "month": 5,
+      "north": 28.738254,
+      "south": 9.636105
+    },
+    {
+      "year": 1996,
+      "month": 6,
+      "north": 25.606099,
+      "south": 14.204845
+    },
+    {
+      "year": 1996,
+      "month": 7,
+      "north": 18.799126,
+      "south": 17.197835
+    },
+    {
+      "year": 1996,
+      "month": 8,
+      "north": 13.736756,
+      "south": 19.282358
+    },
+    {
+      "year": 1996,
+      "month": 9,
+      "north": 12.574351,
+      "south": 20.365127
+    },
+    {
+      "year": 1996,
+      "month": 10,
+      "north": 15.161315,
+      "south": 19.930769
+    },
+    {
+      "year": 1996,
+      "month": 11,
+      "north": 17.826898,
+      "south": 17.033132
+    },
+    {
+      "year": 1996,
+      "month": 12,
+      "north": 21.286928,
+      "south": 9.736337
+    },
+    {
+      "year": 1997,
+      "month": 1,
+      "north": 25.181567,
+      "south": 3.760841
+    },
+    {
+      "year": 1997,
+      "month": 2,
+      "north": 28.184021,
+      "south": 2.05558
+    },
+    {
+      "year": 1997,
+      "month": 3,
+      "north": 29.858273,
+      "south": 2.397872
+    },
+    {
+      "year": 1997,
+      "month": 4,
+      "north": 30.597505,
+      "south": 5.022182
+    },
+    {
+      "year": 1997,
+      "month": 5,
+      "north": 29.248502,
+      "south": 9.15773
+    },
+    {
+      "year": 1997,
+      "month": 6,
+      "north": 25.35862,
+      "south": 12.84723
+    },
+    {
+      "year": 1997,
+      "month": 7,
+      "north": 18.145046,
+      "south": 16.2602
+    },
+    {
+      "year": 1997,
+      "month": 8,
+      "north": 13.007035,
+      "south": 18.509611
+    },
+    {
+      "year": 1997,
+      "month": 9,
+      "north": 11.952726,
+      "south": 19.88106
+    },
+    {
+      "year": 1997,
+      "month": 10,
+      "north": 13.558026,
+      "south": 19.478597
+    },
+    {
+      "year": 1997,
+      "month": 11,
+      "north": 17.13782,
+      "south": 16.663222
+    },
+    {
+      "year": 1997,
+      "month": 12,
+      "north": 21.242014,
+      "south": 10.156287
+    },
+    {
+      "year": 1998,
+      "month": 1,
+      "north": 25.253446,
+      "south": 3.834268
+    },
+    {
+      "year": 1998,
+      "month": 2,
+      "north": 28.286546,
+      "south": 1.931814
+    },
+    {
+      "year": 1998,
+      "month": 3,
+      "north": 29.996756,
+      "south": 2.204983
+    },
+    {
+      "year": 1998,
+      "month": 4,
+      "north": 30.496239,
+      "south": 5.133536
+    },
+    {
+      "year": 1998,
+      "month": 5,
+      "north": 29.280375,
+      "south": 9.031985
+    },
+    {
+      "year": 1998,
+      "month": 6,
+      "north": 24.721022,
+      "south": 12.633768
+    },
+    {
+      "year": 1998,
+      "month": 7,
+      "north": 17.431751,
+      "south": 15.889037
+    },
+    {
+      "year": 1998,
+      "month": 8,
+      "north": 12.153143,
+      "south": 18.250701
+    },
+    {
+      "year": 1998,
+      "month": 9,
+      "north": 10.370945,
+      "south": 19.568754
+    },
+    {
+      "year": 1998,
+      "month": 10,
+      "north": 12.293763,
+      "south": 19.392241
+    },
+    {
+      "year": 1998,
+      "month": 11,
+      "north": 15.982745,
+      "south": 16.536837
+    },
+    {
+      "year": 1998,
+      "month": 12,
+      "north": 19.949893,
+      "south": 10.306609
+    },
+    {
+      "year": 1999,
+      "month": 1,
+      "north": 24.116475,
+      "south": 4.163587
+    },
+    {
+      "year": 1999,
+      "month": 2,
+      "north": 27.150497,
+      "south": 1.845992
+    },
+    {
+      "year": 1999,
+      "month": 3,
+      "north": 28.865627,
+      "south": 2.07045
+    },
+    {
+      "year": 1999,
+      "month": 4,
+      "north": 29.717991,
+      "south": 5.020019
+    },
+    {
+      "year": 1999,
+      "month": 5,
+      "north": 28.610613,
+      "south": 8.984651
+    },
+    {
+      "year": 1999,
+      "month": 6,
+      "north": 24.567624,
+      "south": 12.939068
+    },
+    {
+      "year": 1999,
+      "month": 7,
+      "north": 17.438241,
+      "south": 16.47141
+    },
+    {
+      "year": 1999,
+      "month": 8,
+      "north": 11.917814,
+      "south": 18.446954
+    },
+    {
+      "year": 1999,
+      "month": 9,
+      "north": 9.948501,
+      "south": 19.143316
+    },
+    {
+      "year": 1999,
+      "month": 10,
+      "north": 12.213705,
+      "south": 18.740859
+    },
+    {
+      "year": 1999,
+      "month": 11,
+      "north": 16.324078,
+      "south": 15.805663
+    },
+    {
+      "year": 1999,
+      "month": 12,
+      "north": 19.879314,
+      "south": 10.036203
+    },
+    {
+      "year": 2000,
+      "month": 1,
+      "north": 23.633372,
+      "south": 4.198768
+    },
+    {
+      "year": 2000,
+      "month": 2,
+      "north": 26.427176,
+      "south": 2.090684
+    },
+    {
+      "year": 2000,
+      "month": 3,
+      "north": 28.253217,
+      "south": 2.407977
+    },
+    {
+      "year": 2000,
+      "month": 4,
+      "north": 28.915838,
+      "south": 5.071039
+    },
+    {
+      "year": 2000,
+      "month": 5,
+      "north": 28.072313,
+      "south": 9.556308
+    },
+    {
+      "year": 2000,
+      "month": 6,
+      "north": 24.32255,
+      "south": 13.320179
+    },
+    {
+      "year": 2000,
+      "month": 7,
+      "north": 16.975825,
+      "south": 16.173789
+    },
+    {
+      "year": 2000,
+      "month": 8,
+      "north": 11.634484,
+      "south": 18.573958
+    },
+    {
+      "year": 2000,
+      "month": 9,
+      "north": 10.149999,
+      "south": 19.263093
+    },
+    {
+      "year": 2000,
+      "month": 10,
+      "north": 12.176272,
+      "south": 19.039365
+    },
+    {
+      "year": 2000,
+      "month": 11,
+      "north": 15.866443,
+      "south": 16.827336
+    },
+    {
+      "year": 2000,
+      "month": 12,
+      "north": 19.644591,
+      "south": 10.479896
+    },
+    {
+      "year": 2001,
+      "month": 1,
+      "north": 23.408542,
+      "south": 4.389231
+    },
+    {
+      "year": 2001,
+      "month": 2,
+      "north": 26.399797,
+      "south": 2.488288
+    },
+    {
+      "year": 2001,
+      "month": 3,
+      "north": 28.647074,
+      "south": 3.178009
+    },
+    {
+      "year": 2001,
+      "month": 4,
+      "north": 29.555443,
+      "south": 5.731386
+    },
+    {
+      "year": 2001,
+      "month": 5,
+      "north": 28.122321,
+      "south": 9.251539
+    },
+    {
+      "year": 2001,
+      "month": 6,
+      "north": 24.109515,
+      "south": 13.034248
+    },
+    {
+      "year": 2001,
+      "month": 7,
+      "north": 17.108032,
+      "south": 16.187163
+    },
+    {
+      "year": 2001,
+      "month": 8,
+      "north": 12.305771,
+      "south": 18.270092
+    },
+    {
+      "year": 2001,
+      "month": 9,
+      "north": 11.162471,
+      "south": 19.969447
+    },
+    {
+      "year": 2001,
+      "month": 10,
+      "north": 12.909534,
+      "south": 19.520059
+    },
+    {
+      "year": 2001,
+      "month": 11,
+      "north": 16.476888,
+      "south": 17.021203
+    },
+    {
+      "year": 2001,
+      "month": 12,
+      "north": 19.851726,
+      "south": 11.05897
+    },
+    {
+      "year": 2002,
+      "month": 1,
+      "north": 23.486098,
+      "south": 4.817708
+    },
+    {
+      "year": 2002,
+      "month": 2,
+      "north": 26.621987,
+      "south": 2.471026
+    },
+    {
+      "year": 2002,
+      "month": 3,
+      "north": 28.491005,
+      "south": 2.41396
+    },
+    {
+      "year": 2002,
+      "month": 4,
+      "north": 28.780231,
+      "south": 4.538493
+    },
+    {
+      "year": 2002,
+      "month": 5,
+      "north": 27.621173,
+      "south": 8.108587
+    },
+    {
+      "year": 2002,
+      "month": 6,
+      "north": 23.631873,
+      "south": 11.652567
+    },
+    {
+      "year": 2002,
+      "month": 7,
+      "north": 16.369139,
+      "south": 15.531938
+    },
+    {
+      "year": 2002,
+      "month": 8,
+      "north": 11.063735,
+      "south": 17.954486
+    },
+    {
+      "year": 2002,
+      "month": 9,
+      "north": 9.691481,
+      "south": 19.056865
+    },
+    {
+      "year": 2002,
+      "month": 10,
+      "north": 11.487141,
+      "south": 18.734402
+    },
+    {
+      "year": 2002,
+      "month": 11,
+      "north": 15.41644,
+      "south": 16.030453
+    },
+    {
+      "year": 2002,
+      "month": 12,
+      "north": 19.505568,
+      "south": 10.187232
+    },
+    {
+      "year": 2003,
+      "month": 1,
+      "north": 23.373559,
+      "south": 4.609675
+    },
+    {
+      "year": 2003,
+      "month": 2,
+      "north": 26.359457,
+      "south": 2.426161
+    },
+    {
+      "year": 2003,
+      "month": 3,
+      "north": 28.428718,
+      "south": 2.962361
+    },
+    {
+      "year": 2003,
+      "month": 4,
+      "north": 28.931592,
+      "south": 5.698825
+    },
+    {
+      "year": 2003,
+      "month": 5,
+      "north": 27.377307,
+      "south": 9.508452
+    },
+    {
+      "year": 2003,
+      "month": 6,
+      "north": 23.464878,
+      "south": 13.660476
+    },
+    {
+      "year": 2003,
+      "month": 7,
+      "north": 16.170899,
+      "south": 17.159792
+    },
+    {
+      "year": 2003,
+      "month": 8,
+      "north": 10.941001,
+      "south": 19.193497
+    },
+    {
+      "year": 2003,
+      "month": 9,
+      "north": 9.501968,
+      "south": 20.22812
+    },
+    {
+      "year": 2003,
+      "month": 10,
+      "north": 10.973628,
+      "south": 20.154382
+    },
+    {
+      "year": 2003,
+      "month": 11,
+      "north": 14.682941,
+      "south": 17.532175
+    },
+    {
+      "year": 2003,
+      "month": 12,
+      "north": 18.7113,
+      "south": 10.859604
+    },
+    {
+      "year": 2004,
+      "month": 1,
+      "north": 22.560871,
+      "south": 4.950139
+    },
+    {
+      "year": 2004,
+      "month": 2,
+      "north": 25.254493,
+      "south": 2.80172
+    },
+    {
+      "year": 2004,
+      "month": 3,
+      "north": 27.384129,
+      "south": 2.935919
+    },
+    {
+      "year": 2004,
+      "month": 4,
+      "north": 27.800916,
+      "south": 5.427452
+    },
+    {
+      "year": 2004,
+      "month": 5,
+      "north": 26.834016,
+      "south": 9.304205
+    },
+    {
+      "year": 2004,
+      "month": 6,
+      "north": 23.634254,
+      "south": 13.390147
+    },
+    {
+      "year": 2004,
+      "month": 7,
+      "north": 16.739389,
+      "south": 17.12971
+    },
+    {
+      "year": 2004,
+      "month": 8,
+      "north": 11.300864,
+      "south": 19.467895
+    },
+    {
+      "year": 2004,
+      "month": 9,
+      "north": 9.647977,
+      "south": 20.617486
+    },
+    {
+      "year": 2004,
+      "month": 10,
+      "north": 11.484831,
+      "south": 20.504489
+    },
+    {
+      "year": 2004,
+      "month": 11,
+      "north": 15.259647,
+      "south": 18.160103
+    },
+    {
+      "year": 2004,
+      "month": 12,
+      "north": 19.308622,
+      "south": 11.581104
+    },
+    {
+      "year": 2005,
+      "month": 1,
+      "north": 22.666522,
+      "south": 4.714353
+    },
+    {
+      "year": 2005,
+      "month": 2,
+      "north": 25.020718,
+      "south": 2.432063
+    },
+    {
+      "year": 2005,
+      "month": 3,
+      "north": 27.181676,
+      "south": 2.687493
+    },
+    {
+      "year": 2005,
+      "month": 4,
+      "north": 28.046846,
+      "south": 5.401664
+    },
+    {
+      "year": 2005,
+      "month": 5,
+      "north": 26.940755,
+      "south": 9.085694
+    },
+    {
+      "year": 2005,
+      "month": 6,
+      "north": 22.285392,
+      "south": 12.867344
+    },
+    {
+      "year": 2005,
+      "month": 7,
+      "north": 15.097528,
+      "south": 16.232373
+    },
+    {
+      "year": 2005,
+      "month": 8,
+      "north": 10.337841,
+      "south": 18.477799
+    },
+    {
+      "year": 2005,
+      "month": 9,
+      "north": 8.835711,
+      "south": 19.919087
+    },
+    {
+      "year": 2005,
+      "month": 10,
+      "north": 10.37916,
+      "south": 19.045387
+    },
+    {
+      "year": 2005,
+      "month": 11,
+      "north": 14.344977,
+      "south": 16.554905
+    },
+    {
+      "year": 2005,
+      "month": 12,
+      "north": 18.270582,
+      "south": 9.833075
+    },
+    {
+      "year": 2006,
+      "month": 1,
+      "north": 21.894117,
+      "south": 3.792417
+    },
+    {
+      "year": 2006,
+      "month": 2,
+      "north": 24.513866,
+      "south": 2.065481
+    },
+    {
+      "year": 2006,
+      "month": 3,
+      "north": 26.294497,
+      "south": 2.027099
+    },
+    {
+      "year": 2006,
+      "month": 4,
+      "north": 27.109721,
+      "south": 4.308753
+    },
+    {
+      "year": 2006,
+      "month": 5,
+      "north": 25.763713,
+      "south": 8.213533
+    },
+    {
+      "year": 2006,
+      "month": 6,
+      "north": 21.305989,
+      "south": 12.863319
+    },
+    {
+      "year": 2006,
+      "month": 7,
+      "north": 14.401068,
+      "south": 16.516554
+    },
+    {
+      "year": 2006,
+      "month": 8,
+      "north": 9.912509,
+      "south": 19.168896
+    },
+    {
+      "year": 2006,
+      "month": 9,
+      "north": 8.47525,
+      "south": 20.853237
+    },
+    {
+      "year": 2006,
+      "month": 10,
+      "north": 9.815894,
+      "south": 20.738004
+    },
+    {
+      "year": 2006,
+      "month": 11,
+      "north": 13.50792,
+      "south": 17.763521
+    },
+    {
+      "year": 2006,
+      "month": 12,
+      "north": 17.140179,
+      "south": 10.720466
+    },
+    {
+      "year": 2007,
+      "month": 1,
+      "north": 21.067524,
+      "south": 4.136582
+    },
+    {
+      "year": 2007,
+      "month": 2,
+      "north": 23.91597,
+      "south": 1.99954
+    },
+    {
+      "year": 2007,
+      "month": 3,
+      "north": 25.851265,
+      "south": 2.31139
+    },
+    {
+      "year": 2007,
+      "month": 4,
+      "north": 26.416255,
+      "south": 4.757602
+    },
+    {
+      "year": 2007,
+      "month": 5,
+      "north": 25.320752,
+      "south": 8.467812
+    },
+    {
+      "year": 2007,
+      "month": 6,
+      "north": 20.853683,
+      "south": 12.713921
+    },
+    {
+      "year": 2007,
+      "month": 7,
+      "north": 13.352667,
+      "south": 16.206741
+    },
+    {
+      "year": 2007,
+      "month": 8,
+      "north": 8.409777,
+      "south": 19.055816
+    },
+    {
+      "year": 2007,
+      "month": 9,
+      "north": 6.980504,
+      "south": 20.960497
+    },
+    {
+      "year": 2007,
+      "month": 10,
+      "north": 7.920626,
+      "south": 20.435054
+    },
+    {
+      "year": 2007,
+      "month": 11,
+      "north": 12.253062,
+      "south": 17.618351
+    },
+    {
+      "year": 2007,
+      "month": 12,
+      "north": 16.761301,
+      "south": 11.91321
+    },
+    {
+      "year": 2008,
+      "month": 1,
+      "north": 21.381699,
+      "south": 5.453296
+    },
+    {
+      "year": 2008,
+      "month": 2,
+      "north": 24.540638,
+      "south": 2.653237
+    },
+    {
+      "year": 2008,
+      "month": 3,
+      "north": 26.719068,
+      "south": 3.298092
+    },
+    {
+      "year": 2008,
+      "month": 4,
+      "north": 27.500325,
+      "south": 6.374363
+    },
+    {
+      "year": 2008,
+      "month": 5,
+      "north": 26.324227,
+      "south": 10.007213
+    },
+    {
+      "year": 2008,
+      "month": 6,
+      "north": 21.865824,
+      "south": 14.12854
+    },
+    {
+      "year": 2008,
+      "month": 7,
+      "north": 14.446276,
+      "south": 17.483965
+    },
+    {
+      "year": 2008,
+      "month": 8,
+      "north": 8.887172,
+      "south": 19.767588
+    },
+    {
+      "year": 2008,
+      "month": 9,
+      "north": 7.124541,
+      "south": 20.758507
+    },
+    {
+      "year": 2008,
+      "month": 10,
+      "north": 8.874088,
+      "south": 20.272803
+    },
+    {
+      "year": 2008,
+      "month": 11,
+      "north": 13.232376,
+      "south": 18.061231
+    },
+    {
+      "year": 2008,
+      "month": 12,
+      "north": 17.567785,
+      "south": 12.079376
+    },
+    {
+      "year": 2009,
+      "month": 1,
+      "north": 21.286715,
+      "south": 5.181784
+    },
+    {
+      "year": 2009,
+      "month": 2,
+      "north": 24.258665,
+      "south": 2.488091
+    },
+    {
+      "year": 2009,
+      "month": 3,
+      "north": 26.158753,
+      "south": 2.882316
+    },
+    {
+      "year": 2009,
+      "month": 4,
+      "north": 27.00993,
+      "south": 6.102416
+    },
+    {
+      "year": 2009,
+      "month": 5,
+      "north": 25.822749,
+      "south": 9.611675
+    },
+    {
+      "year": 2009,
+      "month": 6,
+      "north": 21.598633,
+      "south": 13.659319
+    },
+    {
+      "year": 2009,
+      "month": 7,
+      "north": 14.281214,
+      "south": 16.812331
+    },
+    {
+      "year": 2009,
+      "month": 8,
+      "north": 9.214464,
+      "south": 19.130693
+    },
+    {
+      "year": 2009,
+      "month": 9,
+      "north": 7.773199,
+      "south": 20.29041
+    },
+    {
+      "year": 2009,
+      "month": 10,
+      "north": 8.929787,
+      "south": 19.898751
+    },
+    {
+      "year": 2009,
+      "month": 11,
+      "north": 12.988399,
+      "south": 17.171225
+    },
+    {
+      "year": 2009,
+      "month": 12,
+      "north": 17.191225,
+      "south": 10.973534
+    },
+    {
+      "year": 2010,
+      "month": 1,
+      "north": 21.109811,
+      "south": 4.759887
+    },
+    {
+      "year": 2010,
+      "month": 2,
+      "north": 23.978647,
+      "south": 2.680132
+    },
+    {
+      "year": 2010,
+      "month": 3,
+      "north": 26.366691,
+      "south": 2.8364
+    },
+    {
+      "year": 2010,
+      "month": 4,
+      "north": 27.235919,
+      "south": 5.170577
+    },
+    {
+      "year": 2010,
+      "month": 5,
+      "north": 25.461802,
+      "south": 9.325089
+    },
+    {
+      "year": 2010,
+      "month": 6,
+      "north": 20.39029,
+      "south": 14.216401
+    },
+    {
+      "year": 2010,
+      "month": 7,
+      "north": 12.914862,
+      "south": 17.87194
+    },
+    {
+      "year": 2010,
+      "month": 8,
+      "north": 7.956824,
+      "south": 19.979788
+    },
+    {
+      "year": 2010,
+      "month": 9,
+      "north": 6.384649,
+      "south": 20.339858
+    },
+    {
+      "year": 2010,
+      "month": 10,
+      "north": 8.27686,
+      "south": 20.274509
+    },
+    {
+      "year": 2010,
+      "month": 11,
+      "north": 12.365738,
+      "south": 17.365244
+    },
+    {
+      "year": 2010,
+      "month": 12,
+      "north": 16.301718,
+      "south": 11.137835
+    },
+    {
+      "year": 2011,
+      "month": 1,
+      "north": 19.862114,
+      "south": 4.715248
+    },
+    {
+      "year": 2011,
+      "month": 2,
+      "north": 23.110009,
+      "south": 2.437327
+    },
+    {
+      "year": 2011,
+      "month": 3,
+      "north": 24.972412,
+      "south": 2.552581
+    },
+    {
+      "year": 2011,
+      "month": 4,
+      "north": 25.93797,
+      "south": 4.623619
+    },
+    {
+      "year": 2011,
+      "month": 5,
+      "north": 24.464508,
+      "south": 8.689687
+    },
+    {
+      "year": 2011,
+      "month": 6,
+      "north": 19.56847,
+      "south": 12.800335
+    },
+    {
+      "year": 2011,
+      "month": 7,
+      "north": 11.896325,
+      "south": 16.105865
+    },
+    {
+      "year": 2011,
+      "month": 8,
+      "north": 7.15902,
+      "south": 19.197434
+    },
+    {
+      "year": 2011,
+      "month": 9,
+      "north": 5.963485,
+      "south": 20.59334
+    },
+    {
+      "year": 2011,
+      "month": 10,
+      "north": 7.609962,
+      "south": 20.332675
+    },
+    {
+      "year": 2011,
+      "month": 11,
+      "north": 11.94725,
+      "south": 17.326554
+    },
+    {
+      "year": 2011,
+      "month": 12,
+      "north": 16.288091,
+      "south": 10.87044
+    },
+    {
+      "year": 2012,
+      "month": 1,
+      "north": 20.555908,
+      "south": 4.829543
+    },
+    {
+      "year": 2012,
+      "month": 2,
+      "north": 23.268107,
+      "south": 2.429876
+    },
+    {
+      "year": 2012,
+      "month": 3,
+      "north": 25.586304,
+      "south": 2.552567
+    },
+    {
+      "year": 2012,
+      "month": 4,
+      "north": 26.569772,
+      "south": 5.357356
+    },
+    {
+      "year": 2012,
+      "month": 5,
+      "north": 25.071434,
+      "south": 9.361356
+    },
+    {
+      "year": 2012,
+      "month": 6,
+      "north": 19.15172,
+      "south": 13.275213
+    },
+    {
+      "year": 2012,
+      "month": 7,
+      "north": 11.667713,
+      "south": 17.116775
+    },
+    {
+      "year": 2012,
+      "month": 8,
+      "north": 6.567065,
+      "south": 19.756182
+    },
+    {
+      "year": 2012,
+      "month": 9,
+      "north": 4.946497,
+      "south": 21.205503
+    },
+    {
+      "year": 2012,
+      "month": 10,
+      "north": 6.528051,
+      "south": 20.831837
+    },
+    {
+      "year": 2012,
+      "month": 11,
+      "north": 10.621241,
+      "south": 18.398972
+    },
+    {
+      "year": 2012,
+      "month": 12,
+      "north": 15.375762,
+      "south": 11.987875
+    },
+    {
+      "year": 2013,
+      "month": 1,
+      "north": 19.535428,
+      "south": 5.525926
+    },
+    {
+      "year": 2013,
+      "month": 2,
+      "north": 23.347357,
+      "south": 2.930017
+    },
+    {
+      "year": 2013,
+      "month": 3,
+      "north": 25.83163,
+      "south": 3.127184
+    },
+    {
+      "year": 2013,
+      "month": 4,
+      "north": 26.628355,
+      "south": 5.854101
+    },
+    {
+      "year": 2013,
+      "month": 5,
+      "north": 25.04181,
+      "south": 9.746237
+    },
+    {
+      "year": 2013,
+      "month": 6,
+      "north": 20.513039,
+      "south": 14.152091
+    },
+    {
+      "year": 2013,
+      "month": 7,
+      "north": 13.030141,
+      "south": 18.536246
+    },
+    {
+      "year": 2013,
+      "month": 8,
+      "north": 8.267064,
+      "south": 21.641987
+    },
+    {
+      "year": 2013,
+      "month": 9,
+      "north": 7.005476,
+      "south": 23.147113
+    },
+    {
+      "year": 2013,
+      "month": 10,
+      "north": 8.881699,
+      "south": 23.09528
+    },
+    {
+      "year": 2013,
+      "month": 11,
+      "north": 12.784922,
+      "south": 20.546048
+    },
+    {
+      "year": 2013,
+      "month": 12,
+      "north": 17.225172,
+      "south": 14.446272
+    },
+    {
+      "year": 2014,
+      "month": 1,
+      "north": 21.241123,
+      "south": 7.01178
+    },
+    {
+      "year": 2014,
+      "month": 2,
+      "north": 23.707793,
+      "south": 3.895729
+    },
+    {
+      "year": 2014,
+      "month": 3,
+      "north": 25.754757,
+      "south": 3.84012
+    },
+    {
+      "year": 2014,
+      "month": 4,
+      "north": 26.646511,
+      "south": 7.03932
+    },
+    {
+      "year": 2014,
+      "month": 5,
+      "north": 25.25737,
+      "south": 10.883266
+    },
+    {
+      "year": 2014,
+      "month": 6,
+      "north": 20.63857,
+      "south": 15.088054
+    },
+    {
+      "year": 2014,
+      "month": 7,
+      "north": 13.874957,
+      "south": 18.756432
+    },
+    {
+      "year": 2014,
+      "month": 8,
+      "north": 9.462189,
+      "south": 21.34916
+    },
+    {
+      "year": 2014,
+      "month": 9,
+      "north": 7.991871,
+      "south": 22.93942
+    },
+    {
+      "year": 2014,
+      "month": 10,
+      "north": 9.515756,
+      "south": 22.249969
+    },
+    {
+      "year": 2014,
+      "month": 11,
+      "north": 13.76796,
+      "south": 19.53025
+    },
+    {
+      "year": 2014,
+      "month": 12,
+      "north": 18.138338,
+      "south": 13.689688
+    },
+    {
+      "year": 2015,
+      "month": 1,
+      "north": 21.984805,
+      "south": 7.124108
+    },
+    {
+      "year": 2015,
+      "month": 2,
+      "north": 24.966377,
+      "south": 3.758537
+    },
+    {
+      "year": 2015,
+      "month": 3,
+      "north": 26.593969,
+      "south": 3.946908
+    },
+    {
+      "year": 2015,
+      "month": 4,
+      "north": 27.359405,
+      "south": 6.941165
+    },
+    {
+      "year": 2015,
+      "month": 5,
+      "north": 25.899506,
+      "south": 11.217453
+    },
+    {
+      "year": 2015,
+      "month": 6,
+      "north": 21.127956,
+      "south": 15.140455
+    },
+    {
+      "year": 2015,
+      "month": 7,
+      "north": 13.783415,
+      "south": 18.913618
+    },
+    {
+      "year": 2015,
+      "month": 8,
+      "north": 8.564615,
+      "south": 20.380441
+    },
+    {
+      "year": 2015,
+      "month": 9,
+      "north": 6.951262,
+      "south": 21.586692
+    },
+    {
+      "year": 2015,
+      "month": 10,
+      "north": 8.406106,
+      "south": 21.601118
+    },
+    {
+      "year": 2015,
+      "month": 11,
+      "north": 12.53088,
+      "south": 19.270515
+    },
+    {
+      "year": 2015,
+      "month": 12,
+      "north": 16.963621,
+      "south": 12.580848
+    },
+    {
+      "year": 2016,
+      "month": 1,
+      "north": 20.576141,
+      "south": 5.563552
+    },
+    {
+      "year": 2016,
+      "month": 2,
+      "north": 23.063076,
+      "south": 3.108708
+    },
+    {
+      "year": 2016,
+      "month": 3,
+      "north": 24.900573,
+      "south": 3.299777
+    },
+    {
+      "year": 2016,
+      "month": 4,
+      "north": 25.629552,
+      "south": 5.609411
+    },
+    {
+      "year": 2016,
+      "month": 5,
+      "north": 23.930944,
+      "south": 8.043184
+    },
+    {
+      "year": 2016,
+      "month": 6,
+      "north": 18.990515,
+      "south": 12.906513
+    },
+    {
+      "year": 2016,
+      "month": 7,
+      "north": 12.170209,
+      "south": 16.238974
+    },
+    {
+      "year": 2016,
+      "month": 8,
+      "north": 7.206687,
+      "south": 18.535315
+    },
+    {
+      "year": 2016,
+      "month": 9,
+      "north": 5.501491,
+      "south": 19.207607
+    },
+    {
+      "year": 2016,
+      "month": 10,
+      "north": 6.848771,
+      "south": 18.63612
+    },
+    {
+      "year": 2016,
+      "month": 11,
+      "north": 9.864141,
+      "south": 15.273401
+    },
+    {
+      "year": 2016,
+      "month": 12,
+      "north": 14.135505,
+      "south": 8.759013
+    },
+    {
+      "year": 2017,
+      "month": 1,
+      "north": 18.290635,
+      "south": 3.619398
+    },
+    {
+      "year": 2017,
+      "month": 2,
+      "north": 21.262145,
+      "south": 2.286619
+    },
+    {
+      "year": 2017,
+      "month": 3,
+      "north": 23.373137,
+      "south": 2.509208
+    },
+    {
+      "year": 2017,
+      "month": 4,
+      "north": 24.255193,
+      "south": 4.392603
+    },
+    {
+      "year": 2017,
+      "month": 5,
+      "north": 23.240065,
+      "south": 7.899535
+    },
+    {
+      "year": 2017,
+      "month": 6,
+      "north": 18.3033,
+      "south": 11.964257
+    },
+    {
+      "year": 2017,
+      "month": 7,
+      "north": 11.124313,
+      "south": 15.872377
+    },
+    {
+      "year": 2017,
+      "month": 8,
+      "north": 6.670307,
+      "south": 18.522302
+    },
+    {
+      "year": 2017,
+      "month": 9,
+      "north": 5.660187,
+      "south": 19.582275
+    },
+    {
+      "year": 2017,
+      "month": 10,
+      "north": 7.541831,
+      "south": 19.478069
+    },
+    {
+      "year": 2017,
+      "month": 11,
+      "north": 11.444224,
+      "south": 17.165565
+    },
+    {
+      "year": 2017,
+      "month": 12,
+      "north": 15.6471,
+      "south": 10.764326
+    },
+    {
+      "year": 2018,
+      "month": 1,
+      "north": 19.548604,
+      "south": 4.575014
+    },
+    {
+      "year": 2018,
+      "month": 2,
+      "north": 22.236207,
+      "south": 2.471096
+    },
+    {
+      "year": 2018,
+      "month": 3,
+      "north": 24.465507,
+      "south": 2.754279
+    },
+    {
+      "year": 2018,
+      "month": 4,
+      "north": 25.657674,
+      "south": 4.436312
+    },
+    {
+      "year": 2018,
+      "month": 5,
+      "north": 24.548613,
+      "south": 7.874363
+    },
+    {
+      "year": 2018,
+      "month": 6,
+      "north": 19.912443,
+      "south": 12.258954
+    },
+    {
+      "year": 2018,
+      "month": 7,
+      "north": 12.446604,
+      "south": 16.418316
+    },
+    {
+      "year": 2018,
+      "month": 8,
+      "north": 7.617858,
+      "south": 19.189796
+    },
+    {
+      "year": 2018,
+      "month": 9,
+      "north": 6.165694,
+      "south": 20.725613
+    },
+    {
+      "year": 2018,
+      "month": 10,
+      "north": 7.115963,
+      "south": 21.010066
+    },
+    {
+      "year": 2018,
+      "month": 11,
+      "north": 11.688113,
+      "south": 17.350932
+    },
+    {
+      "year": 2018,
+      "month": 12,
+      "north": 16.322951,
+      "south": 10.179317
+    },
+    {
+      "year": 2019,
+      "month": 1,
+      "north": 20.395096,
+      "south": 4.001372
+    },
+    {
+      "year": 2019,
+      "month": 2,
+      "north": 23.303233,
+      "south": 2.282481
+    },
+    {
+      "year": 2019,
+      "month": 3,
+      "north": 25.211963,
+      "south": 2.280201
+    },
+    {
+      "year": 2019,
+      "month": 4,
+      "north": 25.482786,
+      "south": 4.405279
+    },
+    {
+      "year": 2019,
+      "month": 5,
+      "north": 23.915428,
+      "south": 7.83907
+    },
+    {
+      "year": 2019,
+      "month": 6,
+      "north": 18.460753,
+      "south": 12.084562
+    },
+    {
+      "year": 2019,
+      "month": 7,
+      "north": 10.92933,
+      "south": 16.392167
+    },
+    {
+      "year": 2019,
+      "month": 8,
+      "north": 6.341454,
+      "south": 19.351087
+    },
+    {
+      "year": 2019,
+      "month": 9,
+      "north": 5.142278,
+      "south": 20.592954
+    },
+    {
+      "year": 2019,
+      "month": 10,
+      "north": 6.657303,
+      "south": 20.37796
+    },
+    {
+      "year": 2019,
+      "month": 11,
+      "north": 10.664559,
+      "south": 17.296967
+    },
+    {
+      "year": 2019,
+      "month": 12,
+      "north": 15.39757,
+      "south": 10.579123
+    },
+    {
+      "year": 2020,
+      "month": 1,
+      "north": 19.922568,
+      "south": 4.291127
+    },
+    {
+      "year": 2020,
+      "month": 2,
+      "north": 23.155362,
+      "south": 2.043161
+    },
+    {
+      "year": 2020,
+      "month": 3,
+      "north": 25.459363,
+      "south": 2.332104
+    },
+    {
+      "year": 2020,
+      "month": 4,
+      "north": 25.916843,
+      "south": 4.836082
+    },
+    {
+      "year": 2020,
+      "month": 5,
+      "north": 24.331614,
+      "south": 8.682225
+    },
+    {
+      "year": 2020,
+      "month": 6,
+      "north": 19.122642,
+      "south": 13.299777
+    },
+    {
+      "year": 2020,
+      "month": 7,
+      "north": 11.309443,
+      "south": 16.805321
+    },
+    {
+      "year": 2020,
+      "month": 8,
+      "north": 6.778484,
+      "south": 19.679585
+    },
+    {
+      "year": 2020,
+      "month": 9,
+      "north": 5.388962,
+      "south": 21.157444
+    },
+    {
+      "year": 2020,
+      "month": 10,
+      "north": 6.362861,
+      "south": 20.912231
+    },
+    {
+      "year": 2020,
+      "month": 11,
+      "north": 9.98615,
+      "south": 18.11231
+    },
+    {
+      "year": 2020,
+      "month": 12,
+      "north": 14.781246,
+      "south": 10.943619
+    },
+    {
+      "year": 2021,
+      "month": 1,
+      "north": 19.336765,
+      "south": 4.184859
+    },
+    {
+      "year": 2021,
+      "month": 2,
+      "north": 23.015918,
+      "south": 1.996144
+    },
+    {
+      "year": 2021,
+      "month": 3,
+      "north": 25.342035,
+      "south": 2.458762
+    },
+    {
+      "year": 2021,
+      "month": 4,
+      "north": 25.755865,
+      "south": 5.117937
+    },
+    {
+      "year": 2021,
+      "month": 5,
+      "north": 24.436715,
+      "south": 9.190518
+    },
+    {
+      "year": 2021,
+      "month": 6,
+      "north": 19.116768,
+      "south": 13.821998
+    },
+    {
+      "year": 2021,
+      "month": 7,
+      "north": 11.602817,
+      "south": 17.792817
+    },
+    {
+      "year": 2021,
+      "month": 8,
+      "north": 7.029437,
+      "south": 20.408236
+    },
+    {
+      "year": 2021,
+      "month": 9,
+      "north": 5.930489,
+      "south": 21.174581
+    },
+    {
+      "year": 2021,
+      "month": 10,
+      "north": 7.699008,
+      "south": 20.369727
+    },
+    {
+      "year": 2021,
+      "month": 11,
+      "north": 11.756225,
+      "south": 16.860215
+    },
+    {
+      "year": 2021,
+      "month": 12,
+      "north": 16.38991,
+      "south": 9.760136
+    },
+    {
+      "year": 2022,
+      "month": 1,
+      "north": 20.499999,
+      "south": 3.946873
+    },
+    {
+      "year": 2022,
+      "month": 2,
+      "north": 23.41702,
+      "south": 1.985908
+    },
+    {
+      "year": 2022,
+      "month": 3,
+      "north": 25.33896,
+      "south": 2.1856
+    },
+    {
+      "year": 2022,
+      "month": 4,
+      "north": 26.330328,
+      "south": 4.134158
+    },
+    {
+      "year": 2022,
+      "month": 5,
+      "north": 25.023628,
+      "south": 8.087457
+    },
+    {
+      "year": 2022,
+      "month": 6,
+      "north": 19.809133,
+      "south": 11.773759
+    },
+    {
+      "year": 2022,
+      "month": 7,
+      "north": 12.502776,
+      "south": 15.383735
+    },
+    {
+      "year": 2022,
+      "month": 8,
+      "north": 7.869908,
+      "south": 18.078957
+    },
+    {
+      "year": 2022,
+      "month": 9,
+      "north": 6.472335,
+      "south": 19.300839
+    },
+    {
+      "year": 2022,
+      "month": 10,
+      "north": 7.847653,
+      "south": 18.807412
+    },
+    {
+      "year": 2022,
+      "month": 11,
+      "north": 12.09528,
+      "south": 16.081065
+    },
+    {
+      "year": 2022,
+      "month": 12,
+      "north": 16.096755,
+      "south": 8.982721
+    },
+    {
+      "year": 2023,
+      "month": 1,
+      "north": 20.045517,
+      "south": 3.049706
+    },
+    {
+      "year": 2023,
+      "month": 2,
+      "north": 23.147955,
+      "south": 1.636551
+    },
+    {
+      "year": 2023,
+      "month": 3,
+      "north": 25.35823,
+      "south": 1.812311
+    },
+    {
+      "year": 2023,
+      "month": 4,
+      "north": 26.405228,
+      "south": 3.952685
+    },
+    {
+      "year": 2023,
+      "month": 5,
+      "north": 24.93724,
+      "south": 7.355234
+    },
+    {
+      "year": 2023,
+      "month": 6,
+      "north": 20.043674,
+      "south": 10.893173
+    },
+    {
+      "year": 2023,
+      "month": 7,
+      "north": 13.038631,
+      "south": 14.102069
+    },
+    {
+      "year": 2023,
+      "month": 8,
+      "north": 7.987096,
+      "south": 17.062008
+    },
+    {
+      "year": 2023,
+      "month": 9,
+      "north": 6.081648,
+      "south": 18.560795
+    },
+    {
+      "year": 2023,
+      "month": 10,
+      "north": 7.395047,
+      "south": 18.219755
+    },
+    {
+      "year": 2023,
+      "month": 11,
+      "north": 11.646182,
+      "south": 15.777039
+    },
+    {
+      "year": 2023,
+      "month": 12,
+      "north": 15.765529,
+      "south": 9.237115
+    },
+    {
+      "year": 2024,
+      "month": 1,
+      "north": 20.059612,
+      "south": 3.878813
+    },
+    {
+      "year": 2024,
+      "month": 2,
+      "north": 22.986138,
+      "south": 2.062678
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "north": 25.296042,
+      "south": 2.321222
+    },
+    {
+      "year": 2024,
+      "month": 4,
+      "north": 26.257858,
+      "south": 4.696715
+    },
+    {
+      "year": 2024,
+      "month": 5,
+      "north": 25.069008,
+      "south": 8.209778
+    },
+    {
+      "year": 2024,
+      "month": 6,
+      "north": 20.353617,
+      "south": 11.557053
+    },
+    {
+      "year": 2024,
+      "month": 7,
+      "north": 12.523469,
+      "south": 14.698529
+    },
+    {
+      "year": 2024,
+      "month": 8,
+      "north": 6.989908,
+      "south": 17.150657
+    },
+    {
+      "year": 2024,
+      "month": 9,
+      "north": 5.488004,
+      "south": 18.381961
+    },
+    {
+      "year": 2024,
+      "month": 10,
+      "north": 6.716863,
+      "south": 18.427225
+    },
+    {
+      "year": 2024,
+      "month": 11,
+      "north": 10.286615,
+      "south": 15.174237
+    },
+    {
+      "year": 2024,
+      "month": 12,
+      "north": 14.911281,
+      "south": 9.346441
+    },
+    {
+      "year": 2025,
+      "month": 1,
+      "north": 18.871267,
+      "south": 3.597589
+    },
+    {
+      "year": 2025,
+      "month": 2,
+      "north": 21.807139,
+      "south": 1.752967
+    },
+    {
+      "year": 2025,
+      "month": 3,
+      "north": 24.16642,
+      "south": 1.93579
+    },
+    {
+      "year": 2025,
+      "month": 4,
+      "north": 25.244348,
+      "south": 4.245653
+    },
+    {
+      "year": 2025,
+      "month": 5,
+      "north": 23.724577,
+      "south": 7.957819
+    },
+    {
+      "year": 2025,
+      "month": 6,
+      "north": 18.593698,
+      "south": 11.672424
+    },
+    {
+      "year": 2025,
+      "month": 7,
+      "north": 11.589126,
+      "south": 15.086419
+    },
+    {
+      "year": 2025,
+      "month": 8,
+      "north": 6.824414,
+      "south": 17.080163
+    },
+    {
+      "year": 2025,
+      "month": 9,
+      "north": 5.378097,
+      "south": 18.712519
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "north": 6.550739,
+      "south": 18.170644
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "north": 10.1729,
+      "south": 15.485949
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "north": 14.279887,
+      "south": 9.198415
+    }
+  ]
+}

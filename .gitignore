@@ -2,5 +2,7 @@ node_modules/
 readme-videos/
 .venv-oras5/
 .cache/oras5/
+.cache/giomas/
+archive/sea-ice-models/.cache/
 __pycache__/
 .cdsapirc

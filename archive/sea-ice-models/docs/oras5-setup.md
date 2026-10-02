@@ -1,5 +1,7 @@
 # ORAS5 Sea Ice Volume
 
+Archived implementation notes. These describe the former app integration and workflow, neither of which is active. Run local processing commands from `archive/sea-ice-models`; browser checks require restoring the integration. See [Archive](../README.md).
+
 ORAS5 adds separate **Arctic Sea Ice Volume (ORAS5)** and **Antarctic Sea Ice Volume (ORAS5)** choices. A Python updater downloads monthly ice thickness and concentration, integrates them on the native ocean grid, and writes one small file: `data/oras5-sea-ice-volume.json`. The browser and README video rotation enable both datasets automatically when that file is present and valid. PIOMAS remains a separate dataset.
 
 The first run processes the history from January 1958. This is the expensive part: hundreds of global fields, potentially many gigabytes and hours of download/queue time. Requests are grouped by year, raw downloads are discarded after reduction, and progress is saved after each completed year. Subsequent runs download missing months and revisit the last two published months when extending the series. Nothing new is published until the requested history is complete.
@@ -49,7 +51,7 @@ The following checks do not need an API key:
 node --test tests/oras5-data.test.mjs
 ```
 
-`--dry-run` checks public catalogue coverage. `--check-sample` downloads the native grid surface fields and a public January 1979 sample from ICDC, then checks the integration. It does **not** publish a partial app dataset. Public sample processing has been tested locally; authenticated CDS archive retrieval still needs a run with configured credentials.
+`--dry-run` checks public catalogue coverage. `--check-sample` downloads the native grid surface fields and a public January 1979 sample from ICDC, then checks the integration. It does **not** publish a partial app dataset. The published CDS history has been processed by the configured workflow, and its totals have been checked locally against independent ICDC files for January 1979 and January/September 1980.
 
 ## Scientific Method
 
@@ -63,7 +65,7 @@ Thickness is metres of ice within the ice-covered portion of a cell. Concentrati
 
 **These are estimates derived from monthly fields, not exact monthly mean volumes.** The product of mean thickness and mean concentration differs from the mean of their product when thickness and concentration covary within a month. The app does not have daily fields with which to recover that covariance. Source precision and six decimal places in the JSON do not represent uncertainty.
 
-ORAS5 is a model-based reanalysis constrained by observations, not a direct volume measurement. CDS publishes one ensemble member. The updater uses the consolidated product through 2014 and the operational product from 2015; their atmospheric forcing and observation inputs differ. Early records are less observationally constrained. ORAS5 is kept separate from PIOMAS, without splicing or calibrating their totals together. Both volume datasets use the same display scale, zero at the center and a 0-40 thousand km3 color range; enclosed spiral area is not proportional to volume.
+ORAS5 is a model-based reanalysis constrained by observations, not a direct volume measurement. CDS publishes one ensemble member. The updater uses the consolidated product through 2014 and the operational product from 2015; their atmospheric forcing and observation inputs differ. The system paper identifies 1958-1978 as a spin-up/backward extension. Early records are less observationally constrained and deserve particular care when interpreting trends. ORAS5 is kept separate from PIOMAS and GIOMAS, without splicing or calibrating their totals together. All volume datasets share the same display scale, zero at the center and a 0-60 thousand km3 radius and color range. This covers the published Arctic ORAS5 peak of 50.789613 thousand km3 in April 1968; equal volume reference values therefore have equal radii. Enclosed spiral area is not proportional to volume.
 
 Source metadata, coordinates, units, field pairs, monthly continuity, and numerical ranges are checked. Missing ocean concentration or thickness where ice is present causes a failure, rather than being treated as zero. An incomplete or shorter update cannot replace the existing snapshot. **Fetch Latest** in the app refreshes the published JSON, not the authenticated gridded source.
 

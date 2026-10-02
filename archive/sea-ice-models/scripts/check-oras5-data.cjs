@@ -1,3 +1,4 @@
+// Historical integration check; requires restoring the archived browser registrations.
 const assert = require('node:assert/strict');
 const { mkdirSync } = require('node:fs');
 const { tmpdir } = require('node:os');
@@ -99,7 +100,7 @@ window.oras5Test = {
         const state = await page.evaluate(() => oras5Test.state());
         assert.ok(state.finite && state.litPixels > 300, 'ORAS5 canvas is blank or invalid');
         assert.match(state.metric, /10\u00b3 km\u00b3/);
-        assert.deepEqual(state.legend, ['0', '10', '20', '30', '40']);
+        assert.deepEqual(state.legend, ['0', '10', '20', '30', '40', '50', '60']);
         referenceRadius ??= state.monthRadius;
         assert.equal(state.monthRadius, referenceRadius);
         await page.click('#infoBtn');

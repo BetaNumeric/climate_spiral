@@ -1,6 +1,6 @@
 export const SEA_ICE_VOLUME_DATA_URL = 'https://psc.apl.uw.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.2sst.monthly.Current.v2.1.txt';
-export const SEA_ICE_MAX_VOLUME = 40;
-export const SEA_ICE_VOLUME_TICKS = [10, 20, 30, 40];
+export const SEA_ICE_MAX_VOLUME = 60;
+export const SEA_ICE_VOLUME_TICKS = [10, 20, 30, 40, 50, 60];
 
 export const seaIceVolumeToSpiralValue = volume => volume * 3 / SEA_ICE_MAX_VOLUME;
 export const spiralValueToSeaIceVolume = value => value * SEA_ICE_MAX_VOLUME / 3;

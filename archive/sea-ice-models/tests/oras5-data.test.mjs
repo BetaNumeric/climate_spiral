@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { ORAS5_METHOD, parseOras5VolumeData } from '../oras5-data.mjs';
-import { spiralValueToSeaIceVolume } from '../sea-ice-volume-data.mjs';
+import { SEA_ICE_MAX_VOLUME, spiralValueToSeaIceVolume } from '../../../sea-ice-volume-data.mjs';
 import { oras5VideoDatasets } from '../scripts/readme-video.mjs';
 
 function snapshot() {
@@ -33,6 +34,29 @@ test('ORAS5 keeps hemispheres, calendar positions and actual volumes separate', 
     assert.equal(north[1].displayValues[1], 17);
     assert.equal(south[0].displayValues[0], 0);
     assert.equal(spiralValueToSeaIceVolume(north[1].anomalies[1]), 17);
+});
+
+test('published ORAS5 months retain source volumes and fit the shared display scale', async context => {
+    let text;
+    try { text = await readFile(new URL('../data/oras5-sea-ice-volume.json', import.meta.url), 'utf8'); }
+    catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+        context.skip('Optional ORAS5 snapshot has not been published yet');
+        return;
+    }
+    const records = JSON.parse(text).records;
+    for (const hemisphere of ['north', 'south']) {
+        const entries = parseOras5VolumeData(text, hemisphere);
+        assert.ok(entries.length > 0);
+        const months = entries.flatMap(row => row.fractions.map(fraction => Math.round(row.year * 12 + fraction * 12)));
+        assert.deepEqual(months, records.map(row => row.year * 12 + row.month - 1));
+        assert.deepEqual(entries.flatMap(row => row.displayValues), records.map(row => row[hemisphere]));
+        const max = Math.max(...records.map(row => row[hemisphere]));
+        assert.ok(max <= SEA_ICE_MAX_VOLUME, 'Published volume exceeds the shared radius/color range');
+        entries.flatMap(row => row.anomalies).forEach((value, index) => {
+            assert.ok(Math.abs(spiralValueToSeaIceVolume(value) - records[index][hemisphere]) < 1e-10);
+        });
+    }
 });
 
 test('ORAS5 rejects unexpected units, grids, methods and products', () => {

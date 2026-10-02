@@ -4,8 +4,9 @@ const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { chromium } = require('playwright');
 
-const output = join(tmpdir(), 'climate-dataset-framing');
+const output = process.env.CLIMATE_FRAMING_OUTPUT || join(tmpdir(), 'climate-dataset-framing');
 mkdirSync(output, { recursive: true });
+const volumeDatasets = new Set(['arcticvolume']);
 
 const hooks = `
 window.framingTest = {
@@ -79,6 +80,9 @@ window.framingTest = {
       legend: Array.from(document.querySelectorAll('.legend-labels span'), label => label.textContent),
       referenceValues: getActiveDataset().kind === 'sea-ice'
         ? getReferenceValues().map(getSeaIceScale().fromSpiralValue) : null,
+      referenceRadii: getActiveDataset().kind === 'sea-ice'
+        ? getReferenceValues().map(getSpiralRadius) : null,
+      colorMax: getActiveDataset().kind === 'sea-ice' ? getSeaIceScale().max : null,
       litPixels,
     };
   },
@@ -96,7 +100,11 @@ window.framingTest = {
       const context = await browser.newContext({ viewport, serviceWorkers: 'block' });
       const page = await context.newPage();
       const errors = [];
+      const archivedRequests = [];
       page.on('pageerror', error => errors.push(error.message));
+      page.on('request', request => {
+        if (/oras5|giomas/i.test(request.url())) archivedRequests.push(request.url());
+      });
       await page.route('**/index.html', async route => {
         const response = await route.fetch();
         await route.fulfill({ response, body: (await response.text()).replace('// --- Configuration ---',
@@ -105,6 +113,8 @@ window.framingTest = {
       await page.goto('http://127.0.0.1:8000/index.html');
       await page.waitForFunction(() => window.framingTest?.ready());
       const datasets = await page.locator('#datasetSelect option').evaluateAll(options => options.map(option => option.value));
+      assert.deepEqual(datasets, ['temperature', 'ocean', 'land', 'arctic', 'antarctic',
+        'arcticvolume', 'sealevel', 'co2', 'methane']);
       const states = [];
       for (const dataset of datasets) {
         if (dataset !== 'temperature') {
@@ -117,21 +127,25 @@ window.framingTest = {
         states.push(state);
         assert.equal(state.dataset, dataset);
         assert.ok(state.litPixels > 0, dataset + ' has a blank canvas');
-        if (dataset === 'temperature' || dataset === datasets.at(-1) || dataset === 'arcticvolume') {
+        if (dataset === 'temperature' || dataset === datasets.at(-1) || volumeDatasets.has(dataset)) {
           await page.screenshot({ path: join(output, name + '-' + dataset + '.png') });
         }
-        if (dataset === 'arcticvolume') {
+        if (volumeDatasets.has(dataset)) {
           assert.match(state.metric, /10\u00b3 km\u00b3/);
-          assert.deepEqual(state.legend, ['0', '10', '20', '30', '40']);
-          assert.deepEqual(state.referenceValues, [10, 20, 30, 40]);
+          assert.deepEqual(state.legend, ['0', '10', '20', '30', '40', '50', '60']);
+          assert.deepEqual(state.referenceValues, [10, 20, 30, 40, 50, 60]);
+          assert.equal(state.colorMax, 60);
+          state.referenceRadii.forEach((radius, index) => {
+            assert.ok(Math.abs(radius - (index + 1) * 20 / 6) < 1e-6, dataset + ': volume reference radius');
+          });
           await page.click('#infoBtn');
-          await page.screenshot({ path: join(output, name + '-arcticvolume-legend.png') });
+          await page.screenshot({ path: join(output, name + '-' + dataset + '-legend.png') });
           await page.evaluate(() => framingTest.graphView());
           await page.waitForTimeout(150);
           const graph = await page.evaluate(() => framingTest.graphState());
           assert.ok(graph.finite && graph.litPixels > 300, 'Volume graph is blank or invalid');
           assert.ok(graph.leftLabelEdge >= -1, 'Volume guide labels are clipped');
-          await page.screenshot({ path: join(output, name + '-arcticvolume-unwrapped.png') });
+          await page.screenshot({ path: join(output, name + '-' + dataset + '-unwrapped.png') });
           await page.click('#infoBtn');
           await page.evaluate(() => framingTest.topView());
         } else if (dataset === 'arctic' || dataset === 'antarctic') {
@@ -152,6 +166,7 @@ window.framingTest = {
         assert.ok(Math.abs(state.graphWidth - states[0].graphWidth) < 1e-6, state.dataset + ': graph width');
       }
       assert.deepEqual(errors, []);
+      assert.deepEqual(archivedRequests, [], 'Archived models must not be fetched');
       await context.close();
     }
     console.log('Screenshots: ' + output);

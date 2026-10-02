@@ -1,4 +1,32 @@
+// Historical README video integration, used only by the archived tests.
 import { randomInt } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { ORAS5_DATA_PATH, parseOras5VolumeData } from '../oras5-data.mjs';
+import { GIOMAS_DATA_PATH, parseGiomasVolumeData } from '../giomas-data.mjs';
+
+export function oras5VideoDatasets(text) {
+  if (!parseOras5VolumeData(text, 'north').length || !parseOras5VolumeData(text, 'south').length) return [];
+  return [
+    { key: 'arcticoras5', title: 'Arctic Sea Ice Volume (ORAS5)' },
+    { key: 'antarcticoras5', title: 'Antarctic Sea Ice Volume (ORAS5)' },
+  ];
+}
+
+export function giomasVideoDatasets(text) {
+  if (!parseGiomasVolumeData(text, 'north').length || !parseGiomasVolumeData(text, 'south').length) return [];
+  return [
+    { key: 'arcticgiomas', title: 'Arctic Sea Ice Volume (GIOMAS)' },
+    { key: 'antarcticgiomas', title: 'Antarctic Sea Ice Volume (GIOMAS)' },
+  ];
+}
+
+function publishedVideoDatasets(path, parse) {
+  try { return parse(readFileSync(new URL('../' + path, import.meta.url), 'utf8')); }
+  catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    return [];
+  }
+}
 
 export const SECONDARY_DATASETS = [
   { key: 'ocean', title: 'Ocean Temperature' },
@@ -9,6 +37,8 @@ export const SECONDARY_DATASETS = [
   { key: 'co2', title: 'Global CO2' },
   { key: 'methane', title: 'Global Methane' },
   { key: 'sealevel', title: 'Global Sea Level' },
+  ...publishedVideoDatasets(ORAS5_DATA_PATH, oras5VideoDatasets),
+  ...publishedVideoDatasets(GIOMAS_DATA_PATH, giomasVideoDatasets),
 ];
 
 const TOP_START = '<!-- README_VIDEO_TOP_START -->';

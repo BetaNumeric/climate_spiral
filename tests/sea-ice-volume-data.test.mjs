@@ -23,10 +23,10 @@ function source(lastMonth = firstMonth + 13) {
 test('volume uses the PIOMAS monthly source and a reversible scale in thousands of cubic kilometers', () => {
     assert.equal(SEA_ICE_VOLUME_DATA_URL,
         'https://psc.apl.uw.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.2sst.monthly.Current.v2.1.txt');
-    assert.equal(SEA_ICE_MAX_VOLUME, 40);
+    assert.equal(SEA_ICE_MAX_VOLUME, 60);
     assert.equal(seaIceVolumeToSpiralValue(0), 0);
-    assert.deepEqual(SEA_ICE_VOLUME_TICKS.map(seaIceVolumeToSpiralValue), [0.75, 1.5, 2.25, 3]);
-    for (const volume of [0, 4.021, 17.706, 32.951, 40]) {
+    assert.deepEqual(SEA_ICE_VOLUME_TICKS.map(seaIceVolumeToSpiralValue), [0.5, 1, 1.5, 2, 2.5, 3]);
+    for (const volume of [0, 4.021, 17.706, 32.951, 40, 50.789613, 60]) {
         assert(Math.abs(spiralValueToSeaIceVolume(seaIceVolumeToSpiralValue(volume)) - volume) < 1e-10);
     }
 });

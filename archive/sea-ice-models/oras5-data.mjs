@@ -1,4 +1,4 @@
-import { seaIceVolumeToSpiralValue } from './sea-ice-volume-data.mjs';
+import { seaIceVolumeToSpiralValue } from '../../sea-ice-volume-data.mjs';
 
 export const ORAS5_DATA_PATH = 'data/oras5-sea-ice-volume.json';
 export const ORAS5_SOURCE_URL = 'https://cds.climate.copernicus.eu/datasets/reanalysis-oras5';

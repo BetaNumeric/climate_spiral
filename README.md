@@ -37,8 +37,6 @@ https://github.com/user-attachments/assets/baa470a0-12b8-49a9-b5e6-a125154b423b
 
 Temperature values are anomalies relative to 1951-1980; the NOAA land and ocean series are rebased from their original reference period. Sea ice **extent** measures ice-covered ocean area, while PIOMAS **volume** includes thickness and is model-estimated. CO2 and methane show concentrations, not emissions. Sea level shows change relative to 1993. Units and display scales differ across dataset types, so equal radii or colors do not imply comparable climate effects. See [Data Sources and Methods](docs/data-methods.md) for sources, processing, missing-month handling, and scientific limitations.
 
-Optional **Arctic and Antarctic ORAS5 sea ice volume** series can be generated from monthly reanalysis fields starting in 1958. They appear automatically after the first complete download; see [ORAS5 setup and methods](docs/oras5-setup.md) for Copernicus access and monthly automation.
-
 ## Using the App
 
 The animation starts automatically. Use the controls and timeline at the bottom to pause, step through months, or jump to either end. Choose a dataset and switch between **Spiral** and **Unwrapped** at the top of Settings.

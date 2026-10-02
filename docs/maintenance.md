@@ -29,7 +29,7 @@ To run an updater locally:
 
 NASA GISTEMP and Mauna Loa CO2 are downloaded directly by the workflow. The other updaters validate their source downloads before saving local snapshots. These nine datasets do not require credentials.
 
-The separate [ORAS5 workflow](../.github/workflows/update-oras5-data.yml) optionally adds both hemispheres' sea ice volume estimates. It runs monthly on the 18th, requires a `CDSAPI_KEY` secret and accepted Copernicus dataset terms, and skips when unconfigured. Its Python updater keeps resumable checkpoints and publishes only a complete, validated JSON history. See [ORAS5 setup](oras5-setup.md) for installation, tests, scientific methods, and first-run download costs. Once published, both ORAS5 datasets also enter the README video rotation. Run `node scripts/check-oras5-data.cjs` against the local server for desktop/mobile integration checks using clearly synthetic test data; the script never writes a production snapshot.
+Run `node scripts/check-dataset-framing.cjs` against the local server to check the active datasets, reference positions, and both layouts on desktop and mobile.
 
 ENSO remains disabled in the selector and workflow. Its parser, raw snapshot, updater, rendering branches, and tests are retained. To restore it, uncomment its `DATASET_CONFIG` registration and workflow step, add `data/Rnino34.ascii.txt` to the workflow commit paths and service worker assets, and bump the cache version. The retained source is NOAA CPC's [monthly relative Nino 3.4 index](https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt), not the three-month ONI/RONI or an official event classification.
 
