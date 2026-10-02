@@ -1,0 +1,5788 @@
+{
+  "version": 1,
+  "source": "ECMWF ORAS5",
+  "dataset": "reanalysis-oras5",
+  "sourceUrl": "https://cds.climate.copernicus.eu/datasets/reanalysis-oras5",
+  "license": "CC-BY-4.0",
+  "units": "1000 km3",
+  "method": "monthly-mean-thickness-concentration-area-v1",
+  "grid": {
+    "name": "ORCA025",
+    "shape": [
+      1021,
+      1442
+    ],
+    "url": "https://icdc.cen.uni-hamburg.de/thredds/dodsC/ftpthredds/EASYInit/oras5/ORCA025/mesh/mesh_mask.nc",
+    "sha256": "d2a288a6487a53e00c8476d2e98048942596cf0bb570bf927dca1133eb035866"
+  },
+  "records": [
+    {
+      "year": 1958,
+      "month": 1,
+      "product": "consolidated",
+      "north": 31.828224,
+      "south": 2.056507
+    },
+    {
+      "year": 1958,
+      "month": 2,
+      "product": "consolidated",
+      "north": 35.273487,
+      "south": 1.185583
+    },
+    {
+      "year": 1958,
+      "month": 3,
+      "product": "consolidated",
+      "north": 37.46274,
+      "south": 1.232525
+    },
+    {
+      "year": 1958,
+      "month": 4,
+      "product": "consolidated",
+      "north": 38.444129,
+      "south": 3.374107
+    },
+    {
+      "year": 1958,
+      "month": 5,
+      "product": "consolidated",
+      "north": 38.518671,
+      "south": 5.642856
+    },
+    {
+      "year": 1958,
+      "month": 6,
+      "product": "consolidated",
+      "north": 34.874544,
+      "south": 7.808233
+    },
+    {
+      "year": 1958,
+      "month": 7,
+      "product": "consolidated",
+      "north": 28.152496,
+      "south": 10.168784
+    },
+    {
+      "year": 1958,
+      "month": 8,
+      "product": "consolidated",
+      "north": 23.655881,
+      "south": 12.243512
+    },
+    {
+      "year": 1958,
+      "month": 9,
+      "product": "consolidated",
+      "north": 22.408375,
+      "south": 13.852141
+    },
+    {
+      "year": 1958,
+      "month": 10,
+      "product": "consolidated",
+      "north": 24.006852,
+      "south": 14.203706
+    },
+    {
+      "year": 1958,
+      "month": 11,
+      "product": "consolidated",
+      "north": 27.120668,
+      "south": 11.889176
+    },
+    {
+      "year": 1958,
+      "month": 12,
+      "product": "consolidated",
+      "north": 30.026147,
+      "south": 5.848068
+    },
+    {
+      "year": 1959,
+      "month": 1,
+      "product": "consolidated",
+      "north": 33.220932,
+      "south": 1.790892
+    },
+    {
+      "year": 1959,
+      "month": 2,
+      "product": "consolidated",
+      "north": 36.204482,
+      "south": 0.996093
+    },
+    {
+      "year": 1959,
+      "month": 3,
+      "product": "consolidated",
+      "north": 38.440265,
+      "south": 1.108433
+    },
+    {
+      "year": 1959,
+      "month": 4,
+      "product": "consolidated",
+      "north": 39.63799,
+      "south": 3.378743
+    },
+    {
+      "year": 1959,
+      "month": 5,
+      "product": "consolidated",
+      "north": 39.49333,
+      "south": 5.681899
+    },
+    {
+      "year": 1959,
+      "month": 6,
+      "product": "consolidated",
+      "north": 35.806084,
+      "south": 7.953098
+    },
+    {
+      "year": 1959,
+      "month": 7,
+      "product": "consolidated",
+      "north": 28.821216,
+      "south": 10.34379
+    },
+    {
+      "year": 1959,
+      "month": 8,
+      "product": "consolidated",
+      "north": 24.217454,
+      "south": 12.40928
+    },
+    {
+      "year": 1959,
+      "month": 9,
+      "product": "consolidated",
+      "north": 23.065761,
+      "south": 13.888343
+    },
+    {
+      "year": 1959,
+      "month": 10,
+      "product": "consolidated",
+      "north": 24.650318,
+      "south": 14.209849
+    },
+    {
+      "year": 1959,
+      "month": 11,
+      "product": "consolidated",
+      "north": 27.651043,
+      "south": 11.946965
+    },
+    {
+      "year": 1959,
+      "month": 12,
+      "product": "consolidated",
+      "north": 31.124974,
+      "south": 5.546015
+    },
+    {
+      "year": 1960,
+      "month": 1,
+      "product": "consolidated",
+      "north": 34.73605,
+      "south": 1.663939
+    },
+    {
+      "year": 1960,
+      "month": 2,
+      "product": "consolidated",
+      "north": 37.611419,
+      "south": 1.017331
+    },
+    {
+      "year": 1960,
+      "month": 3,
+      "product": "consolidated",
+      "north": 39.719778,
+      "south": 1.232941
+    },
+    {
+      "year": 1960,
+      "month": 4,
+      "product": "consolidated",
+      "north": 41.392899,
+      "south": 3.570825
+    },
+    {
+      "year": 1960,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.225354,
+      "south": 5.783606
+    },
+    {
+      "year": 1960,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.506036,
+      "south": 8.006322
+    },
+    {
+      "year": 1960,
+      "month": 7,
+      "product": "consolidated",
+      "north": 30.621429,
+      "south": 10.366511
+    },
+    {
+      "year": 1960,
+      "month": 8,
+      "product": "consolidated",
+      "north": 26.338467,
+      "south": 12.226933
+    },
+    {
+      "year": 1960,
+      "month": 9,
+      "product": "consolidated",
+      "north": 24.722083,
+      "south": 13.98171
+    },
+    {
+      "year": 1960,
+      "month": 10,
+      "product": "consolidated",
+      "north": 25.52322,
+      "south": 14.308052
+    },
+    {
+      "year": 1960,
+      "month": 11,
+      "product": "consolidated",
+      "north": 27.888843,
+      "south": 12.112475
+    },
+    {
+      "year": 1960,
+      "month": 12,
+      "product": "consolidated",
+      "north": 31.20821,
+      "south": 5.904299
+    },
+    {
+      "year": 1961,
+      "month": 1,
+      "product": "consolidated",
+      "north": 34.496524,
+      "south": 1.845196
+    },
+    {
+      "year": 1961,
+      "month": 2,
+      "product": "consolidated",
+      "north": 37.572155,
+      "south": 1.018977
+    },
+    {
+      "year": 1961,
+      "month": 3,
+      "product": "consolidated",
+      "north": 39.887824,
+      "south": 1.187887
+    },
+    {
+      "year": 1961,
+      "month": 4,
+      "product": "consolidated",
+      "north": 41.523079,
+      "south": 3.41455
+    },
+    {
+      "year": 1961,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.119151,
+      "south": 5.701945
+    },
+    {
+      "year": 1961,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.373109,
+      "south": 8.097307
+    },
+    {
+      "year": 1961,
+      "month": 7,
+      "product": "consolidated",
+      "north": 31.026944,
+      "south": 10.391827
+    },
+    {
+      "year": 1961,
+      "month": 8,
+      "product": "consolidated",
+      "north": 27.197632,
+      "south": 12.335829
+    },
+    {
+      "year": 1961,
+      "month": 9,
+      "product": "consolidated",
+      "north": 26.115142,
+      "south": 13.920506
+    },
+    {
+      "year": 1961,
+      "month": 10,
+      "product": "consolidated",
+      "north": 27.040325,
+      "south": 14.34111
+    },
+    {
+      "year": 1961,
+      "month": 11,
+      "product": "consolidated",
+      "north": 29.893469,
+      "south": 12.001053
+    },
+    {
+      "year": 1961,
+      "month": 12,
+      "product": "consolidated",
+      "north": 33.43569,
+      "south": 5.552172
+    },
+    {
+      "year": 1962,
+      "month": 1,
+      "product": "consolidated",
+      "north": 36.610011,
+      "south": 1.585024
+    },
+    {
+      "year": 1962,
+      "month": 2,
+      "product": "consolidated",
+      "north": 39.562104,
+      "south": 0.911329
+    },
+    {
+      "year": 1962,
+      "month": 3,
+      "product": "consolidated",
+      "north": 41.864652,
+      "south": 1.061028
+    },
+    {
+      "year": 1962,
+      "month": 4,
+      "product": "consolidated",
+      "north": 43.237651,
+      "south": 3.398245
+    },
+    {
+      "year": 1962,
+      "month": 5,
+      "product": "consolidated",
+      "north": 43.191748,
+      "south": 5.697075
+    },
+    {
+      "year": 1962,
+      "month": 6,
+      "product": "consolidated",
+      "north": 39.686419,
+      "south": 7.93142
+    },
+    {
+      "year": 1962,
+      "month": 7,
+      "product": "consolidated",
+      "north": 32.228673,
+      "south": 10.462849
+    },
+    {
+      "year": 1962,
+      "month": 8,
+      "product": "consolidated",
+      "north": 27.897468,
+      "south": 12.32287
+    },
+    {
+      "year": 1962,
+      "month": 9,
+      "product": "consolidated",
+      "north": 27.315428,
+      "south": 13.774828
+    },
+    {
+      "year": 1962,
+      "month": 10,
+      "product": "consolidated",
+      "north": 28.818249,
+      "south": 14.118028
+    },
+    {
+      "year": 1962,
+      "month": 11,
+      "product": "consolidated",
+      "north": 31.272688,
+      "south": 11.743101
+    },
+    {
+      "year": 1962,
+      "month": 12,
+      "product": "consolidated",
+      "north": 34.800759,
+      "south": 5.547722
+    },
+    {
+      "year": 1963,
+      "month": 1,
+      "product": "consolidated",
+      "north": 38.354824,
+      "south": 1.758255
+    },
+    {
+      "year": 1963,
+      "month": 2,
+      "product": "consolidated",
+      "north": 41.20735,
+      "south": 1.056611
+    },
+    {
+      "year": 1963,
+      "month": 3,
+      "product": "consolidated",
+      "north": 43.317367,
+      "south": 1.221553
+    },
+    {
+      "year": 1963,
+      "month": 4,
+      "product": "consolidated",
+      "north": 45.044724,
+      "south": 3.288204
+    },
+    {
+      "year": 1963,
+      "month": 5,
+      "product": "consolidated",
+      "north": 44.303304,
+      "south": 5.463217
+    },
+    {
+      "year": 1963,
+      "month": 6,
+      "product": "consolidated",
+      "north": 41.067247,
+      "south": 7.790687
+    },
+    {
+      "year": 1963,
+      "month": 7,
+      "product": "consolidated",
+      "north": 34.061745,
+      "south": 10.247696
+    },
+    {
+      "year": 1963,
+      "month": 8,
+      "product": "consolidated",
+      "north": 29.068339,
+      "south": 12.104179
+    },
+    {
+      "year": 1963,
+      "month": 9,
+      "product": "consolidated",
+      "north": 27.985812,
+      "south": 13.678794
+    },
+    {
+      "year": 1963,
+      "month": 10,
+      "product": "consolidated",
+      "north": 29.892066,
+      "south": 14.027217
+    },
+    {
+      "year": 1963,
+      "month": 11,
+      "product": "consolidated",
+      "north": 32.686799,
+      "south": 11.362896
+    },
+    {
+      "year": 1963,
+      "month": 12,
+      "product": "consolidated",
+      "north": 36.025792,
+      "south": 5.093176
+    },
+    {
+      "year": 1964,
+      "month": 1,
+      "product": "consolidated",
+      "north": 39.035639,
+      "south": 1.385742
+    },
+    {
+      "year": 1964,
+      "month": 2,
+      "product": "consolidated",
+      "north": 42.254924,
+      "south": 0.772975
+    },
+    {
+      "year": 1964,
+      "month": 3,
+      "product": "consolidated",
+      "north": 44.698148,
+      "south": 0.993042
+    },
+    {
+      "year": 1964,
+      "month": 4,
+      "product": "consolidated",
+      "north": 46.010902,
+      "south": 3.189685
+    },
+    {
+      "year": 1964,
+      "month": 5,
+      "product": "consolidated",
+      "north": 45.430419,
+      "south": 5.393972
+    },
+    {
+      "year": 1964,
+      "month": 6,
+      "product": "consolidated",
+      "north": 42.786834,
+      "south": 7.646369
+    },
+    {
+      "year": 1964,
+      "month": 7,
+      "product": "consolidated",
+      "north": 36.425536,
+      "south": 10.134404
+    },
+    {
+      "year": 1964,
+      "month": 8,
+      "product": "consolidated",
+      "north": 31.20073,
+      "south": 12.015519
+    },
+    {
+      "year": 1964,
+      "month": 9,
+      "product": "consolidated",
+      "north": 29.337701,
+      "south": 13.535351
+    },
+    {
+      "year": 1964,
+      "month": 10,
+      "product": "consolidated",
+      "north": 30.554065,
+      "south": 13.94639
+    },
+    {
+      "year": 1964,
+      "month": 11,
+      "product": "consolidated",
+      "north": 33.145178,
+      "south": 11.702441
+    },
+    {
+      "year": 1964,
+      "month": 12,
+      "product": "consolidated",
+      "north": 36.549632,
+      "south": 5.458523
+    },
+    {
+      "year": 1965,
+      "month": 1,
+      "product": "consolidated",
+      "north": 39.856686,
+      "south": 1.429735
+    },
+    {
+      "year": 1965,
+      "month": 2,
+      "product": "consolidated",
+      "north": 42.843751,
+      "south": 0.765912
+    },
+    {
+      "year": 1965,
+      "month": 3,
+      "product": "consolidated",
+      "north": 45.295492,
+      "south": 1.028671
+    },
+    {
+      "year": 1965,
+      "month": 4,
+      "product": "consolidated",
+      "north": 46.401884,
+      "south": 3.08985
+    },
+    {
+      "year": 1965,
+      "month": 5,
+      "product": "consolidated",
+      "north": 46.128372,
+      "south": 5.375084
+    },
+    {
+      "year": 1965,
+      "month": 6,
+      "product": "consolidated",
+      "north": 42.701482,
+      "south": 7.722106
+    },
+    {
+      "year": 1965,
+      "month": 7,
+      "product": "consolidated",
+      "north": 35.470215,
+      "south": 10.057893
+    },
+    {
+      "year": 1965,
+      "month": 8,
+      "product": "consolidated",
+      "north": 30.59364,
+      "south": 11.948753
+    },
+    {
+      "year": 1965,
+      "month": 9,
+      "product": "consolidated",
+      "north": 29.999456,
+      "south": 13.54957
+    },
+    {
+      "year": 1965,
+      "month": 10,
+      "product": "consolidated",
+      "north": 31.992955,
+      "south": 13.919874
+    },
+    {
+      "year": 1965,
+      "month": 11,
+      "product": "consolidated",
+      "north": 35.031919,
+      "south": 11.663311
+    },
+    {
+      "year": 1965,
+      "month": 12,
+      "product": "consolidated",
+      "north": 38.13986,
+      "south": 5.54254
+    },
+    {
+      "year": 1966,
+      "month": 1,
+      "product": "consolidated",
+      "north": 41.415501,
+      "south": 1.576448
+    },
+    {
+      "year": 1966,
+      "month": 2,
+      "product": "consolidated",
+      "north": 44.142852,
+      "south": 0.956195
+    },
+    {
+      "year": 1966,
+      "month": 3,
+      "product": "consolidated",
+      "north": 46.470918,
+      "south": 1.182827
+    },
+    {
+      "year": 1966,
+      "month": 4,
+      "product": "consolidated",
+      "north": 48.08084,
+      "south": 3.181071
+    },
+    {
+      "year": 1966,
+      "month": 5,
+      "product": "consolidated",
+      "north": 48.250535,
+      "south": 5.40608
+    },
+    {
+      "year": 1966,
+      "month": 6,
+      "product": "consolidated",
+      "north": 45.985448,
+      "south": 7.890482
+    },
+    {
+      "year": 1966,
+      "month": 7,
+      "product": "consolidated",
+      "north": 40.206754,
+      "south": 10.473574
+    },
+    {
+      "year": 1966,
+      "month": 8,
+      "product": "consolidated",
+      "north": 33.863568,
+      "south": 12.568443
+    },
+    {
+      "year": 1966,
+      "month": 9,
+      "product": "consolidated",
+      "north": 31.489407,
+      "south": 13.919383
+    },
+    {
+      "year": 1966,
+      "month": 10,
+      "product": "consolidated",
+      "north": 32.256958,
+      "south": 14.472636
+    },
+    {
+      "year": 1966,
+      "month": 11,
+      "product": "consolidated",
+      "north": 34.601986,
+      "south": 12.390323
+    },
+    {
+      "year": 1966,
+      "month": 12,
+      "product": "consolidated",
+      "north": 38.472699,
+      "south": 5.987788
+    },
+    {
+      "year": 1967,
+      "month": 1,
+      "product": "consolidated",
+      "north": 42.416127,
+      "south": 1.586308
+    },
+    {
+      "year": 1967,
+      "month": 2,
+      "product": "consolidated",
+      "north": 45.370951,
+      "south": 0.812697
+    },
+    {
+      "year": 1967,
+      "month": 3,
+      "product": "consolidated",
+      "north": 46.902711,
+      "south": 1.133628
+    },
+    {
+      "year": 1967,
+      "month": 4,
+      "product": "consolidated",
+      "north": 48.254203,
+      "south": 3.126468
+    },
+    {
+      "year": 1967,
+      "month": 5,
+      "product": "consolidated",
+      "north": 48.655001,
+      "south": 5.327484
+    },
+    {
+      "year": 1967,
+      "month": 6,
+      "product": "consolidated",
+      "north": 46.236803,
+      "south": 7.623672
+    },
+    {
+      "year": 1967,
+      "month": 7,
+      "product": "consolidated",
+      "north": 40.090192,
+      "south": 10.248367
+    },
+    {
+      "year": 1967,
+      "month": 8,
+      "product": "consolidated",
+      "north": 36.695891,
+      "south": 12.405766
+    },
+    {
+      "year": 1967,
+      "month": 9,
+      "product": "consolidated",
+      "north": 36.364308,
+      "south": 14.02565
+    },
+    {
+      "year": 1967,
+      "month": 10,
+      "product": "consolidated",
+      "north": 37.862653,
+      "south": 14.215879
+    },
+    {
+      "year": 1967,
+      "month": 11,
+      "product": "consolidated",
+      "north": 40.750818,
+      "south": 11.927383
+    },
+    {
+      "year": 1967,
+      "month": 12,
+      "product": "consolidated",
+      "north": 44.167569,
+      "south": 5.642933
+    },
+    {
+      "year": 1968,
+      "month": 1,
+      "product": "consolidated",
+      "north": 46.847319,
+      "south": 1.697161
+    },
+    {
+      "year": 1968,
+      "month": 2,
+      "product": "consolidated",
+      "north": 48.991533,
+      "south": 1.040532
+    },
+    {
+      "year": 1968,
+      "month": 3,
+      "product": "consolidated",
+      "north": 50.24749,
+      "south": 1.363857
+    },
+    {
+      "year": 1968,
+      "month": 4,
+      "product": "consolidated",
+      "north": 50.789613,
+      "south": 3.168153
+    },
+    {
+      "year": 1968,
+      "month": 5,
+      "product": "consolidated",
+      "north": 50.395503,
+      "south": 5.541593
+    },
+    {
+      "year": 1968,
+      "month": 6,
+      "product": "consolidated",
+      "north": 45.731042,
+      "south": 7.959877
+    },
+    {
+      "year": 1968,
+      "month": 7,
+      "product": "consolidated",
+      "north": 35.111777,
+      "south": 10.544788
+    },
+    {
+      "year": 1968,
+      "month": 8,
+      "product": "consolidated",
+      "north": 29.45124,
+      "south": 12.526152
+    },
+    {
+      "year": 1968,
+      "month": 9,
+      "product": "consolidated",
+      "north": 28.531766,
+      "south": 13.846474
+    },
+    {
+      "year": 1968,
+      "month": 10,
+      "product": "consolidated",
+      "north": 30.209643,
+      "south": 14.077273
+    },
+    {
+      "year": 1968,
+      "month": 11,
+      "product": "consolidated",
+      "north": 33.297271,
+      "south": 11.741195
+    },
+    {
+      "year": 1968,
+      "month": 12,
+      "product": "consolidated",
+      "north": 37.552076,
+      "south": 5.822649
+    },
+    {
+      "year": 1969,
+      "month": 1,
+      "product": "consolidated",
+      "north": 40.834071,
+      "south": 1.727317
+    },
+    {
+      "year": 1969,
+      "month": 2,
+      "product": "consolidated",
+      "north": 43.628763,
+      "south": 0.834851
+    },
+    {
+      "year": 1969,
+      "month": 3,
+      "product": "consolidated",
+      "north": 46.22177,
+      "south": 1.18927
+    },
+    {
+      "year": 1969,
+      "month": 4,
+      "product": "consolidated",
+      "north": 47.003205,
+      "south": 3.05911
+    },
+    {
+      "year": 1969,
+      "month": 5,
+      "product": "consolidated",
+      "north": 45.918439,
+      "south": 5.434772
+    },
+    {
+      "year": 1969,
+      "month": 6,
+      "product": "consolidated",
+      "north": 42.765024,
+      "south": 7.840854
+    },
+    {
+      "year": 1969,
+      "month": 7,
+      "product": "consolidated",
+      "north": 35.698763,
+      "south": 10.363634
+    },
+    {
+      "year": 1969,
+      "month": 8,
+      "product": "consolidated",
+      "north": 32.164047,
+      "south": 12.492698
+    },
+    {
+      "year": 1969,
+      "month": 9,
+      "product": "consolidated",
+      "north": 30.374299,
+      "south": 13.642013
+    },
+    {
+      "year": 1969,
+      "month": 10,
+      "product": "consolidated",
+      "north": 31.814586,
+      "south": 13.634103
+    },
+    {
+      "year": 1969,
+      "month": 11,
+      "product": "consolidated",
+      "north": 34.573686,
+      "south": 11.499251
+    },
+    {
+      "year": 1969,
+      "month": 12,
+      "product": "consolidated",
+      "north": 37.754229,
+      "south": 5.565615
+    },
+    {
+      "year": 1970,
+      "month": 1,
+      "product": "consolidated",
+      "north": 40.848106,
+      "south": 1.702281
+    },
+    {
+      "year": 1970,
+      "month": 2,
+      "product": "consolidated",
+      "north": 43.692714,
+      "south": 1.069004
+    },
+    {
+      "year": 1970,
+      "month": 3,
+      "product": "consolidated",
+      "north": 45.447147,
+      "south": 1.466933
+    },
+    {
+      "year": 1970,
+      "month": 4,
+      "product": "consolidated",
+      "north": 45.602373,
+      "south": 3.239664
+    },
+    {
+      "year": 1970,
+      "month": 5,
+      "product": "consolidated",
+      "north": 43.97539,
+      "south": 5.630952
+    },
+    {
+      "year": 1970,
+      "month": 6,
+      "product": "consolidated",
+      "north": 41.31852,
+      "south": 8.089228
+    },
+    {
+      "year": 1970,
+      "month": 7,
+      "product": "consolidated",
+      "north": 35.204565,
+      "south": 10.768189
+    },
+    {
+      "year": 1970,
+      "month": 8,
+      "product": "consolidated",
+      "north": 30.523004,
+      "south": 12.751846
+    },
+    {
+      "year": 1970,
+      "month": 9,
+      "product": "consolidated",
+      "north": 30.36539,
+      "south": 13.826219
+    },
+    {
+      "year": 1970,
+      "month": 10,
+      "product": "consolidated",
+      "north": 33.133534,
+      "south": 13.701885
+    },
+    {
+      "year": 1970,
+      "month": 11,
+      "product": "consolidated",
+      "north": 35.636673,
+      "south": 11.574831
+    },
+    {
+      "year": 1970,
+      "month": 12,
+      "product": "consolidated",
+      "north": 38.44996,
+      "south": 5.522026
+    },
+    {
+      "year": 1971,
+      "month": 1,
+      "product": "consolidated",
+      "north": 41.103942,
+      "south": 1.46858
+    },
+    {
+      "year": 1971,
+      "month": 2,
+      "product": "consolidated",
+      "north": 43.476218,
+      "south": 0.8805
+    },
+    {
+      "year": 1971,
+      "month": 3,
+      "product": "consolidated",
+      "north": 45.625267,
+      "south": 1.379896
+    },
+    {
+      "year": 1971,
+      "month": 4,
+      "product": "consolidated",
+      "north": 46.227608,
+      "south": 3.233824
+    },
+    {
+      "year": 1971,
+      "month": 5,
+      "product": "consolidated",
+      "north": 46.223075,
+      "south": 5.433068
+    },
+    {
+      "year": 1971,
+      "month": 6,
+      "product": "consolidated",
+      "north": 42.432815,
+      "south": 7.90175
+    },
+    {
+      "year": 1971,
+      "month": 7,
+      "product": "consolidated",
+      "north": 33.935415,
+      "south": 10.577231
+    },
+    {
+      "year": 1971,
+      "month": 8,
+      "product": "consolidated",
+      "north": 29.171335,
+      "south": 12.533463
+    },
+    {
+      "year": 1971,
+      "month": 9,
+      "product": "consolidated",
+      "north": 28.15055,
+      "south": 13.753311
+    },
+    {
+      "year": 1971,
+      "month": 10,
+      "product": "consolidated",
+      "north": 29.906735,
+      "south": 13.889438
+    },
+    {
+      "year": 1971,
+      "month": 11,
+      "product": "consolidated",
+      "north": 32.492955,
+      "south": 11.670352
+    },
+    {
+      "year": 1971,
+      "month": 12,
+      "product": "consolidated",
+      "north": 35.340005,
+      "south": 5.659358
+    },
+    {
+      "year": 1972,
+      "month": 1,
+      "product": "consolidated",
+      "north": 39.454562,
+      "south": 1.728472
+    },
+    {
+      "year": 1972,
+      "month": 2,
+      "product": "consolidated",
+      "north": 42.99908,
+      "south": 1.012648
+    },
+    {
+      "year": 1972,
+      "month": 3,
+      "product": "consolidated",
+      "north": 44.52427,
+      "south": 1.514843
+    },
+    {
+      "year": 1972,
+      "month": 4,
+      "product": "consolidated",
+      "north": 44.797288,
+      "south": 3.158952
+    },
+    {
+      "year": 1972,
+      "month": 5,
+      "product": "consolidated",
+      "north": 44.298083,
+      "south": 5.304077
+    },
+    {
+      "year": 1972,
+      "month": 6,
+      "product": "consolidated",
+      "north": 40.691251,
+      "south": 7.587654
+    },
+    {
+      "year": 1972,
+      "month": 7,
+      "product": "consolidated",
+      "north": 33.691538,
+      "south": 10.329619
+    },
+    {
+      "year": 1972,
+      "month": 8,
+      "product": "consolidated",
+      "north": 28.662495,
+      "south": 12.43812
+    },
+    {
+      "year": 1972,
+      "month": 9,
+      "product": "consolidated",
+      "north": 26.682463,
+      "south": 13.396258
+    },
+    {
+      "year": 1972,
+      "month": 10,
+      "product": "consolidated",
+      "north": 28.518679,
+      "south": 13.336328
+    },
+    {
+      "year": 1972,
+      "month": 11,
+      "product": "consolidated",
+      "north": 31.634221,
+      "south": 11.168973
+    },
+    {
+      "year": 1972,
+      "month": 12,
+      "product": "consolidated",
+      "north": 35.241788,
+      "south": 5.2578
+    },
+    {
+      "year": 1973,
+      "month": 1,
+      "product": "consolidated",
+      "north": 38.512878,
+      "south": 2.29419
+    },
+    {
+      "year": 1973,
+      "month": 2,
+      "product": "consolidated",
+      "north": 41.414264,
+      "south": 1.629741
+    },
+    {
+      "year": 1973,
+      "month": 3,
+      "product": "consolidated",
+      "north": 43.235159,
+      "south": 2.752137
+    },
+    {
+      "year": 1973,
+      "month": 4,
+      "product": "consolidated",
+      "north": 44.377253,
+      "south": 4.956028
+    },
+    {
+      "year": 1973,
+      "month": 5,
+      "product": "consolidated",
+      "north": 44.010945,
+      "south": 6.98282
+    },
+    {
+      "year": 1973,
+      "month": 6,
+      "product": "consolidated",
+      "north": 39.363219,
+      "south": 9.376195
+    },
+    {
+      "year": 1973,
+      "month": 7,
+      "product": "consolidated",
+      "north": 32.802887,
+      "south": 12.126869
+    },
+    {
+      "year": 1973,
+      "month": 8,
+      "product": "consolidated",
+      "north": 29.219891,
+      "south": 14.233308
+    },
+    {
+      "year": 1973,
+      "month": 9,
+      "product": "consolidated",
+      "north": 27.962663,
+      "south": 15.379876
+    },
+    {
+      "year": 1973,
+      "month": 10,
+      "product": "consolidated",
+      "north": 29.722962,
+      "south": 15.874695
+    },
+    {
+      "year": 1973,
+      "month": 11,
+      "product": "consolidated",
+      "north": 31.952599,
+      "south": 14.024482
+    },
+    {
+      "year": 1973,
+      "month": 12,
+      "product": "consolidated",
+      "north": 33.350959,
+      "south": 8.598629
+    },
+    {
+      "year": 1974,
+      "month": 1,
+      "product": "consolidated",
+      "north": 34.064351,
+      "south": 3.463906
+    },
+    {
+      "year": 1974,
+      "month": 2,
+      "product": "consolidated",
+      "north": 36.316175,
+      "south": 1.901349
+    },
+    {
+      "year": 1974,
+      "month": 3,
+      "product": "consolidated",
+      "north": 38.804679,
+      "south": 2.575951
+    },
+    {
+      "year": 1974,
+      "month": 4,
+      "product": "consolidated",
+      "north": 40.338556,
+      "south": 4.440667
+    },
+    {
+      "year": 1974,
+      "month": 5,
+      "product": "consolidated",
+      "north": 40.496465,
+      "south": 7.081609
+    },
+    {
+      "year": 1974,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.809752,
+      "south": 9.880365
+    },
+    {
+      "year": 1974,
+      "month": 7,
+      "product": "consolidated",
+      "north": 30.310023,
+      "south": 12.180815
+    },
+    {
+      "year": 1974,
+      "month": 8,
+      "product": "consolidated",
+      "north": 26.653486,
+      "south": 14.044214
+    },
+    {
+      "year": 1974,
+      "month": 9,
+      "product": "consolidated",
+      "north": 25.652926,
+      "south": 14.977989
+    },
+    {
+      "year": 1974,
+      "month": 10,
+      "product": "consolidated",
+      "north": 26.850766,
+      "south": 15.193968
+    },
+    {
+      "year": 1974,
+      "month": 11,
+      "product": "consolidated",
+      "north": 29.828497,
+      "south": 12.430226
+    },
+    {
+      "year": 1974,
+      "month": 12,
+      "product": "consolidated",
+      "north": 33.346046,
+      "south": 6.810079
+    },
+    {
+      "year": 1975,
+      "month": 1,
+      "product": "consolidated",
+      "north": 36.818843,
+      "south": 2.399407
+    },
+    {
+      "year": 1975,
+      "month": 2,
+      "product": "consolidated",
+      "north": 39.631452,
+      "south": 1.364307
+    },
+    {
+      "year": 1975,
+      "month": 3,
+      "product": "consolidated",
+      "north": 41.386605,
+      "south": 1.840287
+    },
+    {
+      "year": 1975,
+      "month": 4,
+      "product": "consolidated",
+      "north": 42.100546,
+      "south": 3.857043
+    },
+    {
+      "year": 1975,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.755733,
+      "south": 6.624827
+    },
+    {
+      "year": 1975,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.170405,
+      "south": 9.18984
+    },
+    {
+      "year": 1975,
+      "month": 7,
+      "product": "consolidated",
+      "north": 29.925778,
+      "south": 11.550928
+    },
+    {
+      "year": 1975,
+      "month": 8,
+      "product": "consolidated",
+      "north": 27.561356,
+      "south": 13.270053
+    },
+    {
+      "year": 1975,
+      "month": 9,
+      "product": "consolidated",
+      "north": 27.524872,
+      "south": 14.119269
+    },
+    {
+      "year": 1975,
+      "month": 10,
+      "product": "consolidated",
+      "north": 29.059114,
+      "south": 13.473356
+    },
+    {
+      "year": 1975,
+      "month": 11,
+      "product": "consolidated",
+      "north": 31.444321,
+      "south": 10.703217
+    },
+    {
+      "year": 1975,
+      "month": 12,
+      "product": "consolidated",
+      "north": 33.86497,
+      "south": 6.28681
+    },
+    {
+      "year": 1976,
+      "month": 1,
+      "product": "consolidated",
+      "north": 36.097283,
+      "south": 2.250698
+    },
+    {
+      "year": 1976,
+      "month": 2,
+      "product": "consolidated",
+      "north": 38.652547,
+      "south": 1.425703
+    },
+    {
+      "year": 1976,
+      "month": 3,
+      "product": "consolidated",
+      "north": 40.23169,
+      "south": 2.181837
+    },
+    {
+      "year": 1976,
+      "month": 4,
+      "product": "consolidated",
+      "north": 41.663913,
+      "south": 4.197466
+    },
+    {
+      "year": 1976,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.455848,
+      "south": 6.813247
+    },
+    {
+      "year": 1976,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.694225,
+      "south": 8.832631
+    },
+    {
+      "year": 1976,
+      "month": 7,
+      "product": "consolidated",
+      "north": 30.692095,
+      "south": 11.131048
+    },
+    {
+      "year": 1976,
+      "month": 8,
+      "product": "consolidated",
+      "north": 26.827296,
+      "south": 12.799827
+    },
+    {
+      "year": 1976,
+      "month": 9,
+      "product": "consolidated",
+      "north": 25.573575,
+      "south": 13.328495
+    },
+    {
+      "year": 1976,
+      "month": 10,
+      "product": "consolidated",
+      "north": 27.113205,
+      "south": 12.758572
+    },
+    {
+      "year": 1976,
+      "month": 11,
+      "product": "consolidated",
+      "north": 30.142727,
+      "south": 10.65218
+    },
+    {
+      "year": 1976,
+      "month": 12,
+      "product": "consolidated",
+      "north": 33.246044,
+      "south": 5.846062
+    },
+    {
+      "year": 1977,
+      "month": 1,
+      "product": "consolidated",
+      "north": 35.918222,
+      "south": 2.367726
+    },
+    {
+      "year": 1977,
+      "month": 2,
+      "product": "consolidated",
+      "north": 38.395846,
+      "south": 1.362814
+    },
+    {
+      "year": 1977,
+      "month": 3,
+      "product": "consolidated",
+      "north": 40.295796,
+      "south": 2.214298
+    },
+    {
+      "year": 1977,
+      "month": 4,
+      "product": "consolidated",
+      "north": 41.810077,
+      "south": 3.864843
+    },
+    {
+      "year": 1977,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.502681,
+      "south": 5.919936
+    },
+    {
+      "year": 1977,
+      "month": 6,
+      "product": "consolidated",
+      "north": 36.998576,
+      "south": 8.33754
+    },
+    {
+      "year": 1977,
+      "month": 7,
+      "product": "consolidated",
+      "north": 29.080345,
+      "south": 10.227022
+    },
+    {
+      "year": 1977,
+      "month": 8,
+      "product": "consolidated",
+      "north": 24.508708,
+      "south": 11.461713
+    },
+    {
+      "year": 1977,
+      "month": 9,
+      "product": "consolidated",
+      "north": 23.649601,
+      "south": 11.963346
+    },
+    {
+      "year": 1977,
+      "month": 10,
+      "product": "consolidated",
+      "north": 25.277405,
+      "south": 12.357552
+    },
+    {
+      "year": 1977,
+      "month": 11,
+      "product": "consolidated",
+      "north": 27.960684,
+      "south": 10.724719
+    },
+    {
+      "year": 1977,
+      "month": 12,
+      "product": "consolidated",
+      "north": 31.18745,
+      "south": 5.847799
+    },
+    {
+      "year": 1978,
+      "month": 1,
+      "product": "consolidated",
+      "north": 34.375226,
+      "south": 3.020991
+    },
+    {
+      "year": 1978,
+      "month": 2,
+      "product": "consolidated",
+      "north": 37.310106,
+      "south": 1.852707
+    },
+    {
+      "year": 1978,
+      "month": 3,
+      "product": "consolidated",
+      "north": 39.365796,
+      "south": 2.361468
+    },
+    {
+      "year": 1978,
+      "month": 4,
+      "product": "consolidated",
+      "north": 40.826462,
+      "south": 4.050107
+    },
+    {
+      "year": 1978,
+      "month": 5,
+      "product": "consolidated",
+      "north": 40.889398,
+      "south": 5.972958
+    },
+    {
+      "year": 1978,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.207451,
+      "south": 7.899242
+    },
+    {
+      "year": 1978,
+      "month": 7,
+      "product": "consolidated",
+      "north": 30.251244,
+      "south": 9.955854
+    },
+    {
+      "year": 1978,
+      "month": 8,
+      "product": "consolidated",
+      "north": 26.375453,
+      "south": 11.651945
+    },
+    {
+      "year": 1978,
+      "month": 9,
+      "product": "consolidated",
+      "north": 25.667838,
+      "south": 12.592116
+    },
+    {
+      "year": 1978,
+      "month": 10,
+      "product": "consolidated",
+      "north": 26.972844,
+      "south": 12.52705
+    },
+    {
+      "year": 1978,
+      "month": 11,
+      "product": "consolidated",
+      "north": 29.155147,
+      "south": 10.947294
+    },
+    {
+      "year": 1978,
+      "month": 12,
+      "product": "consolidated",
+      "north": 31.805061,
+      "south": 6.27305
+    },
+    {
+      "year": 1979,
+      "month": 1,
+      "product": "consolidated",
+      "north": 34.80845,
+      "south": 2.41793
+    },
+    {
+      "year": 1979,
+      "month": 2,
+      "product": "consolidated",
+      "north": 37.362982,
+      "south": 1.583489
+    },
+    {
+      "year": 1979,
+      "month": 3,
+      "product": "consolidated",
+      "north": 39.021165,
+      "south": 1.955707
+    },
+    {
+      "year": 1979,
+      "month": 4,
+      "product": "consolidated",
+      "north": 40.227068,
+      "south": 4.007341
+    },
+    {
+      "year": 1979,
+      "month": 5,
+      "product": "consolidated",
+      "north": 40.315461,
+      "south": 6.55042
+    },
+    {
+      "year": 1979,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.903713,
+      "south": 9.044307
+    },
+    {
+      "year": 1979,
+      "month": 7,
+      "product": "consolidated",
+      "north": 31.600074,
+      "south": 11.134668
+    },
+    {
+      "year": 1979,
+      "month": 8,
+      "product": "consolidated",
+      "north": 26.680788,
+      "south": 12.205438
+    },
+    {
+      "year": 1979,
+      "month": 9,
+      "product": "consolidated",
+      "north": 25.811798,
+      "south": 13.103213
+    },
+    {
+      "year": 1979,
+      "month": 10,
+      "product": "consolidated",
+      "north": 26.981383,
+      "south": 13.395869
+    },
+    {
+      "year": 1979,
+      "month": 11,
+      "product": "consolidated",
+      "north": 29.433008,
+      "south": 11.503644
+    },
+    {
+      "year": 1979,
+      "month": 12,
+      "product": "consolidated",
+      "north": 32.973467,
+      "south": 5.524486
+    },
+    {
+      "year": 1980,
+      "month": 1,
+      "product": "consolidated",
+      "north": 36.450219,
+      "south": 2.400588
+    },
+    {
+      "year": 1980,
+      "month": 2,
+      "product": "consolidated",
+      "north": 39.618836,
+      "south": 1.40052
+    },
+    {
+      "year": 1980,
+      "month": 3,
+      "product": "consolidated",
+      "north": 41.552965,
+      "south": 1.535463
+    },
+    {
+      "year": 1980,
+      "month": 4,
+      "product": "consolidated",
+      "north": 42.891536,
+      "south": 2.597985
+    },
+    {
+      "year": 1980,
+      "month": 5,
+      "product": "consolidated",
+      "north": 42.61274,
+      "south": 4.678164
+    },
+    {
+      "year": 1980,
+      "month": 6,
+      "product": "consolidated",
+      "north": 39.941696,
+      "south": 7.162716
+    },
+    {
+      "year": 1980,
+      "month": 7,
+      "product": "consolidated",
+      "north": 32.331967,
+      "south": 9.178526
+    },
+    {
+      "year": 1980,
+      "month": 8,
+      "product": "consolidated",
+      "north": 27.724909,
+      "south": 10.682296
+    },
+    {
+      "year": 1980,
+      "month": 9,
+      "product": "consolidated",
+      "north": 28.567393,
+      "south": 11.760215
+    },
+    {
+      "year": 1980,
+      "month": 10,
+      "product": "consolidated",
+      "north": 29.961114,
+      "south": 12.230841
+    },
+    {
+      "year": 1980,
+      "month": 11,
+      "product": "consolidated",
+      "north": 31.609658,
+      "south": 10.018004
+    },
+    {
+      "year": 1980,
+      "month": 12,
+      "product": "consolidated",
+      "north": 34.167763,
+      "south": 4.744741
+    },
+    {
+      "year": 1981,
+      "month": 1,
+      "product": "consolidated",
+      "north": 36.768448,
+      "south": 1.845131
+    },
+    {
+      "year": 1981,
+      "month": 2,
+      "product": "consolidated",
+      "north": 38.885292,
+      "south": 1.131735
+    },
+    {
+      "year": 1981,
+      "month": 3,
+      "product": "consolidated",
+      "north": 40.854159,
+      "south": 1.370718
+    },
+    {
+      "year": 1981,
+      "month": 4,
+      "product": "consolidated",
+      "north": 41.610773,
+      "south": 2.7695
+    },
+    {
+      "year": 1981,
+      "month": 5,
+      "product": "consolidated",
+      "north": 41.505293,
+      "south": 5.256819
+    },
+    {
+      "year": 1981,
+      "month": 6,
+      "product": "consolidated",
+      "north": 37.345704,
+      "south": 7.762602
+    },
+    {
+      "year": 1981,
+      "month": 7,
+      "product": "consolidated",
+      "north": 29.570402,
+      "south": 9.976294
+    },
+    {
+      "year": 1981,
+      "month": 8,
+      "product": "consolidated",
+      "north": 24.996603,
+      "south": 11.666602
+    },
+    {
+      "year": 1981,
+      "month": 9,
+      "product": "consolidated",
+      "north": 22.743378,
+      "south": 11.649514
+    },
+    {
+      "year": 1981,
+      "month": 10,
+      "product": "consolidated",
+      "north": 23.411872,
+      "south": 10.916676
+    },
+    {
+      "year": 1981,
+      "month": 11,
+      "product": "consolidated",
+      "north": 24.846651,
+      "south": 8.710121
+    },
+    {
+      "year": 1981,
+      "month": 12,
+      "product": "consolidated",
+      "north": 27.467944,
+      "south": 4.119092
+    },
+    {
+      "year": 1982,
+      "month": 1,
+      "product": "consolidated",
+      "north": 30.305655,
+      "south": 1.381967
+    },
+    {
+      "year": 1982,
+      "month": 2,
+      "product": "consolidated",
+      "north": 32.019991,
+      "south": 0.717891
+    },
+    {
+      "year": 1982,
+      "month": 3,
+      "product": "consolidated",
+      "north": 33.221574,
+      "south": 1.339646
+    },
+    {
+      "year": 1982,
+      "month": 4,
+      "product": "consolidated",
+      "north": 34.044511,
+      "south": 3.45148
+    },
+    {
+      "year": 1982,
+      "month": 5,
+      "product": "consolidated",
+      "north": 33.234574,
+      "south": 5.664839
+    },
+    {
+      "year": 1982,
+      "month": 6,
+      "product": "consolidated",
+      "north": 30.067907,
+      "south": 7.34291
+    },
+    {
+      "year": 1982,
+      "month": 7,
+      "product": "consolidated",
+      "north": 22.67135,
+      "south": 8.501659
+    },
+    {
+      "year": 1982,
+      "month": 8,
+      "product": "consolidated",
+      "north": 18.946355,
+      "south": 9.381184
+    },
+    {
+      "year": 1982,
+      "month": 9,
+      "product": "consolidated",
+      "north": 16.63672,
+      "south": 9.454509
+    },
+    {
+      "year": 1982,
+      "month": 10,
+      "product": "consolidated",
+      "north": 17.249826,
+      "south": 8.778353
+    },
+    {
+      "year": 1982,
+      "month": 11,
+      "product": "consolidated",
+      "north": 19.573506,
+      "south": 6.92242
+    },
+    {
+      "year": 1982,
+      "month": 12,
+      "product": "consolidated",
+      "north": 21.860576,
+      "south": 2.958571
+    },
+    {
+      "year": 1983,
+      "month": 1,
+      "product": "consolidated",
+      "north": 24.189733,
+      "south": 1.081679
+    },
+    {
+      "year": 1983,
+      "month": 2,
+      "product": "consolidated",
+      "north": 26.243193,
+      "south": 0.728994
+    },
+    {
+      "year": 1983,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.418478,
+      "south": 1.263127
+    },
+    {
+      "year": 1983,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.781373,
+      "south": 2.831348
+    },
+    {
+      "year": 1983,
+      "month": 5,
+      "product": "consolidated",
+      "north": 27.22494,
+      "south": 4.821423
+    },
+    {
+      "year": 1983,
+      "month": 6,
+      "product": "consolidated",
+      "north": 24.312861,
+      "south": 6.820111
+    },
+    {
+      "year": 1983,
+      "month": 7,
+      "product": "consolidated",
+      "north": 17.263982,
+      "south": 8.636987
+    },
+    {
+      "year": 1983,
+      "month": 8,
+      "product": "consolidated",
+      "north": 13.271953,
+      "south": 9.479804
+    },
+    {
+      "year": 1983,
+      "month": 9,
+      "product": "consolidated",
+      "north": 13.056973,
+      "south": 9.856856
+    },
+    {
+      "year": 1983,
+      "month": 10,
+      "product": "consolidated",
+      "north": 14.896551,
+      "south": 9.194357
+    },
+    {
+      "year": 1983,
+      "month": 11,
+      "product": "consolidated",
+      "north": 17.537971,
+      "south": 7.27602
+    },
+    {
+      "year": 1983,
+      "month": 12,
+      "product": "consolidated",
+      "north": 20.171332,
+      "south": 3.437446
+    },
+    {
+      "year": 1984,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.392408,
+      "south": 1.151563
+    },
+    {
+      "year": 1984,
+      "month": 2,
+      "product": "consolidated",
+      "north": 24.211785,
+      "south": 0.720703
+    },
+    {
+      "year": 1984,
+      "month": 3,
+      "product": "consolidated",
+      "north": 25.58675,
+      "south": 1.115843
+    },
+    {
+      "year": 1984,
+      "month": 4,
+      "product": "consolidated",
+      "north": 26.550613,
+      "south": 2.65435
+    },
+    {
+      "year": 1984,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.14283,
+      "south": 4.836708
+    },
+    {
+      "year": 1984,
+      "month": 6,
+      "product": "consolidated",
+      "north": 22.873131,
+      "south": 7.255938
+    },
+    {
+      "year": 1984,
+      "month": 7,
+      "product": "consolidated",
+      "north": 15.714083,
+      "south": 9.313226
+    },
+    {
+      "year": 1984,
+      "month": 8,
+      "product": "consolidated",
+      "north": 12.745184,
+      "south": 9.805815
+    },
+    {
+      "year": 1984,
+      "month": 9,
+      "product": "consolidated",
+      "north": 11.251385,
+      "south": 9.398934
+    },
+    {
+      "year": 1984,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.03533,
+      "south": 8.705959
+    },
+    {
+      "year": 1984,
+      "month": 11,
+      "product": "consolidated",
+      "north": 14.217959,
+      "south": 7.330609
+    },
+    {
+      "year": 1984,
+      "month": 12,
+      "product": "consolidated",
+      "north": 17.336075,
+      "south": 3.38286
+    },
+    {
+      "year": 1985,
+      "month": 1,
+      "product": "consolidated",
+      "north": 20.77995,
+      "south": 1.131543
+    },
+    {
+      "year": 1985,
+      "month": 2,
+      "product": "consolidated",
+      "north": 23.766127,
+      "south": 0.891496
+    },
+    {
+      "year": 1985,
+      "month": 3,
+      "product": "consolidated",
+      "north": 26.239044,
+      "south": 1.4903
+    },
+    {
+      "year": 1985,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.904913,
+      "south": 3.110992
+    },
+    {
+      "year": 1985,
+      "month": 5,
+      "product": "consolidated",
+      "north": 27.613934,
+      "south": 5.59061
+    },
+    {
+      "year": 1985,
+      "month": 6,
+      "product": "consolidated",
+      "north": 22.613053,
+      "south": 7.984981
+    },
+    {
+      "year": 1985,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.615877,
+      "south": 9.740894
+    },
+    {
+      "year": 1985,
+      "month": 8,
+      "product": "consolidated",
+      "north": 11.963076,
+      "south": 11.195854
+    },
+    {
+      "year": 1985,
+      "month": 9,
+      "product": "consolidated",
+      "north": 11.714608,
+      "south": 11.831934
+    },
+    {
+      "year": 1985,
+      "month": 10,
+      "product": "consolidated",
+      "north": 13.801066,
+      "south": 11.698611
+    },
+    {
+      "year": 1985,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.647433,
+      "south": 10.134856
+    },
+    {
+      "year": 1985,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.670126,
+      "south": 5.839074
+    },
+    {
+      "year": 1986,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.967515,
+      "south": 2.436485
+    },
+    {
+      "year": 1986,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.879811,
+      "south": 1.596904
+    },
+    {
+      "year": 1986,
+      "month": 3,
+      "product": "consolidated",
+      "north": 28.38784,
+      "south": 1.770075
+    },
+    {
+      "year": 1986,
+      "month": 4,
+      "product": "consolidated",
+      "north": 29.373454,
+      "south": 2.762572
+    },
+    {
+      "year": 1986,
+      "month": 5,
+      "product": "consolidated",
+      "north": 27.491168,
+      "south": 4.349578
+    },
+    {
+      "year": 1986,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.663215,
+      "south": 5.932727
+    },
+    {
+      "year": 1986,
+      "month": 7,
+      "product": "consolidated",
+      "north": 16.831358,
+      "south": 6.934699
+    },
+    {
+      "year": 1986,
+      "month": 8,
+      "product": "consolidated",
+      "north": 14.863394,
+      "south": 7.305217
+    },
+    {
+      "year": 1986,
+      "month": 9,
+      "product": "consolidated",
+      "north": 15.579481,
+      "south": 6.977834
+    },
+    {
+      "year": 1986,
+      "month": 10,
+      "product": "consolidated",
+      "north": 17.952705,
+      "south": 6.924029
+    },
+    {
+      "year": 1986,
+      "month": 11,
+      "product": "consolidated",
+      "north": 19.944701,
+      "south": 5.784784
+    },
+    {
+      "year": 1986,
+      "month": 12,
+      "product": "consolidated",
+      "north": 22.43065,
+      "south": 3.230822
+    },
+    {
+      "year": 1987,
+      "month": 1,
+      "product": "consolidated",
+      "north": 25.218089,
+      "south": 1.393927
+    },
+    {
+      "year": 1987,
+      "month": 2,
+      "product": "consolidated",
+      "north": 28.090026,
+      "south": 1.022109
+    },
+    {
+      "year": 1987,
+      "month": 3,
+      "product": "consolidated",
+      "north": 30.294268,
+      "south": 1.684699
+    },
+    {
+      "year": 1987,
+      "month": 4,
+      "product": "consolidated",
+      "north": 31.606865,
+      "south": 3.55324
+    },
+    {
+      "year": 1987,
+      "month": 5,
+      "product": "consolidated",
+      "north": 31.037481,
+      "south": 5.565409
+    },
+    {
+      "year": 1987,
+      "month": 6,
+      "product": "consolidated",
+      "north": 26.899728,
+      "south": 7.684122
+    },
+    {
+      "year": 1987,
+      "month": 7,
+      "product": "consolidated",
+      "north": 17.742031,
+      "south": 9.570586
+    },
+    {
+      "year": 1987,
+      "month": 8,
+      "product": "consolidated",
+      "north": 13.678158,
+      "south": 10.881014
+    },
+    {
+      "year": 1987,
+      "month": 9,
+      "product": "consolidated",
+      "north": 14.895445,
+      "south": 11.378629
+    },
+    {
+      "year": 1987,
+      "month": 10,
+      "product": "consolidated",
+      "north": 17.245601,
+      "south": 11.172634
+    },
+    {
+      "year": 1987,
+      "month": 11,
+      "product": "consolidated",
+      "north": 19.456165,
+      "south": 9.206895
+    },
+    {
+      "year": 1987,
+      "month": 12,
+      "product": "consolidated",
+      "north": 22.849261,
+      "south": 5.028799
+    },
+    {
+      "year": 1988,
+      "month": 1,
+      "product": "consolidated",
+      "north": 26.342098,
+      "south": 1.593421
+    },
+    {
+      "year": 1988,
+      "month": 2,
+      "product": "consolidated",
+      "north": 28.787523,
+      "south": 1.203343
+    },
+    {
+      "year": 1988,
+      "month": 3,
+      "product": "consolidated",
+      "north": 31.36834,
+      "south": 1.776146
+    },
+    {
+      "year": 1988,
+      "month": 4,
+      "product": "consolidated",
+      "north": 32.709202,
+      "south": 3.210257
+    },
+    {
+      "year": 1988,
+      "month": 5,
+      "product": "consolidated",
+      "north": 31.623855,
+      "south": 5.403501
+    },
+    {
+      "year": 1988,
+      "month": 6,
+      "product": "consolidated",
+      "north": 26.575102,
+      "south": 7.766306
+    },
+    {
+      "year": 1988,
+      "month": 7,
+      "product": "consolidated",
+      "north": 18.386792,
+      "south": 9.897539
+    },
+    {
+      "year": 1988,
+      "month": 8,
+      "product": "consolidated",
+      "north": 15.167585,
+      "south": 11.301508
+    },
+    {
+      "year": 1988,
+      "month": 9,
+      "product": "consolidated",
+      "north": 15.721589,
+      "south": 11.684526
+    },
+    {
+      "year": 1988,
+      "month": 10,
+      "product": "consolidated",
+      "north": 18.154127,
+      "south": 11.834169
+    },
+    {
+      "year": 1988,
+      "month": 11,
+      "product": "consolidated",
+      "north": 20.751259,
+      "south": 10.168304
+    },
+    {
+      "year": 1988,
+      "month": 12,
+      "product": "consolidated",
+      "north": 24.154449,
+      "south": 5.272452
+    },
+    {
+      "year": 1989,
+      "month": 1,
+      "product": "consolidated",
+      "north": 27.30442,
+      "south": 1.863581
+    },
+    {
+      "year": 1989,
+      "month": 2,
+      "product": "consolidated",
+      "north": 29.518738,
+      "south": 1.26339
+    },
+    {
+      "year": 1989,
+      "month": 3,
+      "product": "consolidated",
+      "north": 30.968363,
+      "south": 1.779173
+    },
+    {
+      "year": 1989,
+      "month": 4,
+      "product": "consolidated",
+      "north": 31.730677,
+      "south": 3.287802
+    },
+    {
+      "year": 1989,
+      "month": 5,
+      "product": "consolidated",
+      "north": 31.012576,
+      "south": 6.065341
+    },
+    {
+      "year": 1989,
+      "month": 6,
+      "product": "consolidated",
+      "north": 26.744525,
+      "south": 8.5374
+    },
+    {
+      "year": 1989,
+      "month": 7,
+      "product": "consolidated",
+      "north": 18.971618,
+      "south": 10.204159
+    },
+    {
+      "year": 1989,
+      "month": 8,
+      "product": "consolidated",
+      "north": 15.283494,
+      "south": 11.701043
+    },
+    {
+      "year": 1989,
+      "month": 9,
+      "product": "consolidated",
+      "north": 14.57355,
+      "south": 12.397324
+    },
+    {
+      "year": 1989,
+      "month": 10,
+      "product": "consolidated",
+      "north": 16.364065,
+      "south": 12.123047
+    },
+    {
+      "year": 1989,
+      "month": 11,
+      "product": "consolidated",
+      "north": 19.422721,
+      "south": 10.139015
+    },
+    {
+      "year": 1989,
+      "month": 12,
+      "product": "consolidated",
+      "north": 22.791682,
+      "south": 5.241934
+    },
+    {
+      "year": 1990,
+      "month": 1,
+      "product": "consolidated",
+      "north": 25.28177,
+      "south": 2.398609
+    },
+    {
+      "year": 1990,
+      "month": 2,
+      "product": "consolidated",
+      "north": 27.249952,
+      "south": 1.768662
+    },
+    {
+      "year": 1990,
+      "month": 3,
+      "product": "consolidated",
+      "north": 28.596076,
+      "south": 2.176201
+    },
+    {
+      "year": 1990,
+      "month": 4,
+      "product": "consolidated",
+      "north": 28.229399,
+      "south": 4.046434
+    },
+    {
+      "year": 1990,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.165235,
+      "south": 5.91467
+    },
+    {
+      "year": 1990,
+      "month": 6,
+      "product": "consolidated",
+      "north": 21.053377,
+      "south": 8.495789
+    },
+    {
+      "year": 1990,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.084187,
+      "south": 10.002496
+    },
+    {
+      "year": 1990,
+      "month": 8,
+      "product": "consolidated",
+      "north": 11.070392,
+      "south": 11.227039
+    },
+    {
+      "year": 1990,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.777035,
+      "south": 11.597789
+    },
+    {
+      "year": 1990,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.752735,
+      "south": 11.393632
+    },
+    {
+      "year": 1990,
+      "month": 11,
+      "product": "consolidated",
+      "north": 15.999687,
+      "south": 9.432421
+    },
+    {
+      "year": 1990,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.370788,
+      "south": 5.211278
+    },
+    {
+      "year": 1991,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.604802,
+      "south": 2.258084
+    },
+    {
+      "year": 1991,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.855379,
+      "south": 1.57217
+    },
+    {
+      "year": 1991,
+      "month": 3,
+      "product": "consolidated",
+      "north": 28.360985,
+      "south": 1.986861
+    },
+    {
+      "year": 1991,
+      "month": 4,
+      "product": "consolidated",
+      "north": 30.072699,
+      "south": 4.053124
+    },
+    {
+      "year": 1991,
+      "month": 5,
+      "product": "consolidated",
+      "north": 29.306554,
+      "south": 6.47533
+    },
+    {
+      "year": 1991,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.907313,
+      "south": 8.362352
+    },
+    {
+      "year": 1991,
+      "month": 7,
+      "product": "consolidated",
+      "north": 16.000011,
+      "south": 10.471794
+    },
+    {
+      "year": 1991,
+      "month": 8,
+      "product": "consolidated",
+      "north": 12.835226,
+      "south": 12.012692
+    },
+    {
+      "year": 1991,
+      "month": 9,
+      "product": "consolidated",
+      "north": 12.02416,
+      "south": 12.436099
+    },
+    {
+      "year": 1991,
+      "month": 10,
+      "product": "consolidated",
+      "north": 13.884382,
+      "south": 12.125849
+    },
+    {
+      "year": 1991,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.255573,
+      "south": 10.514575
+    },
+    {
+      "year": 1991,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.130336,
+      "south": 5.625435
+    },
+    {
+      "year": 1992,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.358798,
+      "south": 2.46791
+    },
+    {
+      "year": 1992,
+      "month": 2,
+      "product": "consolidated",
+      "north": 24.947283,
+      "south": 1.528703
+    },
+    {
+      "year": 1992,
+      "month": 3,
+      "product": "consolidated",
+      "north": 26.504401,
+      "south": 1.915271
+    },
+    {
+      "year": 1992,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.619068,
+      "south": 3.937031
+    },
+    {
+      "year": 1992,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.869853,
+      "south": 6.433095
+    },
+    {
+      "year": 1992,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.435665,
+      "south": 8.630883
+    },
+    {
+      "year": 1992,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.518535,
+      "south": 10.698932
+    },
+    {
+      "year": 1992,
+      "month": 8,
+      "product": "consolidated",
+      "north": 11.381334,
+      "south": 12.329471
+    },
+    {
+      "year": 1992,
+      "month": 9,
+      "product": "consolidated",
+      "north": 11.458303,
+      "south": 12.694518
+    },
+    {
+      "year": 1992,
+      "month": 10,
+      "product": "consolidated",
+      "north": 13.743692,
+      "south": 12.869647
+    },
+    {
+      "year": 1992,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.337381,
+      "south": 10.585956
+    },
+    {
+      "year": 1992,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.900346,
+      "south": 4.860361
+    },
+    {
+      "year": 1993,
+      "month": 1,
+      "product": "consolidated",
+      "north": 23.239178,
+      "south": 1.827318
+    },
+    {
+      "year": 1993,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.805576,
+      "south": 0.986395
+    },
+    {
+      "year": 1993,
+      "month": 3,
+      "product": "consolidated",
+      "north": 28.122707,
+      "south": 1.528653
+    },
+    {
+      "year": 1993,
+      "month": 4,
+      "product": "consolidated",
+      "north": 29.417974,
+      "south": 3.469639
+    },
+    {
+      "year": 1993,
+      "month": 5,
+      "product": "consolidated",
+      "north": 28.349202,
+      "south": 6.147685
+    },
+    {
+      "year": 1993,
+      "month": 6,
+      "product": "consolidated",
+      "north": 22.197138,
+      "south": 8.322556
+    },
+    {
+      "year": 1993,
+      "month": 7,
+      "product": "consolidated",
+      "north": 12.992596,
+      "south": 10.640044
+    },
+    {
+      "year": 1993,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.150619,
+      "south": 12.00169
+    },
+    {
+      "year": 1993,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.500441,
+      "south": 13.168018
+    },
+    {
+      "year": 1993,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.834703,
+      "south": 13.019513
+    },
+    {
+      "year": 1993,
+      "month": 11,
+      "product": "consolidated",
+      "north": 15.993957,
+      "south": 11.270665
+    },
+    {
+      "year": 1993,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.527415,
+      "south": 6.053965
+    },
+    {
+      "year": 1994,
+      "month": 1,
+      "product": "consolidated",
+      "north": 23.059662,
+      "south": 2.98827
+    },
+    {
+      "year": 1994,
+      "month": 2,
+      "product": "consolidated",
+      "north": 26.024798,
+      "south": 2.076758
+    },
+    {
+      "year": 1994,
+      "month": 3,
+      "product": "consolidated",
+      "north": 28.43632,
+      "south": 2.740485
+    },
+    {
+      "year": 1994,
+      "month": 4,
+      "product": "consolidated",
+      "north": 29.523475,
+      "south": 4.577794
+    },
+    {
+      "year": 1994,
+      "month": 5,
+      "product": "consolidated",
+      "north": 28.81687,
+      "south": 6.974696
+    },
+    {
+      "year": 1994,
+      "month": 6,
+      "product": "consolidated",
+      "north": 24.150814,
+      "south": 9.278477
+    },
+    {
+      "year": 1994,
+      "month": 7,
+      "product": "consolidated",
+      "north": 15.695665,
+      "south": 11.289173
+    },
+    {
+      "year": 1994,
+      "month": 8,
+      "product": "consolidated",
+      "north": 11.850236,
+      "south": 12.781392
+    },
+    {
+      "year": 1994,
+      "month": 9,
+      "product": "consolidated",
+      "north": 12.121769,
+      "south": 13.073406
+    },
+    {
+      "year": 1994,
+      "month": 10,
+      "product": "consolidated",
+      "north": 14.189767,
+      "south": 13.014438
+    },
+    {
+      "year": 1994,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.854922,
+      "south": 11.38583
+    },
+    {
+      "year": 1994,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.884927,
+      "south": 6.656438
+    },
+    {
+      "year": 1995,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.806216,
+      "south": 3.070695
+    },
+    {
+      "year": 1995,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.232715,
+      "south": 1.906846
+    },
+    {
+      "year": 1995,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.23815,
+      "south": 2.431694
+    },
+    {
+      "year": 1995,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.930516,
+      "south": 4.35223
+    },
+    {
+      "year": 1995,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.332735,
+      "south": 7.024097
+    },
+    {
+      "year": 1995,
+      "month": 6,
+      "product": "consolidated",
+      "north": 20.840444,
+      "south": 9.281568
+    },
+    {
+      "year": 1995,
+      "month": 7,
+      "product": "consolidated",
+      "north": 12.928005,
+      "south": 11.124758
+    },
+    {
+      "year": 1995,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.007659,
+      "south": 12.748229
+    },
+    {
+      "year": 1995,
+      "month": 9,
+      "product": "consolidated",
+      "north": 9.899383,
+      "south": 13.442969
+    },
+    {
+      "year": 1995,
+      "month": 10,
+      "product": "consolidated",
+      "north": 10.76147,
+      "south": 12.916973
+    },
+    {
+      "year": 1995,
+      "month": 11,
+      "product": "consolidated",
+      "north": 13.622635,
+      "south": 11.397664
+    },
+    {
+      "year": 1995,
+      "month": 12,
+      "product": "consolidated",
+      "north": 16.904772,
+      "south": 6.878015
+    },
+    {
+      "year": 1996,
+      "month": 1,
+      "product": "consolidated",
+      "north": 20.132928,
+      "south": 3.09666
+    },
+    {
+      "year": 1996,
+      "month": 2,
+      "product": "consolidated",
+      "north": 23.205763,
+      "south": 1.618688
+    },
+    {
+      "year": 1996,
+      "month": 3,
+      "product": "consolidated",
+      "north": 25.205511,
+      "south": 2.203165
+    },
+    {
+      "year": 1996,
+      "month": 4,
+      "product": "consolidated",
+      "north": 26.292875,
+      "south": 4.184291
+    },
+    {
+      "year": 1996,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.045988,
+      "south": 6.991183
+    },
+    {
+      "year": 1996,
+      "month": 6,
+      "product": "consolidated",
+      "north": 22.351961,
+      "south": 9.38048
+    },
+    {
+      "year": 1996,
+      "month": 7,
+      "product": "consolidated",
+      "north": 15.698264,
+      "south": 11.300631
+    },
+    {
+      "year": 1996,
+      "month": 8,
+      "product": "consolidated",
+      "north": 12.734046,
+      "south": 12.482566
+    },
+    {
+      "year": 1996,
+      "month": 9,
+      "product": "consolidated",
+      "north": 12.971675,
+      "south": 12.919603
+    },
+    {
+      "year": 1996,
+      "month": 10,
+      "product": "consolidated",
+      "north": 14.8016,
+      "south": 12.862305
+    },
+    {
+      "year": 1996,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.556689,
+      "south": 10.484128
+    },
+    {
+      "year": 1996,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.510105,
+      "south": 5.347713
+    },
+    {
+      "year": 1997,
+      "month": 1,
+      "product": "consolidated",
+      "north": 23.076829,
+      "south": 2.007355
+    },
+    {
+      "year": 1997,
+      "month": 2,
+      "product": "consolidated",
+      "north": 26.033542,
+      "south": 1.290768
+    },
+    {
+      "year": 1997,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.805022,
+      "south": 1.731602
+    },
+    {
+      "year": 1997,
+      "month": 4,
+      "product": "consolidated",
+      "north": 28.901718,
+      "south": 3.756664
+    },
+    {
+      "year": 1997,
+      "month": 5,
+      "product": "consolidated",
+      "north": 28.038425,
+      "south": 6.474606
+    },
+    {
+      "year": 1997,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.225888,
+      "south": 8.834985
+    },
+    {
+      "year": 1997,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.519692,
+      "south": 11.087661
+    },
+    {
+      "year": 1997,
+      "month": 8,
+      "product": "consolidated",
+      "north": 12.076919,
+      "south": 12.486612
+    },
+    {
+      "year": 1997,
+      "month": 9,
+      "product": "consolidated",
+      "north": 12.5611,
+      "south": 12.994547
+    },
+    {
+      "year": 1997,
+      "month": 10,
+      "product": "consolidated",
+      "north": 13.530399,
+      "south": 13.202311
+    },
+    {
+      "year": 1997,
+      "month": 11,
+      "product": "consolidated",
+      "north": 15.801399,
+      "south": 10.94004
+    },
+    {
+      "year": 1997,
+      "month": 12,
+      "product": "consolidated",
+      "north": 19.242671,
+      "south": 5.679026
+    },
+    {
+      "year": 1998,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.794918,
+      "south": 2.407603
+    },
+    {
+      "year": 1998,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.917506,
+      "south": 1.546471
+    },
+    {
+      "year": 1998,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.913388,
+      "south": 2.043348
+    },
+    {
+      "year": 1998,
+      "month": 4,
+      "product": "consolidated",
+      "north": 28.836306,
+      "south": 3.907462
+    },
+    {
+      "year": 1998,
+      "month": 5,
+      "product": "consolidated",
+      "north": 27.776821,
+      "south": 6.450383
+    },
+    {
+      "year": 1998,
+      "month": 6,
+      "product": "consolidated",
+      "north": 22.210646,
+      "south": 8.56254
+    },
+    {
+      "year": 1998,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.177593,
+      "south": 10.479106
+    },
+    {
+      "year": 1998,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.600435,
+      "south": 11.975665
+    },
+    {
+      "year": 1998,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.259388,
+      "south": 12.842694
+    },
+    {
+      "year": 1998,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.057066,
+      "south": 12.899811
+    },
+    {
+      "year": 1998,
+      "month": 11,
+      "product": "consolidated",
+      "north": 14.733765,
+      "south": 10.908649
+    },
+    {
+      "year": 1998,
+      "month": 12,
+      "product": "consolidated",
+      "north": 18.06229,
+      "south": 5.658591
+    },
+    {
+      "year": 1999,
+      "month": 1,
+      "product": "consolidated",
+      "north": 22.007352,
+      "south": 2.203192
+    },
+    {
+      "year": 1999,
+      "month": 2,
+      "product": "consolidated",
+      "north": 25.406797,
+      "south": 1.389743
+    },
+    {
+      "year": 1999,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.729726,
+      "south": 1.868448
+    },
+    {
+      "year": 1999,
+      "month": 4,
+      "product": "consolidated",
+      "north": 29.415629,
+      "south": 3.870423
+    },
+    {
+      "year": 1999,
+      "month": 5,
+      "product": "consolidated",
+      "north": 28.591165,
+      "south": 6.280422
+    },
+    {
+      "year": 1999,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.103957,
+      "south": 8.569309
+    },
+    {
+      "year": 1999,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.73498,
+      "south": 10.485649
+    },
+    {
+      "year": 1999,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.843609,
+      "south": 11.899821
+    },
+    {
+      "year": 1999,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.336437,
+      "south": 12.63996
+    },
+    {
+      "year": 1999,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.175243,
+      "south": 12.811893
+    },
+    {
+      "year": 1999,
+      "month": 11,
+      "product": "consolidated",
+      "north": 15.021094,
+      "south": 10.892848
+    },
+    {
+      "year": 1999,
+      "month": 12,
+      "product": "consolidated",
+      "north": 17.680168,
+      "south": 6.2434
+    },
+    {
+      "year": 2000,
+      "month": 1,
+      "product": "consolidated",
+      "north": 20.934954,
+      "south": 2.792313
+    },
+    {
+      "year": 2000,
+      "month": 2,
+      "product": "consolidated",
+      "north": 23.916578,
+      "south": 1.660613
+    },
+    {
+      "year": 2000,
+      "month": 3,
+      "product": "consolidated",
+      "north": 25.842956,
+      "south": 2.327187
+    },
+    {
+      "year": 2000,
+      "month": 4,
+      "product": "consolidated",
+      "north": 26.977293,
+      "south": 4.254986
+    },
+    {
+      "year": 2000,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.552439,
+      "south": 6.844702
+    },
+    {
+      "year": 2000,
+      "month": 6,
+      "product": "consolidated",
+      "north": 21.407312,
+      "south": 9.12164
+    },
+    {
+      "year": 2000,
+      "month": 7,
+      "product": "consolidated",
+      "north": 13.161326,
+      "south": 11.228395
+    },
+    {
+      "year": 2000,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.575332,
+      "south": 12.675971
+    },
+    {
+      "year": 2000,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.276695,
+      "south": 13.165799
+    },
+    {
+      "year": 2000,
+      "month": 10,
+      "product": "consolidated",
+      "north": 12.214568,
+      "south": 12.904477
+    },
+    {
+      "year": 2000,
+      "month": 11,
+      "product": "consolidated",
+      "north": 14.952063,
+      "south": 11.068503
+    },
+    {
+      "year": 2000,
+      "month": 12,
+      "product": "consolidated",
+      "north": 18.264384,
+      "south": 6.324016
+    },
+    {
+      "year": 2001,
+      "month": 1,
+      "product": "consolidated",
+      "north": 21.852092,
+      "south": 3.170091
+    },
+    {
+      "year": 2001,
+      "month": 2,
+      "product": "consolidated",
+      "north": 24.901503,
+      "south": 2.26171
+    },
+    {
+      "year": 2001,
+      "month": 3,
+      "product": "consolidated",
+      "north": 27.277247,
+      "south": 2.753659
+    },
+    {
+      "year": 2001,
+      "month": 4,
+      "product": "consolidated",
+      "north": 28.988955,
+      "south": 4.370653
+    },
+    {
+      "year": 2001,
+      "month": 5,
+      "product": "consolidated",
+      "north": 28.119615,
+      "south": 6.776074
+    },
+    {
+      "year": 2001,
+      "month": 6,
+      "product": "consolidated",
+      "north": 23.392566,
+      "south": 9.036014
+    },
+    {
+      "year": 2001,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.905744,
+      "south": 10.971775
+    },
+    {
+      "year": 2001,
+      "month": 8,
+      "product": "consolidated",
+      "north": 11.862647,
+      "south": 12.139175
+    },
+    {
+      "year": 2001,
+      "month": 9,
+      "product": "consolidated",
+      "north": 11.621922,
+      "south": 12.807545
+    },
+    {
+      "year": 2001,
+      "month": 10,
+      "product": "consolidated",
+      "north": 13.739648,
+      "south": 12.251545
+    },
+    {
+      "year": 2001,
+      "month": 11,
+      "product": "consolidated",
+      "north": 16.131393,
+      "south": 10.540973
+    },
+    {
+      "year": 2001,
+      "month": 12,
+      "product": "consolidated",
+      "north": 18.274151,
+      "south": 5.877188
+    },
+    {
+      "year": 2002,
+      "month": 1,
+      "product": "consolidated",
+      "north": 21.612273,
+      "south": 2.608215
+    },
+    {
+      "year": 2002,
+      "month": 2,
+      "product": "consolidated",
+      "north": 24.677885,
+      "south": 1.650543
+    },
+    {
+      "year": 2002,
+      "month": 3,
+      "product": "consolidated",
+      "north": 26.47969,
+      "south": 2.05107
+    },
+    {
+      "year": 2002,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.41126,
+      "south": 3.594337
+    },
+    {
+      "year": 2002,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.975128,
+      "south": 5.839287
+    },
+    {
+      "year": 2002,
+      "month": 6,
+      "product": "consolidated",
+      "north": 21.779222,
+      "south": 8.043269
+    },
+    {
+      "year": 2002,
+      "month": 7,
+      "product": "consolidated",
+      "north": 14.492124,
+      "south": 10.475136
+    },
+    {
+      "year": 2002,
+      "month": 8,
+      "product": "consolidated",
+      "north": 10.792192,
+      "south": 12.219033
+    },
+    {
+      "year": 2002,
+      "month": 9,
+      "product": "consolidated",
+      "north": 10.188511,
+      "south": 12.971146
+    },
+    {
+      "year": 2002,
+      "month": 10,
+      "product": "consolidated",
+      "north": 11.856227,
+      "south": 12.93983
+    },
+    {
+      "year": 2002,
+      "month": 11,
+      "product": "consolidated",
+      "north": 14.521155,
+      "south": 10.958118
+    },
+    {
+      "year": 2002,
+      "month": 12,
+      "product": "consolidated",
+      "north": 17.554059,
+      "south": 6.912043
+    },
+    {
+      "year": 2003,
+      "month": 1,
+      "product": "consolidated",
+      "north": 20.970897,
+      "south": 3.349259
+    },
+    {
+      "year": 2003,
+      "month": 2,
+      "product": "consolidated",
+      "north": 23.932911,
+      "south": 2.14428
+    },
+    {
+      "year": 2003,
+      "month": 3,
+      "product": "consolidated",
+      "north": 26.520682,
+      "south": 2.570461
+    },
+    {
+      "year": 2003,
+      "month": 4,
+      "product": "consolidated",
+      "north": 27.450055,
+      "south": 4.555236
+    },
+    {
+      "year": 2003,
+      "month": 5,
+      "product": "consolidated",
+      "north": 26.347401,
+      "south": 7.169957
+    },
+    {
+      "year": 2003,
+      "month": 6,
+      "product": "consolidated",
+      "north": 21.289309,
+      "south": 9.664175
+    },
+    {
+      "year": 2003,
+      "month": 7,
+      "product": "consolidated",
+      "north": 12.868354,
+      "south": 11.750088
+    },
+    {
+      "year": 2003,
+      "month": 8,
+      "product": "consolidated",
+      "north": 9.909277,
+      "south": 12.94164
+    },
+    {
+      "year": 2003,
+      "month": 9,
+      "product": "consolidated",
+      "north": 9.308499,
+      "south": 13.541735
+    },
+    {
+      "year": 2003,
+      "month": 10,
+      "product": "consolidated",
+      "north": 10.816017,
+      "south": 13.321056
+    },
+    {
+      "year": 2003,
+      "month": 11,
+      "product": "consolidated",
+      "north": 13.306454,
+      "south": 11.153624
+    },
+    {
+      "year": 2003,
+      "month": 12,
+      "product": "consolidated",
+      "north": 16.463346,
+      "south": 6.568472
+    },
+    {
+      "year": 2004,
+      "month": 1,
+      "product": "consolidated",
+      "north": 19.586796,
+      "south": 3.360485
+    },
+    {
+      "year": 2004,
+      "month": 2,
+      "product": "consolidated",
+      "north": 22.286287,
+      "south": 2.222568
+    },
+    {
+      "year": 2004,
+      "month": 3,
+      "product": "consolidated",
+      "north": 24.465791,
+      "south": 2.780494
+    },
+    {
+      "year": 2004,
+      "month": 4,
+      "product": "consolidated",
+      "north": 25.268038,
+      "south": 4.519824
+    },
+    {
+      "year": 2004,
+      "month": 5,
+      "product": "consolidated",
+      "north": 24.581058,
+      "south": 6.867728
+    },
+    {
+      "year": 2004,
+      "month": 6,
+      "product": "consolidated",
+      "north": 19.961017,
+      "south": 9.028587
+    },
+    {
+      "year": 2004,
+      "month": 7,
+      "product": "consolidated",
+      "north": 12.456856,
+      "south": 10.881547
+    },
+    {
+      "year": 2004,
+      "month": 8,
+      "product": "consolidated",
+      "north": 9.466456,
+      "south": 11.548827
+    },
+    {
+      "year": 2004,
+      "month": 9,
+      "product": "consolidated",
+      "north": 9.392922,
+      "south": 10.981478
+    },
+    {
+      "year": 2004,
+      "month": 10,
+      "product": "consolidated",
+      "north": 10.898812,
+      "south": 10.986668
+    },
+    {
+      "year": 2004,
+      "month": 11,
+      "product": "consolidated",
+      "north": 13.674177,
+      "south": 9.715595
+    },
+    {
+      "year": 2004,
+      "month": 12,
+      "product": "consolidated",
+      "north": 16.861395,
+      "south": 5.175212
+    },
+    {
+      "year": 2005,
+      "month": 1,
+      "product": "consolidated",
+      "north": 19.636484,
+      "south": 2.279767
+    },
+    {
+      "year": 2005,
+      "month": 2,
+      "product": "consolidated",
+      "north": 21.859718,
+      "south": 1.778952
+    },
+    {
+      "year": 2005,
+      "month": 3,
+      "product": "consolidated",
+      "north": 23.925317,
+      "south": 2.41156
+    },
+    {
+      "year": 2005,
+      "month": 4,
+      "product": "consolidated",
+      "north": 25.292439,
+      "south": 4.350733
+    },
+    {
+      "year": 2005,
+      "month": 5,
+      "product": "consolidated",
+      "north": 24.345694,
+      "south": 6.567804
+    },
+    {
+      "year": 2005,
+      "month": 6,
+      "product": "consolidated",
+      "north": 18.285897,
+      "south": 8.686093
+    },
+    {
+      "year": 2005,
+      "month": 7,
+      "product": "consolidated",
+      "north": 10.701021,
+      "south": 10.72702
+    },
+    {
+      "year": 2005,
+      "month": 8,
+      "product": "consolidated",
+      "north": 7.407846,
+      "south": 11.954526
+    },
+    {
+      "year": 2005,
+      "month": 9,
+      "product": "consolidated",
+      "north": 7.365976,
+      "south": 12.899272
+    },
+    {
+      "year": 2005,
+      "month": 10,
+      "product": "consolidated",
+      "north": 8.56086,
+      "south": 12.542731
+    },
+    {
+      "year": 2005,
+      "month": 11,
+      "product": "consolidated",
+      "north": 11.45023,
+      "south": 10.448345
+    },
+    {
+      "year": 2005,
+      "month": 12,
+      "product": "consolidated",
+      "north": 14.639911,
+      "south": 5.162268
+    },
+    {
+      "year": 2006,
+      "month": 1,
+      "product": "consolidated",
+      "north": 17.92437,
+      "south": 2.290505
+    },
+    {
+      "year": 2006,
+      "month": 2,
+      "product": "consolidated",
+      "north": 20.836157,
+      "south": 1.647229
+    },
+    {
+      "year": 2006,
+      "month": 3,
+      "product": "consolidated",
+      "north": 23.207183,
+      "south": 1.797297
+    },
+    {
+      "year": 2006,
+      "month": 4,
+      "product": "consolidated",
+      "north": 24.728659,
+      "south": 3.431669
+    },
+    {
+      "year": 2006,
+      "month": 5,
+      "product": "consolidated",
+      "north": 23.328765,
+      "south": 5.653789
+    },
+    {
+      "year": 2006,
+      "month": 6,
+      "product": "consolidated",
+      "north": 17.906499,
+      "south": 8.245697
+    },
+    {
+      "year": 2006,
+      "month": 7,
+      "product": "consolidated",
+      "north": 10.663177,
+      "south": 10.286738
+    },
+    {
+      "year": 2006,
+      "month": 8,
+      "product": "consolidated",
+      "north": 7.780094,
+      "south": 12.17335
+    },
+    {
+      "year": 2006,
+      "month": 9,
+      "product": "consolidated",
+      "north": 7.460475,
+      "south": 13.126929
+    },
+    {
+      "year": 2006,
+      "month": 10,
+      "product": "consolidated",
+      "north": 8.314544,
+      "south": 12.820529
+    },
+    {
+      "year": 2006,
+      "month": 11,
+      "product": "consolidated",
+      "north": 10.936915,
+      "south": 10.23589
+    },
+    {
+      "year": 2006,
+      "month": 12,
+      "product": "consolidated",
+      "north": 13.759904,
+      "south": 5.237239
+    },
+    {
+      "year": 2007,
+      "month": 1,
+      "product": "consolidated",
+      "north": 17.124235,
+      "south": 2.147227
+    },
+    {
+      "year": 2007,
+      "month": 2,
+      "product": "consolidated",
+      "north": 19.888491,
+      "south": 1.517953
+    },
+    {
+      "year": 2007,
+      "month": 3,
+      "product": "consolidated",
+      "north": 22.022586,
+      "south": 2.046739
+    },
+    {
+      "year": 2007,
+      "month": 4,
+      "product": "consolidated",
+      "north": 23.102962,
+      "south": 3.637644
+    },
+    {
+      "year": 2007,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.365858,
+      "south": 6.015495
+    },
+    {
+      "year": 2007,
+      "month": 6,
+      "product": "consolidated",
+      "north": 15.668193,
+      "south": 8.618462
+    },
+    {
+      "year": 2007,
+      "month": 7,
+      "product": "consolidated",
+      "north": 8.015173,
+      "south": 10.58909
+    },
+    {
+      "year": 2007,
+      "month": 8,
+      "product": "consolidated",
+      "north": 4.777602,
+      "south": 11.924259
+    },
+    {
+      "year": 2007,
+      "month": 9,
+      "product": "consolidated",
+      "north": 4.36354,
+      "south": 12.959252
+    },
+    {
+      "year": 2007,
+      "month": 10,
+      "product": "consolidated",
+      "north": 5.374146,
+      "south": 12.928061
+    },
+    {
+      "year": 2007,
+      "month": 11,
+      "product": "consolidated",
+      "north": 8.617174,
+      "south": 10.982621
+    },
+    {
+      "year": 2007,
+      "month": 12,
+      "product": "consolidated",
+      "north": 11.929381,
+      "south": 7.02897
+    },
+    {
+      "year": 2008,
+      "month": 1,
+      "product": "consolidated",
+      "north": 15.770495,
+      "south": 3.166367
+    },
+    {
+      "year": 2008,
+      "month": 2,
+      "product": "consolidated",
+      "north": 18.867014,
+      "south": 2.112767
+    },
+    {
+      "year": 2008,
+      "month": 3,
+      "product": "consolidated",
+      "north": 21.236426,
+      "south": 2.858221
+    },
+    {
+      "year": 2008,
+      "month": 4,
+      "product": "consolidated",
+      "north": 22.616765,
+      "south": 4.994883
+    },
+    {
+      "year": 2008,
+      "month": 5,
+      "product": "consolidated",
+      "north": 21.731453,
+      "south": 7.258466
+    },
+    {
+      "year": 2008,
+      "month": 6,
+      "product": "consolidated",
+      "north": 16.625148,
+      "south": 9.787206
+    },
+    {
+      "year": 2008,
+      "month": 7,
+      "product": "consolidated",
+      "north": 8.833144,
+      "south": 11.778073
+    },
+    {
+      "year": 2008,
+      "month": 8,
+      "product": "consolidated",
+      "north": 5.247001,
+      "south": 13.781993
+    },
+    {
+      "year": 2008,
+      "month": 9,
+      "product": "consolidated",
+      "north": 4.919422,
+      "south": 15.186035
+    },
+    {
+      "year": 2008,
+      "month": 10,
+      "product": "consolidated",
+      "north": 6.751299,
+      "south": 15.785312
+    },
+    {
+      "year": 2008,
+      "month": 11,
+      "product": "consolidated",
+      "north": 10.229873,
+      "south": 13.933667
+    },
+    {
+      "year": 2008,
+      "month": 12,
+      "product": "consolidated",
+      "north": 13.506167,
+      "south": 8.354629
+    },
+    {
+      "year": 2009,
+      "month": 1,
+      "product": "consolidated",
+      "north": 16.704156,
+      "south": 3.980074
+    },
+    {
+      "year": 2009,
+      "month": 2,
+      "product": "consolidated",
+      "north": 19.616162,
+      "south": 2.573588
+    },
+    {
+      "year": 2009,
+      "month": 3,
+      "product": "consolidated",
+      "north": 21.66206,
+      "south": 3.14596
+    },
+    {
+      "year": 2009,
+      "month": 4,
+      "product": "consolidated",
+      "north": 23.132033,
+      "south": 5.401619
+    },
+    {
+      "year": 2009,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.429495,
+      "south": 7.773309
+    },
+    {
+      "year": 2009,
+      "month": 6,
+      "product": "consolidated",
+      "north": 17.751809,
+      "south": 10.244542
+    },
+    {
+      "year": 2009,
+      "month": 7,
+      "product": "consolidated",
+      "north": 9.774256,
+      "south": 12.416481
+    },
+    {
+      "year": 2009,
+      "month": 8,
+      "product": "consolidated",
+      "north": 6.550842,
+      "south": 14.277429
+    },
+    {
+      "year": 2009,
+      "month": 9,
+      "product": "consolidated",
+      "north": 6.553128,
+      "south": 15.888728
+    },
+    {
+      "year": 2009,
+      "month": 10,
+      "product": "consolidated",
+      "north": 7.591597,
+      "south": 16.266374
+    },
+    {
+      "year": 2009,
+      "month": 11,
+      "product": "consolidated",
+      "north": 10.60472,
+      "south": 14.246788
+    },
+    {
+      "year": 2009,
+      "month": 12,
+      "product": "consolidated",
+      "north": 13.981741,
+      "south": 8.444478
+    },
+    {
+      "year": 2010,
+      "month": 1,
+      "product": "consolidated",
+      "north": 17.244212,
+      "south": 4.211193
+    },
+    {
+      "year": 2010,
+      "month": 2,
+      "product": "consolidated",
+      "north": 20.191278,
+      "south": 2.964264
+    },
+    {
+      "year": 2010,
+      "month": 3,
+      "product": "consolidated",
+      "north": 22.738102,
+      "south": 3.084063
+    },
+    {
+      "year": 2010,
+      "month": 4,
+      "product": "consolidated",
+      "north": 23.879295,
+      "south": 4.610644
+    },
+    {
+      "year": 2010,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.301916,
+      "south": 7.109381
+    },
+    {
+      "year": 2010,
+      "month": 6,
+      "product": "consolidated",
+      "north": 16.813945,
+      "south": 9.904353
+    },
+    {
+      "year": 2010,
+      "month": 7,
+      "product": "consolidated",
+      "north": 9.13695,
+      "south": 12.151529
+    },
+    {
+      "year": 2010,
+      "month": 8,
+      "product": "consolidated",
+      "north": 6.672678,
+      "south": 13.8426
+    },
+    {
+      "year": 2010,
+      "month": 9,
+      "product": "consolidated",
+      "north": 6.04506,
+      "south": 14.374619
+    },
+    {
+      "year": 2010,
+      "month": 10,
+      "product": "consolidated",
+      "north": 7.856779,
+      "south": 14.647527
+    },
+    {
+      "year": 2010,
+      "month": 11,
+      "product": "consolidated",
+      "north": 10.913537,
+      "south": 12.517379
+    },
+    {
+      "year": 2010,
+      "month": 12,
+      "product": "consolidated",
+      "north": 14.207566,
+      "south": 6.570301
+    },
+    {
+      "year": 2011,
+      "month": 1,
+      "product": "consolidated",
+      "north": 17.47702,
+      "south": 3.041561
+    },
+    {
+      "year": 2011,
+      "month": 2,
+      "product": "consolidated",
+      "north": 20.494256,
+      "south": 2.380819
+    },
+    {
+      "year": 2011,
+      "month": 3,
+      "product": "consolidated",
+      "north": 22.458034,
+      "south": 2.599484
+    },
+    {
+      "year": 2011,
+      "month": 4,
+      "product": "consolidated",
+      "north": 23.476218,
+      "south": 4.003126
+    },
+    {
+      "year": 2011,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.066933,
+      "south": 6.756983
+    },
+    {
+      "year": 2011,
+      "month": 6,
+      "product": "consolidated",
+      "north": 16.790669,
+      "south": 9.150016
+    },
+    {
+      "year": 2011,
+      "month": 7,
+      "product": "consolidated",
+      "north": 8.537597,
+      "south": 11.197841
+    },
+    {
+      "year": 2011,
+      "month": 8,
+      "product": "consolidated",
+      "north": 5.079854,
+      "south": 13.108756
+    },
+    {
+      "year": 2011,
+      "month": 9,
+      "product": "consolidated",
+      "north": 5.455987,
+      "south": 14.36187
+    },
+    {
+      "year": 2011,
+      "month": 10,
+      "product": "consolidated",
+      "north": 7.073994,
+      "south": 14.587899
+    },
+    {
+      "year": 2011,
+      "month": 11,
+      "product": "consolidated",
+      "north": 10.573463,
+      "south": 12.669982
+    },
+    {
+      "year": 2011,
+      "month": 12,
+      "product": "consolidated",
+      "north": 14.036972,
+      "south": 7.487499
+    },
+    {
+      "year": 2012,
+      "month": 1,
+      "product": "consolidated",
+      "north": 17.516542,
+      "south": 3.873876
+    },
+    {
+      "year": 2012,
+      "month": 2,
+      "product": "consolidated",
+      "north": 20.307589,
+      "south": 2.634794
+    },
+    {
+      "year": 2012,
+      "month": 3,
+      "product": "consolidated",
+      "north": 22.436675,
+      "south": 3.130102
+    },
+    {
+      "year": 2012,
+      "month": 4,
+      "product": "consolidated",
+      "north": 23.63816,
+      "south": 4.959051
+    },
+    {
+      "year": 2012,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.553469,
+      "south": 7.204619
+    },
+    {
+      "year": 2012,
+      "month": 6,
+      "product": "consolidated",
+      "north": 15.771909,
+      "south": 9.310789
+    },
+    {
+      "year": 2012,
+      "month": 7,
+      "product": "consolidated",
+      "north": 7.706932,
+      "south": 11.527172
+    },
+    {
+      "year": 2012,
+      "month": 8,
+      "product": "consolidated",
+      "north": 4.439525,
+      "south": 13.331399
+    },
+    {
+      "year": 2012,
+      "month": 9,
+      "product": "consolidated",
+      "north": 4.255726,
+      "south": 14.894612
+    },
+    {
+      "year": 2012,
+      "month": 10,
+      "product": "consolidated",
+      "north": 5.790503,
+      "south": 15.219022
+    },
+    {
+      "year": 2012,
+      "month": 11,
+      "product": "consolidated",
+      "north": 9.009078,
+      "south": 13.349098
+    },
+    {
+      "year": 2012,
+      "month": 12,
+      "product": "consolidated",
+      "north": 12.531269,
+      "south": 7.924717
+    },
+    {
+      "year": 2013,
+      "month": 1,
+      "product": "consolidated",
+      "north": 15.813529,
+      "south": 3.84704
+    },
+    {
+      "year": 2013,
+      "month": 2,
+      "product": "consolidated",
+      "north": 19.007657,
+      "south": 2.641774
+    },
+    {
+      "year": 2013,
+      "month": 3,
+      "product": "consolidated",
+      "north": 21.520142,
+      "south": 3.108393
+    },
+    {
+      "year": 2013,
+      "month": 4,
+      "product": "consolidated",
+      "north": 22.991838,
+      "south": 4.98119
+    },
+    {
+      "year": 2013,
+      "month": 5,
+      "product": "consolidated",
+      "north": 22.172331,
+      "south": 7.459374
+    },
+    {
+      "year": 2013,
+      "month": 6,
+      "product": "consolidated",
+      "north": 16.91016,
+      "south": 9.797666
+    },
+    {
+      "year": 2013,
+      "month": 7,
+      "product": "consolidated",
+      "north": 9.639805,
+      "south": 12.071383
+    },
+    {
+      "year": 2013,
+      "month": 8,
+      "product": "consolidated",
+      "north": 7.47248,
+      "south": 13.931022
+    },
+    {
+      "year": 2013,
+      "month": 9,
+      "product": "consolidated",
+      "north": 7.504873,
+      "south": 15.085101
+    },
+    {
+      "year": 2013,
+      "month": 10,
+      "product": "consolidated",
+      "north": 9.319469,
+      "south": 15.717952
+    },
+    {
+      "year": 2013,
+      "month": 11,
+      "product": "consolidated",
+      "north": 12.455765,
+      "south": 14.197703
+    },
+    {
+      "year": 2013,
+      "month": 12,
+      "product": "consolidated",
+      "north": 15.535487,
+      "south": 8.861443
+    },
+    {
+      "year": 2014,
+      "month": 1,
+      "product": "consolidated",
+      "north": 18.820397,
+      "south": 4.522836
+    },
+    {
+      "year": 2014,
+      "month": 2,
+      "product": "consolidated",
+      "north": 21.573602,
+      "south": 3.185739
+    },
+    {
+      "year": 2014,
+      "month": 3,
+      "product": "consolidated",
+      "north": 23.55996,
+      "south": 3.576259
+    },
+    {
+      "year": 2014,
+      "month": 4,
+      "product": "consolidated",
+      "north": 24.733796,
+      "south": 5.970185
+    },
+    {
+      "year": 2014,
+      "month": 5,
+      "product": "consolidated",
+      "north": 24.062984,
+      "south": 8.41094
+    },
+    {
+      "year": 2014,
+      "month": 6,
+      "product": "consolidated",
+      "north": 18.918435,
+      "south": 11.073422
+    },
+    {
+      "year": 2014,
+      "month": 7,
+      "product": "consolidated",
+      "north": 11.997786,
+      "south": 13.377332
+    },
+    {
+      "year": 2014,
+      "month": 8,
+      "product": "consolidated",
+      "north": 9.299474,
+      "south": 15.290692
+    },
+    {
+      "year": 2014,
+      "month": 9,
+      "product": "consolidated",
+      "north": 8.885879,
+      "south": 16.62257
+    },
+    {
+      "year": 2014,
+      "month": 10,
+      "product": "consolidated",
+      "north": 10.450958,
+      "south": 16.779133
+    },
+    {
+      "year": 2014,
+      "month": 11,
+      "product": "consolidated",
+      "north": 13.570079,
+      "south": 14.811804
+    },
+    {
+      "year": 2014,
+      "month": 12,
+      "product": "consolidated",
+      "north": 16.573552,
+      "south": 9.848386
+    },
+    {
+      "year": 2015,
+      "month": 1,
+      "product": "operational",
+      "north": 19.450683,
+      "south": 4.999153
+    },
+    {
+      "year": 2015,
+      "month": 2,
+      "product": "operational",
+      "north": 21.948848,
+      "south": 3.318423
+    },
+    {
+      "year": 2015,
+      "month": 3,
+      "product": "operational",
+      "north": 23.424613,
+      "south": 3.751483
+    },
+    {
+      "year": 2015,
+      "month": 4,
+      "product": "operational",
+      "north": 24.383845,
+      "south": 6.036973
+    },
+    {
+      "year": 2015,
+      "month": 5,
+      "product": "operational",
+      "north": 23.449084,
+      "south": 8.832316
+    },
+    {
+      "year": 2015,
+      "month": 6,
+      "product": "operational",
+      "north": 17.951408,
+      "south": 11.050515
+    },
+    {
+      "year": 2015,
+      "month": 7,
+      "product": "operational",
+      "north": 9.257844,
+      "south": 13.104565
+    },
+    {
+      "year": 2015,
+      "month": 8,
+      "product": "operational",
+      "north": 6.112399,
+      "south": 14.816468
+    },
+    {
+      "year": 2015,
+      "month": 9,
+      "product": "operational",
+      "north": 6.247206,
+      "south": 16.324027
+    },
+    {
+      "year": 2015,
+      "month": 10,
+      "product": "operational",
+      "north": 8.275181,
+      "south": 16.992877
+    },
+    {
+      "year": 2015,
+      "month": 11,
+      "product": "operational",
+      "north": 11.565044,
+      "south": 15.361186
+    },
+    {
+      "year": 2015,
+      "month": 12,
+      "product": "operational",
+      "north": 14.952744,
+      "south": 9.437503
+    },
+    {
+      "year": 2016,
+      "month": 1,
+      "product": "operational",
+      "north": 17.769283,
+      "south": 4.767211
+    },
+    {
+      "year": 2016,
+      "month": 2,
+      "product": "operational",
+      "north": 20.495019,
+      "south": 3.274424
+    },
+    {
+      "year": 2016,
+      "month": 3,
+      "product": "operational",
+      "north": 22.669168,
+      "south": 3.761585
+    },
+    {
+      "year": 2016,
+      "month": 4,
+      "product": "operational",
+      "north": 23.170141,
+      "south": 5.631043
+    },
+    {
+      "year": 2016,
+      "month": 5,
+      "product": "operational",
+      "north": 21.892077,
+      "south": 7.996974
+    },
+    {
+      "year": 2016,
+      "month": 6,
+      "product": "operational",
+      "north": 16.665906,
+      "south": 10.473718
+    },
+    {
+      "year": 2016,
+      "month": 7,
+      "product": "operational",
+      "north": 9.475731,
+      "south": 12.14477
+    },
+    {
+      "year": 2016,
+      "month": 8,
+      "product": "operational",
+      "north": 5.775269,
+      "south": 13.702049
+    },
+    {
+      "year": 2016,
+      "month": 9,
+      "product": "operational",
+      "north": 5.117628,
+      "south": 13.863606
+    },
+    {
+      "year": 2016,
+      "month": 10,
+      "product": "operational",
+      "north": 6.861351,
+      "south": 13.482758
+    },
+    {
+      "year": 2016,
+      "month": 11,
+      "product": "operational",
+      "north": 9.330391,
+      "south": 10.358404
+    },
+    {
+      "year": 2016,
+      "month": 12,
+      "product": "operational",
+      "north": 12.345987,
+      "south": 5.30751
+    },
+    {
+      "year": 2017,
+      "month": 1,
+      "product": "operational",
+      "north": 15.476213,
+      "south": 2.294842
+    },
+    {
+      "year": 2017,
+      "month": 2,
+      "product": "operational",
+      "north": 18.172174,
+      "south": 1.522732
+    },
+    {
+      "year": 2017,
+      "month": 3,
+      "product": "operational",
+      "north": 20.422176,
+      "south": 1.52752
+    },
+    {
+      "year": 2017,
+      "month": 4,
+      "product": "operational",
+      "north": 21.776667,
+      "south": 2.817942
+    },
+    {
+      "year": 2017,
+      "month": 5,
+      "product": "operational",
+      "north": 20.840262,
+      "south": 5.111259
+    },
+    {
+      "year": 2017,
+      "month": 6,
+      "product": "operational",
+      "north": 15.851077,
+      "south": 7.62104
+    },
+    {
+      "year": 2017,
+      "month": 7,
+      "product": "operational",
+      "north": 9.010106,
+      "south": 9.978096
+    },
+    {
+      "year": 2017,
+      "month": 8,
+      "product": "operational",
+      "north": 5.773397,
+      "south": 11.788204
+    },
+    {
+      "year": 2017,
+      "month": 9,
+      "product": "operational",
+      "north": 5.425014,
+      "south": 12.913374
+    },
+    {
+      "year": 2017,
+      "month": 10,
+      "product": "operational",
+      "north": 7.153393,
+      "south": 13.34817
+    },
+    {
+      "year": 2017,
+      "month": 11,
+      "product": "operational",
+      "north": 9.823606,
+      "south": 11.363032
+    },
+    {
+      "year": 2017,
+      "month": 12,
+      "product": "operational",
+      "north": 12.964949,
+      "south": 6.222194
+    },
+    {
+      "year": 2018,
+      "month": 1,
+      "product": "operational",
+      "north": 15.961076,
+      "south": 2.391126
+    },
+    {
+      "year": 2018,
+      "month": 2,
+      "product": "operational",
+      "north": 18.35583,
+      "south": 1.64705
+    },
+    {
+      "year": 2018,
+      "month": 3,
+      "product": "operational",
+      "north": 20.728637,
+      "south": 1.946316
+    },
+    {
+      "year": 2018,
+      "month": 4,
+      "product": "operational",
+      "north": 22.48365,
+      "south": 3.170699
+    },
+    {
+      "year": 2018,
+      "month": 5,
+      "product": "operational",
+      "north": 22.026368,
+      "south": 5.525243
+    },
+    {
+      "year": 2018,
+      "month": 6,
+      "product": "operational",
+      "north": 17.625051,
+      "south": 8.20525
+    },
+    {
+      "year": 2018,
+      "month": 7,
+      "product": "operational",
+      "north": 10.10355,
+      "south": 10.47214
+    },
+    {
+      "year": 2018,
+      "month": 8,
+      "product": "operational",
+      "north": 6.946204,
+      "south": 12.461084
+    },
+    {
+      "year": 2018,
+      "month": 9,
+      "product": "operational",
+      "north": 6.138256,
+      "south": 13.649201
+    },
+    {
+      "year": 2018,
+      "month": 10,
+      "product": "operational",
+      "north": 7.11074,
+      "south": 14.281732
+    },
+    {
+      "year": 2018,
+      "month": 11,
+      "product": "operational",
+      "north": 10.243397,
+      "south": 11.837123
+    },
+    {
+      "year": 2018,
+      "month": 12,
+      "product": "operational",
+      "north": 13.474937,
+      "south": 5.823707
+    },
+    {
+      "year": 2019,
+      "month": 1,
+      "product": "operational",
+      "north": 16.958331,
+      "south": 2.861085
+    },
+    {
+      "year": 2019,
+      "month": 2,
+      "product": "operational",
+      "north": 19.86909,
+      "south": 2.020475
+    },
+    {
+      "year": 2019,
+      "month": 3,
+      "product": "operational",
+      "north": 21.987757,
+      "south": 2.086401
+    },
+    {
+      "year": 2019,
+      "month": 4,
+      "product": "operational",
+      "north": 22.8225,
+      "south": 3.418631
+    },
+    {
+      "year": 2019,
+      "month": 5,
+      "product": "operational",
+      "north": 21.960716,
+      "south": 5.457101
+    },
+    {
+      "year": 2019,
+      "month": 6,
+      "product": "operational",
+      "north": 16.685827,
+      "south": 7.831568
+    },
+    {
+      "year": 2019,
+      "month": 7,
+      "product": "operational",
+      "north": 9.000964,
+      "south": 10.26969
+    },
+    {
+      "year": 2019,
+      "month": 8,
+      "product": "operational",
+      "north": 5.972526,
+      "south": 12.215426
+    },
+    {
+      "year": 2019,
+      "month": 9,
+      "product": "operational",
+      "north": 5.73904,
+      "south": 13.311003
+    },
+    {
+      "year": 2019,
+      "month": 10,
+      "product": "operational",
+      "north": 7.1252,
+      "south": 13.601177
+    },
+    {
+      "year": 2019,
+      "month": 11,
+      "product": "operational",
+      "north": 9.659019,
+      "south": 12.016213
+    },
+    {
+      "year": 2019,
+      "month": 12,
+      "product": "operational",
+      "north": 13.545321,
+      "south": 6.524581
+    },
+    {
+      "year": 2020,
+      "month": 1,
+      "product": "operational",
+      "north": 16.977285,
+      "south": 2.813541
+    },
+    {
+      "year": 2020,
+      "month": 2,
+      "product": "operational",
+      "north": 19.861229,
+      "south": 1.66925
+    },
+    {
+      "year": 2020,
+      "month": 3,
+      "product": "operational",
+      "north": 22.110788,
+      "south": 1.978263
+    },
+    {
+      "year": 2020,
+      "month": 4,
+      "product": "operational",
+      "north": 23.090122,
+      "south": 3.51237
+    },
+    {
+      "year": 2020,
+      "month": 5,
+      "product": "operational",
+      "north": 22.011954,
+      "south": 5.941886
+    },
+    {
+      "year": 2020,
+      "month": 6,
+      "product": "operational",
+      "north": 16.850118,
+      "south": 8.495924
+    },
+    {
+      "year": 2020,
+      "month": 7,
+      "product": "operational",
+      "north": 9.110151,
+      "south": 10.73466
+    },
+    {
+      "year": 2020,
+      "month": 8,
+      "product": "operational",
+      "north": 6.018374,
+      "south": 12.6817
+    },
+    {
+      "year": 2020,
+      "month": 9,
+      "product": "operational",
+      "north": 5.485543,
+      "south": 13.983974
+    },
+    {
+      "year": 2020,
+      "month": 10,
+      "product": "operational",
+      "north": 6.701744,
+      "south": 14.522348
+    },
+    {
+      "year": 2020,
+      "month": 11,
+      "product": "operational",
+      "north": 9.622653,
+      "south": 12.61758
+    },
+    {
+      "year": 2020,
+      "month": 12,
+      "product": "operational",
+      "north": 12.96805,
+      "south": 6.532888
+    },
+    {
+      "year": 2021,
+      "month": 1,
+      "product": "operational",
+      "north": 16.654617,
+      "south": 2.672606
+    },
+    {
+      "year": 2021,
+      "month": 2,
+      "product": "operational",
+      "north": 19.844403,
+      "south": 1.663425
+    },
+    {
+      "year": 2021,
+      "month": 3,
+      "product": "operational",
+      "north": 22.318592,
+      "south": 2.189331
+    },
+    {
+      "year": 2021,
+      "month": 4,
+      "product": "operational",
+      "north": 23.599642,
+      "south": 3.963195
+    },
+    {
+      "year": 2021,
+      "month": 5,
+      "product": "operational",
+      "north": 23.013571,
+      "south": 6.457582
+    },
+    {
+      "year": 2021,
+      "month": 6,
+      "product": "operational",
+      "north": 17.392945,
+      "south": 9.102716
+    },
+    {
+      "year": 2021,
+      "month": 7,
+      "product": "operational",
+      "north": 10.591803,
+      "south": 11.641898
+    },
+    {
+      "year": 2021,
+      "month": 8,
+      "product": "operational",
+      "north": 7.590865,
+      "south": 13.36488
+    },
+    {
+      "year": 2021,
+      "month": 9,
+      "product": "operational",
+      "north": 6.993719,
+      "south": 14.331225
+    },
+    {
+      "year": 2021,
+      "month": 10,
+      "product": "operational",
+      "north": 8.880742,
+      "south": 14.297188
+    },
+    {
+      "year": 2021,
+      "month": 11,
+      "product": "operational",
+      "north": 11.937284,
+      "south": 12.100165
+    },
+    {
+      "year": 2021,
+      "month": 12,
+      "product": "operational",
+      "north": 15.367542,
+      "south": 6.053638
+    },
+    {
+      "year": 2022,
+      "month": 1,
+      "product": "operational",
+      "north": 18.898461,
+      "south": 2.648028
+    },
+    {
+      "year": 2022,
+      "month": 2,
+      "product": "operational",
+      "north": 21.447708,
+      "south": 1.558342
+    },
+    {
+      "year": 2022,
+      "month": 3,
+      "product": "operational",
+      "north": 23.143414,
+      "south": 1.722012
+    },
+    {
+      "year": 2022,
+      "month": 4,
+      "product": "operational",
+      "north": 24.570358,
+      "south": 3.222306
+    },
+    {
+      "year": 2022,
+      "month": 5,
+      "product": "operational",
+      "north": 23.992548,
+      "south": 5.673741
+    },
+    {
+      "year": 2022,
+      "month": 6,
+      "product": "operational",
+      "north": 19.08395,
+      "south": 7.794869
+    },
+    {
+      "year": 2022,
+      "month": 7,
+      "product": "operational",
+      "north": 11.920919,
+      "south": 10.125859
+    },
+    {
+      "year": 2022,
+      "month": 8,
+      "product": "operational",
+      "north": 8.560196,
+      "south": 12.109547
+    },
+    {
+      "year": 2022,
+      "month": 9,
+      "product": "operational",
+      "north": 7.467731,
+      "south": 13.327763
+    },
+    {
+      "year": 2022,
+      "month": 10,
+      "product": "operational",
+      "north": 9.207992,
+      "south": 13.808606
+    },
+    {
+      "year": 2022,
+      "month": 11,
+      "product": "operational",
+      "north": 12.413081,
+      "south": 11.88193
+    },
+    {
+      "year": 2022,
+      "month": 12,
+      "product": "operational",
+      "north": 15.586992,
+      "south": 5.235345
+    },
+    {
+      "year": 2023,
+      "month": 1,
+      "product": "operational",
+      "north": 18.824185,
+      "south": 2.13725
+    },
+    {
+      "year": 2023,
+      "month": 2,
+      "product": "operational",
+      "north": 21.314802,
+      "south": 1.3396
+    },
+    {
+      "year": 2023,
+      "month": 3,
+      "product": "operational",
+      "north": 23.491676,
+      "south": 1.524054
+    },
+    {
+      "year": 2023,
+      "month": 4,
+      "product": "operational",
+      "north": 25.207064,
+      "south": 2.911454
+    },
+    {
+      "year": 2023,
+      "month": 5,
+      "product": "operational",
+      "north": 24.451051,
+      "south": 5.119931
+    },
+    {
+      "year": 2023,
+      "month": 6,
+      "product": "operational",
+      "north": 19.755787,
+      "south": 7.237046
+    },
+    {
+      "year": 2023,
+      "month": 7,
+      "product": "operational",
+      "north": 11.66752,
+      "south": 9.307471
+    },
+    {
+      "year": 2023,
+      "month": 8,
+      "product": "operational",
+      "north": 7.436857,
+      "south": 11.375278
+    },
+    {
+      "year": 2023,
+      "month": 9,
+      "product": "operational",
+      "north": 6.246233,
+      "south": 12.984147
+    },
+    {
+      "year": 2023,
+      "month": 10,
+      "product": "operational",
+      "north": 8.241829,
+      "south": 13.494712
+    },
+    {
+      "year": 2023,
+      "month": 11,
+      "product": "operational",
+      "north": 11.468219,
+      "south": 12.372184
+    },
+    {
+      "year": 2023,
+      "month": 12,
+      "product": "operational",
+      "north": 14.655099,
+      "south": 7.178194
+    },
+    {
+      "year": 2024,
+      "month": 1,
+      "product": "operational",
+      "north": 18.087708,
+      "south": 3.229507
+    },
+    {
+      "year": 2024,
+      "month": 2,
+      "product": "operational",
+      "north": 20.746241,
+      "south": 2.136515
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "product": "operational",
+      "north": 22.970702,
+      "south": 2.588071
+    },
+    {
+      "year": 2024,
+      "month": 4,
+      "product": "operational",
+      "north": 24.522498,
+      "south": 4.317526
+    },
+    {
+      "year": 2024,
+      "month": 5,
+      "product": "operational",
+      "north": 23.815972,
+      "south": 6.597443
+    },
+    {
+      "year": 2024,
+      "month": 6,
+      "product": "operational",
+      "north": 18.307007,
+      "south": 8.722442
+    },
+    {
+      "year": 2024,
+      "month": 7,
+      "product": "operational",
+      "north": 9.989479,
+      "south": 10.890115
+    },
+    {
+      "year": 2024,
+      "month": 8,
+      "product": "operational",
+      "north": 6.233902,
+      "south": 13.057654
+    },
+    {
+      "year": 2024,
+      "month": 9,
+      "product": "operational",
+      "north": 5.916986,
+      "south": 14.194179
+    },
+    {
+      "year": 2024,
+      "month": 10,
+      "product": "operational",
+      "north": 7.462436,
+      "south": 14.604649
+    },
+    {
+      "year": 2024,
+      "month": 11,
+      "product": "operational",
+      "north": 10.327167,
+      "south": 13.18289
+    },
+    {
+      "year": 2024,
+      "month": 12,
+      "product": "operational",
+      "north": 13.532468,
+      "south": 8.318185
+    },
+    {
+      "year": 2025,
+      "month": 1,
+      "product": "operational",
+      "north": 16.685986,
+      "south": 3.788647
+    },
+    {
+      "year": 2025,
+      "month": 2,
+      "product": "operational",
+      "north": 19.313253,
+      "south": 2.199536
+    },
+    {
+      "year": 2025,
+      "month": 3,
+      "product": "operational",
+      "north": 21.455206,
+      "south": 2.344975
+    },
+    {
+      "year": 2025,
+      "month": 4,
+      "product": "operational",
+      "north": 22.961214,
+      "south": 4.015742
+    },
+    {
+      "year": 2025,
+      "month": 5,
+      "product": "operational",
+      "north": 21.89168,
+      "south": 6.191533
+    },
+    {
+      "year": 2025,
+      "month": 6,
+      "product": "operational",
+      "north": 17.440913,
+      "south": 8.395887
+    },
+    {
+      "year": 2025,
+      "month": 7,
+      "product": "operational",
+      "north": 9.94509,
+      "south": 10.629961
+    },
+    {
+      "year": 2025,
+      "month": 8,
+      "product": "operational",
+      "north": 6.45448,
+      "south": 12.697335
+    },
+    {
+      "year": 2025,
+      "month": 9,
+      "product": "operational",
+      "north": 6.062038,
+      "south": 14.230522
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "product": "operational",
+      "north": 7.72877,
+      "south": 14.572168
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "product": "operational",
+      "north": 10.236534,
+      "south": 12.918015
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "product": "operational",
+      "north": 13.200298,
+      "south": 7.331245
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "product": "operational",
+      "north": 16.628768,
+      "south": 3.351485
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "product": "operational",
+      "north": 19.460089,
+      "south": 2.068796
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "product": "operational",
+      "north": 21.381749,
+      "south": 2.18679
+    },
+    {
+      "year": 2026,
+      "month": 4,
+      "product": "operational",
+      "north": 22.378161,
+      "south": 3.68844
+    },
+    {
+      "year": 2026,
+      "month": 5,
+      "product": "operational",
+      "north": 21.297951,
+      "south": 5.969565
+    },
+    {
+      "year": 2026,
+      "month": 6,
+      "product": "operational",
+      "north": 16.931818,
+      "south": 8.557324
+    },
+    {
+      "year": 2026,
+      "month": 7,
+      "product": "operational",
+      "north": 10.468715,
+      "south": 11.011934
+    },
+    {
+      "year": 2026,
+      "month": 8,
+      "product": "operational",
+      "north": 6.743765,
+      "south": 12.960681
+    }
+  ]
+}
