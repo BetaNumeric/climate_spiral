@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v36`;
+const CACHE_NAME = `${CACHE_PREFIX}v38`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -18,6 +18,9 @@ const CORE_ASSETS = [
   "./index.html",
   "./manifest.json",
   "./temperature-data.mjs",
+  "./local-temperature-data.mjs",
+  "./local-temperature-ui.mjs",
+  "./station-temperature-data.mjs",
   "./spiral-layout.mjs",
   "./video-export.mjs",
   "./video-mux.mjs",
@@ -43,6 +46,7 @@ const CORE_ASSETS = [
 
 const toAbsoluteUrl = (path) => new URL(path, self.location).toString();
 const DATA_ASSET_URLS = new Set(DATA_ASSETS.map(toAbsoluteUrl));
+const STATION_ASSET_PATH = new URL('./data/weather-stations/', self.location).pathname;
 
 async function cacheCoreAssets(cache) {
   await Promise.allSettled(
@@ -127,7 +131,8 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      if (request.mode === "navigate" || DATA_ASSET_URLS.has(requestUrl.toString())) {
+      if (request.mode === "navigate" || DATA_ASSET_URLS.has(requestUrl.toString())
+          || (requestUrl.origin === self.location.origin && requestUrl.pathname.startsWith(STATION_ASSET_PATH))) {
         return networkFirst(request, cache);
       }
 

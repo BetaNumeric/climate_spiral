@@ -26,6 +26,7 @@ https://github.com/user-attachments/assets/baa470a0-12b8-49a9-b5e6-a125154b423b
 | Dataset | Monthly measurement | Source | Starts |
 | --- | --- | --- | --- |
 | Global Temperature | Combined land and ocean temperature anomaly, °C | [NASA GISTEMP](https://data.giss.nasa.gov/gistemp/) | 1880 |
+| Local Temperature | Temperature anomaly at a selected location or station, °C | [Open-Meteo / ERA5-Land](https://open-meteo.com/en/docs/historical-weather-api), [NOAA GHCN-Monthly](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-monthly) | 1950 / varies by station |
 | Ocean Temperature | Sea surface temperature anomaly, °C | [NOAA NCEI](https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series) | 1850 |
 | Land Temperature | Land surface air temperature anomaly, °C | [NOAA NCEI](https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series) | 1850 |
 | Arctic Sea Ice Extent | Extent, million km² | [NOAA/NSIDC](https://nsidc.org/data/g02135/versions/4) | 1978 |
@@ -40,6 +41,8 @@ Temperature values are anomalies relative to 1951-1980; the NOAA land and ocean 
 ## Using the App
 
 The animation starts automatically. Use the controls and timeline at the bottom to pause, step through months, or jump to either end. Choose a dataset and switch between **Spiral** and **Unwrapped** at the top of Settings.
+
+Choose **Local Temperature** to search for a place or enter `latitude, longitude`. Its **Source** selector offers Open-Meteo reanalysis estimates or NOAA weather station observations. The station option recommends a nearby record and offers alternatives, with distance, years covered, and completeness shown below. Expand the search radius when needed. Both sources use the same 1951-1980 baseline and save data on your device for later visits; the first reanalysis download takes longer.
 
 Drag to rotate and scroll or pinch to zoom. Enable **Free Camera** in Settings to pan with a right-button drag. Press `1`, `2`, or `3` for the top, front, or right view; double-click or double-tap to reset to the top view. A double right-click selects the front view. The camera also snaps into those orientations after a nearby rotational drag.
 

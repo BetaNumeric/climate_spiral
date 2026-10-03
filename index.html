@@ -369,6 +369,9 @@
         .legend.methane { background: linear-gradient(to right, #2a9d8f, #ffd166); }
         .legend.sea-level { background: linear-gradient(to right, #39b9db, #ff7866); }
         .legend.enso { background: linear-gradient(to right, #0000ff, #ffffff 50%, #ff0000); }
+        .legend.local-temperature { background: linear-gradient(to right, #0000ff, #ffffff 50%, #ff0000); }
+        #infoLocation { margin-bottom: 8px; color: #bbb; font-size: 0.8rem; overflow-wrap: anywhere; }
+        #infoLocation:empty { display: none; }
 
         /* Close Button */
         .close-btn {
@@ -456,12 +459,12 @@
         }
         .settings-body::-webkit-scrollbar-thumb:hover { background-color: #707070; }
         .settings-dataset { display: grid; gap: 8px; padding: 16px 0; }
-        .settings-dataset > label { color: #aaa; font-size: 0.8rem; }
+        .settings-dataset label { color: #aaa; font-size: 0.8rem; }
         .settings-layout { width: 100%; margin: 14px 0 0; box-sizing: border-box; }
         .settings-layout label { flex: 1; text-align: center; }
         .settings-layout span { padding-block: 8px; }
         #settingsPanel input[type=range] { box-sizing: border-box; margin-inline: 0; }
-        #datasetSelect, #videoAdvanced select {
+        #datasetSelect, #videoAdvanced select, #localTemperatureControls select {
             width: 100%;
             min-width: 0;
             height: 38px;
@@ -475,6 +478,37 @@
             font-size: 16px;
         }
         #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
+        #localTemperatureControls { display: grid; gap: 8px; min-width: 0; }
+        #localTemperatureControls[hidden] { display: none; }
+        #localSearchForm { display: flex; gap: 6px; }
+        #localSearch {
+            min-width: 0; width: 100%; height: 38px; box-sizing: border-box;
+            padding: 0 10px; border: 1px solid #555; border-radius: 4px;
+            background: #222; color: white; color-scheme: dark; font: inherit; font-size: 16px;
+            -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
+        }
+        #localSearchForm .upload-label { flex-shrink: 0; }
+        #localResults { list-style: none; padding: 0; margin: 0; }
+        #localResults button {
+            width: 100%; padding: 10px 8px; text-align: left; border: 0; border-bottom: 1px solid #333;
+            background: transparent; color: #ddd; font: inherit; font-size: 0.85rem;
+            overflow-wrap: anywhere; cursor: pointer;
+        }
+        #localResults button:hover { background: #333; }
+        #localSelected { color: #ddd; font-size: 0.8rem; overflow-wrap: anywhere; }
+        #localSelected:empty { display: none; }
+        .local-status-row { display: flex; align-items: center; gap: 8px; }
+        #localStatus { flex: 1; color: #aaa; font-size: 0.75rem; overflow-wrap: anywhere; }
+        #localAction { flex-shrink: 0; }
+        #localStationFields { display: grid; gap: 8px; min-width: 0; }
+        #localStationFields[hidden] { display: none; }
+        #localStationFields select { min-width: 0; max-width: 100%; }
+        #localStationSelect { text-overflow: ellipsis; }
+        #localStationDetails { margin: 0; color: #aaa; font-size: 0.75rem; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; }
+        #localStationDetails:empty { display: none; }
+        .local-radius, .local-source { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .local-source label { flex-shrink: 0; }
+        #localTemperatureControls #localStationRadius { width: auto; }
         .layout-modes { display: flex; border: 1px solid #555; border-radius: 6px; overflow: hidden; }
         .layout-modes label { position: relative; cursor: pointer; }
         .layout-modes input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -794,6 +828,7 @@
         
         <!-- Live Data Display -->
         <div id="currentDataDisplay" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #333;">
+            <div id="infoLocation"></div>
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
                     <div class="info-data-label" style="font-size: 0.8rem; color: #aaa;">Date</div>
@@ -833,6 +868,39 @@
             <div class="settings-dataset">
                 <label for="datasetSelect">Dataset</label>
                 <select id="datasetSelect"></select>
+                <div id="localTemperatureControls" hidden>
+                    <div class="local-source">
+                        <label for="localSource">Source</label>
+                        <select id="localSource">
+                            <option value="era5">Reanalysis (Open-Meteo)</option>
+                            <option value="station">Weather station (NOAA)</option>
+                        </select>
+                    </div>
+                    <form id="localSearchForm" role="search" aria-label="Find a location">
+                        <input id="localSearch" type="search" placeholder="City or coordinates" aria-label="City or latitude, longitude" maxlength="100" autocomplete="off" spellcheck="false">
+                        <button class="upload-label" type="submit">Search</button>
+                    </form>
+                    <ul id="localResults" aria-label="Matching locations"></ul>
+                    <span id="localSelected"></span>
+                    <div id="localStationFields" hidden>
+                        <div class="local-radius">
+                            <label for="localStationRadius">Search radius</label>
+                            <select id="localStationRadius">
+                                <option value="50">50 km</option>
+                                <option value="100" selected>100 km</option>
+                                <option value="250">250 km</option>
+                                <option value="500">500 km</option>
+                            </select>
+                        </div>
+                        <label id="localStationLabel" for="localStationSelect">Station</label>
+                        <select id="localStationSelect" disabled aria-describedby="localStationDetails"></select>
+                        <p id="localStationDetails"></p>
+                    </div>
+                    <div class="local-status-row">
+                        <span id="localStatus" role="status" aria-live="polite"></span>
+                        <button id="localAction" class="upload-label" type="button" hidden>Cancel</button>
+                    </div>
+                </div>
                 <a id="settingsSourceLink" target="_blank" rel="noopener noreferrer"></a>
             </div>
 
@@ -1086,6 +1154,9 @@
         import { VIDEO_EXPORT_FPS, MAX_VIDEO_PATH_STEPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming, getVideoLayout,
             getVideoOrbitFrame, getVideoRecorderOptions } from './video-export.mjs';
         import { getTemperatureDataUrl, parseTemperatureData } from './temperature-data.mjs';
+        import { LOCAL_TEMPERATURE_SOURCE, parseLocalTemperatureData, localTemperatureRange, localLocationKey } from './local-temperature-data.mjs';
+        import { setupLocalTemperature } from './local-temperature-ui.mjs';
+        import { STATION_SOURCE, parseStationTemperatureData } from './station-temperature-data.mjs';
         import { ENSO_DATA_URL, ENSO_TICKS, parseENSOData, ensoAnomalyToRadius } from './enso-data.mjs';
         import { SEA_LEVEL_SOURCE_URL, SEA_LEVEL_TICKS, fetchSeaLevelData, parseSeaLevelData,
             seaLevelMmToSpiralValue, spiralValueToSeaLevelMm } from './sea-level-data.mjs';
@@ -1178,6 +1249,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 `;
 
         const DATASET_CONFIG = {
+            local: {
+                id: 'local', title: 'Local Temperature', metricLabel: 'Local Anomaly',
+                sourceLabel: 'Open-Meteo / ERA5-Land', sourceHref: LOCAL_TEMPERATURE_SOURCE,
+                supportsInterpolation: false, preserveMonthlyGaps: true, fileExtension: '.json',
+                parse: text => {
+                    try {
+                        const snapshot = JSON.parse(text);
+                        return snapshot.adjustment === 'QCF' ? parseStationTemperatureData(snapshot) : parseLocalTemperatureData(snapshot);
+                    } catch { return []; }
+                },
+                description: 'Monthly temperature anomalies relative to the local 1951-1980 average for each calendar month. ERA5-Land reanalysis estimates at approximately 11 km resolution, provided by Open-Meteo. Location search: GeoNames. Data: CC BY 4.0.'
+            },
             temperature: {
                 id: "temperature",
                 title: "Global Temperature",
@@ -1332,6 +1415,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let spiralHeight = 0; 
         let currentMaxAnomaly = 0;
         let datasetRadiusScale = 1;
+        let localControls, localSnapshot = null;
+        let localRange = localTemperatureRange([]);
         let layoutMix = 0;
         let layoutTransition = null;
         let monthlyLayout = graphLayout(5, 20);
@@ -1372,7 +1457,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         let timelineTimeout;
         let dataStatusTimeout;
 
-        const preventNativeInteraction = (event) => event.preventDefault();
+        const preventNativeInteraction = (event) => {
+            if (event.target.closest?.('#localSearch')) return;
+            event.preventDefault();
+        };
         document.addEventListener('contextmenu', preventNativeInteraction);
         document.addEventListener('selectstart', preventNativeInteraction);
         document.addEventListener('dragstart', preventNativeInteraction);
@@ -1578,6 +1666,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getUnscaledSpiralRadius(value) {
+            // Reserve the inner quarter for the year; local anomalies can be much wider than global ones.
+            if (currentDatasetKey === 'local') return CONFIG.outerRadius *
+                (0.25 + 0.75 * (value + localRange.extent) / (2 * localRange.extent));
             if (currentDatasetKey === 'enso') return ensoAnomalyToRadius(value);
             return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
         }
@@ -1606,6 +1697,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getOuterRingValue(maxValue) {
+            if (currentDatasetKey === 'local') return localRange.extent;
             if (currentDatasetKey === 'sealevel') return Math.max(maxValue, seaLevelMmToSpiralValue(SEA_LEVEL_TICKS.at(-1)));
             if (currentDatasetKey === 'enso') return Math.max(maxValue, ENSO_TICKS.at(-1));
             if (currentDatasetKey === 'methane') return Math.max(maxValue, methanePpbToSpiralValue(METHANE_TICKS.at(-1)));
@@ -1916,7 +2008,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function updateLegendLabels() {
             const isSeaIce = getActiveDataset().kind === 'sea-ice';
-            const values = isSeaIce ? [0, ...getSeaIceScale().ticks].map(String)
+            const values = currentDatasetKey === 'local' ? localRange.ticks.map(value => (value > 0 ? '+' : '') + value + '\u00b0C')
+                : isSeaIce ? [0, ...getSeaIceScale().ticks].map(String)
                 : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(value => value + ' mm')
                 : currentDatasetKey === 'enso' ? ENSO_TICKS.map(value => (value > 0 ? '+' : '') + value + '\u00b0C')
                 : currentDatasetKey === 'methane' ? [METHANE_AXIS_MIN, ...METHANE_TICKS].map(value => value + ' ppb')
@@ -1926,6 +2019,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             document.querySelector('.legend').classList.toggle('methane', currentDatasetKey === 'methane');
             document.querySelector('.legend').classList.toggle('enso', currentDatasetKey === 'enso');
             document.querySelector('.legend').classList.toggle('sea-level', currentDatasetKey === 'sealevel');
+            document.querySelector('.legend').classList.toggle('local-temperature', currentDatasetKey === 'local');
             document.querySelector('.legend-labels').replaceChildren(...values.map(value => {
                 const label = document.createElement('span');
                 label.textContent = value;
@@ -1934,7 +2028,11 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function applyDatasetUI() {
-            const dataset = getActiveDataset();
+            let dataset = getActiveDataset();
+            if (currentDatasetKey === 'local' && (localSnapshot?.station || (!localSnapshot && document.getElementById('localSource').value === 'station'))) {
+                dataset = { ...dataset, metricLabel: 'Station Anomaly', sourceLabel: 'NOAA GHCN-Monthly v4', sourceHref: STATION_SOURCE,
+                    description: 'Monthly weather station observations, adjusted by NOAA for discontinuities such as station moves and instrument changes. Anomalies are relative to this station\'s 1951-1980 average for each calendar month. Missing months remain gaps. Location search: Open-Meteo / GeoNames.' };
+            }
             const metricLabel = document.getElementById('infoMetricLabel');
             const infoDescription = document.getElementById('infoDescription');
             const sourceLink = document.getElementById('sourceLink');
@@ -1947,6 +2045,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (metricLabel) metricLabel.innerText = dataset.metricLabel;
             if (infoDescription) infoDescription.innerText = dataset.description;
+            document.getElementById('infoLocation').textContent = currentDatasetKey === 'local' && localSnapshot ? localSnapshot.location.name.replaceAll('_', ' ') : '';
+            document.getElementById('localTemperatureControls').hidden = currentDatasetKey !== 'local';
             if (sourceLink) {
                 sourceLink.href = dataset.sourceHref;
                 sourceLink.innerText = dataset.sourceLabel;
@@ -2033,6 +2133,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             const reader = new FileReader();
             reader.onload = function(e) {
                 if (!isCurrentDataLoad(datasetKey, token)) return;
+                if (datasetKey === 'local') { void localControls.importSnapshot(e.target.result); return; }
                 if (applyDataText(e.target.result, "User File", datasetKey)) {
                     updateDataStatus("User File", "#2ecc71", 3000);
                 } else {
@@ -2050,6 +2151,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         async function fetchRemoteData() {
             const datasetKey = currentDatasetKey;
             const dataset = getDatasetByKey(datasetKey);
+            if (datasetKey === 'local') { beginDataLoad(); return localControls.refresh(); }
             const token = beginDataLoad();
             updateDataStatus("Fetching " + dataset.title + "...");
 
@@ -2090,6 +2192,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function loadLocalData() {
             const datasetKey = currentDatasetKey;
             const token = beginDataLoad();
+            if (datasetKey === 'local') return localControls.activate();
             const dataset = getDatasetByKey(datasetKey);
             updateDataStatus("Checking local...");
 
@@ -2301,6 +2404,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         function startVideoPreview() {
             if (videoPreview) { stopVideoPreview(); return; }
             if (videoExport || !spiralMesh || !timelineStops.length) return;
+            localControls.cancel();
             let cameraPath, framePlan;
             try {
                 cameraPath = getConfiguredVideoPath();
@@ -2379,6 +2483,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function getVideoLegendStops() {
+            if (currentDatasetKey === 'local') return [[0, '#0000ff'], [0.5, '#ffffff'], [1, '#ff0000']];
             if (currentDatasetKey === 'sealevel') return [[0, '#39b9db'], [1, '#ff7866']];
             if (currentDatasetKey === 'methane') return [[0, '#2a9d8f'], [1, '#ffd166']];
             if (getActiveDataset().kind === 'sea-ice') return [[0, '#176b87'], [1, '#effbff']];
@@ -2402,6 +2507,12 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             context.save();
             context.textBaseline = 'alphabetic';
+            if (currentDatasetKey === 'local' && localSnapshot) {
+                context.font = `500 ${Math.min(22 * pixelScale, rect.height * 0.09)}px ${FONT_FAMILY}`;
+                context.fillStyle = '#bbbbbb';
+                context.textAlign = 'left';
+                context.fillText(localSnapshot.location.name.replaceAll('_', ' '), rect.x, rect.y + rect.height * 0.08, rect.width);
+            }
             context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
             while (headlineSize > 11 * pixelScale && context.measureText(date).width + context.measureText(value).width + headlineGap > rect.width) {
                 headlineSize -= pixelScale;
@@ -2449,10 +2560,18 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 context.textAlign = index === 0 ? 'left' : index === labels.length - 1 ? 'right' : 'center';
                 context.fillText(label, rect.x + rect.width * fraction, labelY);
             });
+            if (currentDatasetKey === 'local') {
+                context.font = `400 ${Math.min(16 * pixelScale, rect.height * 0.07)}px ${FONT_FAMILY}`;
+                context.fillStyle = '#aaaaaa';
+                context.textAlign = 'left';
+                const attribution = localSnapshot?.station ? 'NOAA GHCN-Monthly v4 (adjusted)' : 'ERA5-Land / Open-Meteo (CC BY 4.0)';
+                context.fillText(attribution + ' | Baseline 1951-1980', rect.x, rect.y + rect.height * 0.94, rect.width);
+            }
             context.restore();
         }
 
         function startVideoExport() {
+            localControls.cancel();
             if (videoPreview) stopVideoPreview();
             if (videoExport) {
                 cancelVideoExport();
@@ -2829,7 +2948,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
         
         function getReferenceValues() {
-            return currentDatasetKey === 'enso' ? ENSO_TICKS
+            return currentDatasetKey === 'local' ? localRange.ticks
+                : currentDatasetKey === 'enso' ? ENSO_TICKS
                 : currentDatasetKey === 'sealevel' ? SEA_LEVEL_TICKS.map(seaLevelMmToSpiralValue)
                 : currentDatasetKey === 'methane' ? METHANE_TICKS.map(methanePpbToSpiralValue)
                 : getActiveDataset().kind === 'sea-ice' ? getSeaIceScale().ticks.map(getSeaIceScale().toSpiralValue)
@@ -2966,6 +3086,26 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function setupUI() {
+            localControls = setupLocalTemperature({
+                isActive: () => currentDatasetKey === 'local' && !videoExport && !videoPreview,
+                onClear: () => {
+                    if (currentDatasetKey !== 'local') return;
+                    localSnapshot = null;
+                    clearDataVisualization();
+                    applyDatasetUI();
+                },
+                onData: (snapshot, source) => {
+                    if (currentDatasetKey !== 'local' || videoExport || videoPreview) return;
+                    const seriesKey = value => value?.station ? 'station:' + value.station.id : value && localLocationKey(value.location);
+                    if (!localSnapshot || seriesKey(localSnapshot) !== seriesKey(snapshot)) {
+                        datasetPlaybackState.local = { initialized: false, progress: 0, completed: false, wasAnimating: false };
+                    }
+                    localSnapshot = snapshot;
+                    applyDatasetUI();
+                    applyDataText(JSON.stringify(snapshot), source, 'local');
+                    updateDataStatus('');
+                }
+            });
             const toggleBtn = document.getElementById('infoBtn');
             const settingsBtn = document.getElementById('settingsBtn');
             const playBtn = document.getElementById('playBtn');
@@ -3038,7 +3178,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 const visible = e.target.checked;
                 if(yearLabelsGroup) yearLabelsGroup.visible = visible;
                 if(monthLabelsGroup) monthLabelsGroup.visible = visible;
-                if(yearIndicatorMesh) yearIndicatorMesh.visible = visible;
+                if(yearIndicatorMesh) yearIndicatorMesh.visible = visible && Boolean(spiralMesh);
                 if(tempGridGroup) tempGridGroup.visible = visible;
                 if(tempLabelGroup) tempLabelGroup.visible = visible;
                 if(tempVerticalGroup) tempVerticalGroup.visible = visible;
@@ -3054,7 +3194,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     return;
                 }
                 saveCurrentDatasetPlaybackState();
+                localControls.cancel();
                 currentDatasetKey = nextDatasetKey;
+                if (nextDatasetKey === 'local') clearDataVisualization();
                 applyDatasetUI();
                 loadLocalData();
             });
@@ -3227,7 +3369,9 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     
                     // Update legend marker position
                     let percent;
-                    if (currentDatasetKey === 'sealevel') {
+                    if (currentDatasetKey === 'local') {
+                        percent = (currentDisplayValue + localRange.extent) / (2 * localRange.extent) * 100;
+                    } else if (currentDatasetKey === 'sealevel') {
                         percent = currentDisplayValue / SEA_LEVEL_TICKS.at(-1) * 100;
                     } else if (currentDatasetKey === 'enso') {
                         percent = (currentDisplayValue - ENSO_TICKS[0]) / (ENSO_TICKS.at(-1) - ENSO_TICKS[0]) * 100;
@@ -3307,6 +3451,7 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
         }
 
         function updatePlaybackButtonAvailability() {
+            document.getElementById('playBtn').disabled = totalIndices <= 0;
             const atStart = totalIndices <= 0 || animationIndex <= 0.5;
             const atEnd = totalIndices <= 0 || animationIndex >= totalIndices - 0.5;
             document.getElementById('stepBackBtn').disabled = isAnimating || atStart;
@@ -3382,6 +3527,30 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
             return false;
         }
 
+        function clearDataVisualization() {
+            const playback = { ...datasetPlaybackState[currentDatasetKey] };
+            if (isAnimating) toggleAnimation();
+            datasetPlaybackState[currentDatasetKey] = playback;
+            for (const object of [spiralMesh, spiralLine, endCapMesh, yearLabelsGroup, monthLabelsGroup,
+                tempGridGroup, tempLabelGroup, tempVerticalGroup]) {
+                if (object) { disposeHierarchy(object); scene.remove(object); }
+            }
+            spiralMesh = spiralLine = endCapMesh = yearLabelsGroup = monthLabelsGroup = null;
+            tempGridGroup = tempLabelGroup = tempVerticalGroup = null;
+            yearIndicatorMesh.visible = false;
+            currentDataText = '';
+            generatedGeometryData = null;
+            totalIndices = animationIndex = 0;
+            timelineStops = [];
+            for (const id of ['infoMonth', 'infoYear', 'timelineStart', 'timelineEnd']) document.getElementById(id).textContent = '--';
+            document.getElementById('legendMarker').hidden = true;
+            document.getElementById('timelineSlider').value = 0;
+            updatePlaybackButtonAvailability();
+            updateVideoDurationEstimate();
+            updateSourceLabel('No location loaded');
+            updateDataStatus('');
+        }
+
         function updateDataVisualization(rawDataOverride) {
             const dataset = getActiveDataset();
             const rawData = Array.isArray(rawDataOverride)
@@ -3399,6 +3568,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 : rawData;
 
             if (!hasUsableData(processedData)) return false;
+            if (currentDatasetKey === 'local') localRange = localTemperatureRange(processedData);
+            yearIndicatorMesh.visible = document.getElementById('helpersToggle').checked;
             
             startYear = processedData[0].year;
             const lastEntry = processedData[processedData.length - 1];
@@ -4069,7 +4240,10 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                     }
 
                     let c = new THREE.Color();
-                    if (currentDatasetKey === 'sealevel') {
+                    if (currentDatasetKey === 'local') {
+                        c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
+                            Math.min(1, Math.abs(colorValue) / localRange.extent));
+                    } else if (currentDatasetKey === 'sealevel') {
                         c.lerpColors(CONFIG.colors.seaLevelLow, CONFIG.colors.seaLevelHigh,
                             THREE.MathUtils.clamp(displayValue / SEA_LEVEL_TICKS.at(-1), 0, 1));
                     } else if (currentDatasetKey === 'enso') {

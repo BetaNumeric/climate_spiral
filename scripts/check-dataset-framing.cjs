@@ -113,10 +113,10 @@ window.framingTest = {
       await page.goto('http://127.0.0.1:8000/index.html');
       await page.waitForFunction(() => window.framingTest?.ready());
       const datasets = await page.locator('#datasetSelect option').evaluateAll(options => options.map(option => option.value));
-      assert.deepEqual(datasets, ['temperature', 'ocean', 'land', 'arctic', 'antarctic',
+      assert.deepEqual(datasets, ['local', 'temperature', 'ocean', 'land', 'arctic', 'antarctic',
         'arcticvolume', 'sealevel', 'co2', 'methane']);
       const states = [];
-      for (const dataset of datasets) {
+      for (const dataset of datasets.filter(key => key !== 'local')) {
         if (dataset !== 'temperature') {
           const previousMesh = (await page.evaluate(() => framingTest.state())).mesh;
           await page.selectOption('#datasetSelect', dataset, { force: true });
