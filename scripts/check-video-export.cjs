@@ -1,6 +1,7 @@
 // Run with: node scripts/check-video-export.cjs [path-to-playwright-package]
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
+const { installVideoSessionHook } = require('./browser-test-hooks.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { tmpdir } = require('node:os');
@@ -98,6 +99,7 @@ async function checkSeeking(page) {
     const context = await browser.newContext({ serviceWorkers: 'block', acceptDownloads: true,
       viewport: { width: 1280, height: 800 } });
     const page = await context.newPage();
+    await installVideoSessionHook(page);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.route('**/index.html', async route => {
@@ -112,16 +114,16 @@ async function checkSeeking(page) {
           snapshot: () => ({ position: activeCamera.position.toArray(), quaternion: activeCamera.quaternion.toArray(),
             zoom: activeCamera.zoom, target: controls.target.toArray(), projection: activeCamera.projectionMatrix.toArray(),
             index: animationIndex, playing: isAnimating, width: renderer.domElement.width, height: renderer.domElement.height }),
-          phase: () => ({ recording: Boolean(videoExport), polar: controls.getPolarAngle(), progress: animationIndex / totalIndices }),
-          exportState: () => videoExport && ({ frameIndex: videoExport.frameIndex,
-            totalFrames: videoExport.totalFrames, paused: videoExport.paused, layout: videoExport.layout,
-            framePlan: videoExport.framePlan }),
-          framePlan: () => getCurrentVideoFramePlan(),
+          phase: () => ({ recording: Boolean(videoController.testRecording), polar: controls.getPolarAngle(), progress: animationIndex / totalIndices }),
+          exportState: () => videoController.testRecording && ({ frameIndex: videoController.testRecording.frameIndex,
+            totalFrames: videoController.testRecording.totalFrames, paused: videoController.testRecording.paused, layout: videoController.testRecording.layout,
+            framePlan: videoController.testRecording.framePlan }),
+          framePlan: () => videoController.getFramePlan(),
           stops: () => timelineStops.length,
-          setExportPaused: value => setVideoExportPaused(value),
+          setExportPaused: value => videoController.setPaused(value),
           orbit: () => ({ distance: activeCamera.position.distanceTo(controls.target),
             projection: activeCamera.projectionMatrix.toArray(), target: controls.target.toArray(), zoom: activeCamera.zoom }),
-          ready: () => Boolean(spiralMesh && totalIndices && currentDataText !== INITIAL_DATA_SOURCE)
+          ready: () => Boolean(spiralMesh && totalIndices)
         };
         // --- Configuration ---`) });
     });
@@ -244,6 +246,16 @@ async function checkSeeking(page) {
     await page.click('#videoExportBtn');
     assert.deepEqual(await page.evaluate(() => window.exportTest.snapshot()), before);
     assert.equal(await page.locator('#videoDownload').isVisible(), false);
+
+    await page.locator('#videoPreviewBtn').evaluate(button => button.click());
+    assert.equal(await page.locator('#videoPreviewBar').isVisible(), true);
+    await page.locator('#videoExportBtn').evaluate(button => button.click());
+    await page.waitForFunction(() => window.exportTest.exportState()?.frameIndex >= 2);
+    assert.equal(await page.locator('#videoPreviewBar').isHidden(), true);
+    await page.click('#videoExportBtn');
+    const afterPreviewExport = await page.evaluate(() => window.exportTest.snapshot());
+    assert.equal(afterPreviewExport.index, before.index, 'Export started during a preview must restore the original timeline');
+    assert.equal(afterPreviewExport.playing, before.playing);
 
     await page.selectOption('#videoCamera', 'current');
     await page.click('#videoViewList [data-action="remove"]');

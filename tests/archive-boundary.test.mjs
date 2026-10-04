@@ -5,13 +5,14 @@ import { runInNewContext } from 'node:vm';
 
 const root = new URL('../', import.meta.url);
 
-test('archived sea ice models are absent from the app, cache, docs and active workflows', async () => {
+test('archived datasets are absent from the app, cache, docs and active workflows', async () => {
     const workflows = await readdir(new URL('.github/workflows/', root));
-    assert(!workflows.some(name => /oras5|giomas/i.test(name)));
+    assert(!workflows.some(name => /oras5|giomas|enso/i.test(name)));
     for (const file of ['index.html', 'service-worker.js', 'scripts/readme-video.mjs',
+        'datasets.mjs', 'dataset-loader.mjs', 'gistemp-data.mjs',
         'README.md', 'docs/data-methods.md', 'docs/maintenance.md',
         ...workflows.map(name => '.github/workflows/' + name)]) {
-        assert.doesNotMatch(await readFile(new URL(file, root), 'utf8'), /oras5|giomas/i, file);
+        assert.doesNotMatch(await readFile(new URL(file, root), 'utf8'), /oras5|giomas|\benso\b|Rnino34/i, file);
     }
 });
 
@@ -51,7 +52,10 @@ test('service worker caches the retained datasets and clears the previous app ca
     assert(requests.includes(origin + 'data/piomas-monthly.txt'));
     assert(requests.includes(origin + 'data/sea-ice-north.json'));
     assert(requests.includes(origin + 'data/sea-ice-south.json'));
-    assert(requests.every(url => !/oras5|giomas|\/archive\//i.test(url)));
+    for (const module of ['datasets.mjs', 'dataset-loader.mjs', 'gistemp-data.mjs']) {
+        assert(requests.includes(origin + module));
+    }
+    assert(requests.every(url => !/oras5|giomas|enso|Rnino34|\/archive\//i.test(url)));
     await dispatch('activate');
     assert(!stores.has('climate-spiral-v35'));
     assert(stores.has('another-app'));
@@ -69,5 +73,10 @@ test('archived code, snapshots, tests and workflow templates are retained outsid
             await assert.rejects(access(new URL(file, root)), { code: 'ENOENT' });
             await access(new URL('archive/sea-ice-models/' + file, root));
         }
+    }
+    for (const file of ['enso-data.mjs', 'data/Rnino34.ascii.txt',
+        'scripts/update-enso-data.mjs', 'tests/enso-data.test.mjs']) {
+        await assert.rejects(access(new URL(file, root)), { code: 'ENOENT' });
+        await access(new URL('archive/enso/' + file, root));
     }
 });

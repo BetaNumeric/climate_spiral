@@ -1,23 +1,35 @@
 const assert = require('node:assert/strict');
-const { mkdirSync } = require('node:fs');
+const { mkdirSync, writeFileSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { chromium } = require('playwright');
 
-const output = join(tmpdir(), 'climate-tube-continuity');
+const output = join(tmpdir(), process.argv[2] || 'climate-tube-continuity');
 mkdirSync(output, { recursive: true });
 
 const hooks = `
   window.tubeTest = {
     ready: () => Boolean(spiralMesh && timelineStops.length),
+    async fingerprints() {
+      const morph = spiralMesh.geometry.layoutMorph;
+      const arrays = { source: morph.source, target: morph.target, sourceNormals: morph.sourceNormals,
+        targetNormals: morph.targetNormals, sourceIndex: morph.sourceIndex, targetIndex: morph.targetIndex,
+        colors: spiralMesh.geometry.attributes.color.array };
+      const result = {};
+      for (const [name, array] of Object.entries(arrays)) {
+        const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', array));
+        result[name] = Array.from(hash, byte => byte.toString(16).padStart(2, '0')).join('');
+      }
+      return result;
+    },
     pause() { if (isAnimating) toggleAnimation(); setPlaybackPosition(totalIndices); },
     synthetic() {
       const points = [new THREE.Vector3(1, 0, -2), new THREE.Vector3(2, 1, -1),
         new THREE.Vector3(2, 2, 1), new THREE.Vector3(1, 3, 2)];
       const sources = [0, 1, 1, 2, 3, 3];
       const colors = points.map(() => new THREE.Color('white'));
-      const reference = createDataTubeGeometry(points, colors, 0.12, 8);
-      const duplicated = createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8);
+      const reference = spiralGeometry.createDataTubeGeometry(points, colors, 0.12, 8);
+      const duplicated = spiralGeometry.createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8);
       const errors = {};
       for (const name of ['position', 'normal']) {
         errors[name] = 0;
@@ -30,9 +42,9 @@ const hooks = `
           }
         }
       }
-      const flat = createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8,
+      const flat = spiralGeometry.createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8,
         sources.map((i, index) => ({ decimalYear: 2000 + i / 12, stripYear: index < 2 ? 2000 : 2001 })), true);
-      const gap = createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8,
+      const gap = spiralGeometry.createDataTubeGeometry(sources.map(i => points[i]), sources.map(i => colors[i]), 0.12, 8,
         sources.map((i, index) => ({ decimalYear: 2000 + i / 12, missing: index === 2 })));
       // A yearly opening or missing month must still use separate rings, even at coincident positions.
       errors.flatSplit = flat.index.array.includes(2 * 8);
@@ -72,7 +84,7 @@ const hooks = `
       setPlaybackPosition(totalIndices);
     },
     view(close) {
-      setCameraView('top', { duration: 0 });
+      cameraController.setView('top', { duration: 0 });
       controls.enableDamping = false;
       if (close) {
         const point = generatedGeometryData.find(p => p.decimalYear === 1950).point;
@@ -113,6 +125,7 @@ const hooks = `
       await page.waitForFunction(() => window.tubeTest?.ready());
       await page.evaluate(() => tubeTest.pause());
       const original = await page.evaluate(() => tubeTest.inspect());
+      const fingerprints = await page.evaluate(() => tubeTest.fingerprints());
       console.log(name, original);
       await page.evaluate(() => tubeTest.view(true));
       await page.screenshot({ path: join(output, name + '-close.png') });
@@ -121,6 +134,7 @@ const hooks = `
       console.log('Compared with an uninterrupted tube:', synthetic);
       assert.ok(synthetic.position < 1e-6 && synthetic.normal < 1e-6, 'Duplicating a boundary must not alter the tube surface');
       assert.ok(synthetic.flatSplit && synthetic.gapSplit);
+      writeFileSync(join(output, name + '.json'), JSON.stringify({ original, synthetic, fingerprints }, null, 2));
       assert.ok(original.joins > 100);
       assert.equal(original.positionError, 0);
       assert.equal(original.normalError, 0);

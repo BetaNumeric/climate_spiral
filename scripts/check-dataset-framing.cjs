@@ -9,13 +9,14 @@ mkdirSync(output, { recursive: true });
 const volumeDatasets = new Set(['arcticvolume']);
 
 const hooks = `
+import { getVideoOrbitFrame } from './video-export.mjs';
 window.framingTest = {
   ready: () => Boolean(spiralMesh && monthLabelsGroup?.children.length === 12),
   topView() {
     layoutTransition = null;
     layoutMix = 0;
     applyLayout();
-    cameraResetAnimation = null;
+    cameraController.cancelAnimation();
     controls.enableDamping = false;
     if (isAnimating) toggleAnimation();
     setPlaybackPosition(totalIndices);

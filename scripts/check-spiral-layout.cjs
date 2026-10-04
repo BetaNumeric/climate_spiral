@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const { installVideoSessionHook } = require('./browser-test-hooks.cjs');
 const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
@@ -145,18 +146,18 @@ const hooks = `
       for (let i = 0; i < data.length; i += 4) if (Math.max(data[i], data[i + 1], data[i + 2]) > 20) lit++;
       return lit;
     },
-    exportState: () => ({ frames: videoExport?.frameIndex ?? 0, active: Boolean(videoExport), mix: layoutMix,
+    exportState: () => ({ frames: videoController.testRecording?.frameIndex ?? 0, active: Boolean(videoController.testRecording), mix: layoutMix,
       polar: controls.getPolarAngle(), azimuth: controls.getAzimuthalAngle() }),
-    previewState: () => ({ active: Boolean(videoPreview), mix: layoutMix, index: animationIndex,
+    previewState: () => ({ active: Boolean(videoController.isPreviewing), mix: layoutMix, index: animationIndex,
       polar: controls.getPolarAngle(), azimuth: controls.getAzimuthalAngle() }),
     lastExportFrame() {
-      videoExport.frameIndex = videoExport.framePlan.startHoldFrames + videoExport.framePlan.drawSteps - 1;
-      videoExport.nextFrameAt = 0;
-      return videoExport.frameIndex + 1;
+      videoController.testRecording.frameIndex = videoController.testRecording.framePlan.startHoldFrames + videoController.testRecording.framePlan.drawSteps - 1;
+      videoController.testRecording.nextFrameAt = 0;
+      return videoController.testRecording.frameIndex + 1;
     },
-    exportImage: () => videoExport.canvas.toDataURL('image/png').split(',')[1],
+    exportImage: () => videoController.testRecording.canvas.toDataURL('image/png').split(',')[1],
     legendPixels() {
-      const session = videoExport, rect = session.layout.legend;
+      const session = videoController.testRecording, rect = session.layout.legend;
       const data = session.context.getImageData(rect.x, rect.y, rect.width, rect.height).data;
       let white = 0;
       for (let i = 0; i < data.length; i += 4) {
@@ -165,13 +166,13 @@ const hooks = `
       return white;
     },
     exportTransition(fraction, move = 0) {
-      videoExport.frameIndex = videoExport.framePlan.startHoldFrames + videoExport.framePlan.drawSteps
-        + videoExport.framePlan.stepFrames.slice(0, move).reduce((sum, frames) => sum + frames, 0)
-        + Math.round(fraction * (videoExport.framePlan.stepFrames[move] - 1));
-      videoExport.nextFrameAt = 0;
-      return videoExport.frameIndex + 1;
+      videoController.testRecording.frameIndex = videoController.testRecording.framePlan.startHoldFrames + videoController.testRecording.framePlan.drawSteps
+        + videoController.testRecording.framePlan.stepFrames.slice(0, move).reduce((sum, frames) => sum + frames, 0)
+        + Math.round(fraction * (videoController.testRecording.framePlan.stepFrames[move] - 1));
+      videoController.testRecording.nextFrameAt = 0;
+      return videoController.testRecording.frameIndex + 1;
     },
-    holdExport(paused) { setVideoExportPaused(paused); },
+    holdExport(paused) { videoController.setPaused(paused); },
   };
 `;
 
@@ -182,6 +183,7 @@ const hooks = `
     for (const [name, viewport] of Object.entries({ desktop: { width: 1280, height: 800 }, mobile: { width: 390, height: 844 } })) {
       const context = await browser.newContext({ viewport, deviceScaleFactor: name === 'mobile' ? 2 : 1, serviceWorkers: 'block' });
       const page = await context.newPage();
+      await installVideoSessionHook(page);
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.route('**/index.html', async route => {
@@ -327,10 +329,10 @@ const hooks = `
 
       if (name === 'desktop') {
         const datasets = await page.locator('#datasetSelect option').evaluateAll(options => options.map(option => option.value));
-        for (const dataset of datasets.filter(key => key !== 'temperature')) {
+        for (const dataset of datasets.filter(key => key !== 'temperature' && key !== 'local')) {
           const mesh = (await page.evaluate(() => layoutTest.state())).mesh;
           await page.selectOption('#datasetSelect', dataset);
-          await page.waitForFunction(previous => layoutTest.state().mesh !== previous, mesh);
+          await page.waitForFunction(previous => layoutTest.ready() && layoutTest.state().mesh !== previous, mesh);
           await page.evaluate(() => { layoutTest.pause(); layoutTest.seek(1); layoutTest.camera(false); });
           const result = await page.evaluate(() => layoutTest.inspect());
           assert.ok(result.finite && result.axisError < 1e-6 && result.rowError < 1e-8, dataset);

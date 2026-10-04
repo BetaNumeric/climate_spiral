@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v40`;
+const CACHE_NAME = `${CACHE_PREFIX}v45`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -16,6 +16,14 @@ const DATA_ASSETS = [
 const CORE_ASSETS = [
   "./",
   "./index.html",
+  "./styles.css",
+  "./co2-data.mjs",
+  "./dataset-display.mjs",
+  "./datasets.mjs",
+  "./dataset-loader.mjs",
+  "./gistemp-data.mjs",
+  "./camera-controller.mjs",
+  "./video-controller.mjs",
   "./manifest.json",
   "./temperature-data.mjs",
   "./local-temperature-data.mjs",
@@ -24,11 +32,11 @@ const CORE_ASSETS = [
   "./country-temperature-data.mjs",
   "./data/country-temperature/catalog.json",
   "./spiral-layout.mjs",
+  "./spiral-geometry.mjs",
   "./video-export.mjs",
   "./video-mux.mjs",
   "./vendor/mediabunny/mediabunny.min.mjs",
   "./methane-data.mjs",
-  "./enso-data.mjs",
   "./sea-level-data.mjs",
   "./sea-ice-data.mjs",
   "./sea-ice-volume-data.mjs",
@@ -37,8 +45,6 @@ const CORE_ASSETS = [
   "./icons/icon_32.png",
   "./icons/icon_192.png",
   "./icons/icon_512.png",
-  "./icons/play.png",
-  "./icons/pause.png",
   "./icons/settings.png",
   "./icons/info.png",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",

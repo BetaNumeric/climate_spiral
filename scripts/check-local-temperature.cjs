@@ -12,7 +12,7 @@ window.localTest = {
   snapshot: () => JSON.stringify(localSnapshot),
   frame(graph = false) {
     if (isAnimating) toggleAnimation();
-    layoutTransition = cameraResetAnimation = null;
+    layoutTransition = null; cameraController.cancelAnimation();
     layoutMix = graph ? 1 : 0;
     applyLayout();
     setPlaybackPosition(totalIndices);
@@ -52,7 +52,7 @@ window.localTest = {
     const text = [];
     const fillText = context.fillText.bind(context);
     context.fillText = (...args) => { text.push(args[0]); fillText(...args); };
-    drawVideoLegend({ context, canvas, layout: { legend: { x: 40, y: 350, width: 660, height: 220 } } });
+    videoController.drawLegend({ context, canvas, layout: { legend: { x: 40, y: 350, width: 660, height: 220 } } });
     return { image: canvas.toDataURL(), text };
   },
 };

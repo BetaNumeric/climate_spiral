@@ -20,8 +20,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
+      - name: Install test dependencies
+        run: npm ci --ignore-scripts
+
       - name: Test data handling
-        run: node --test tests/*.test.mjs
+        run: npm test
 
       - name: Download and prepare NOAA station observations
         run: node scripts/update-station-data.mjs

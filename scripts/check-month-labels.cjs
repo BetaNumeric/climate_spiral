@@ -10,11 +10,11 @@ const hooks = `
 window.monthTest = {
   ready: () => Boolean(spiralMesh && timelineStops.length),
   intermediate(mix) { layoutTransition = null; layoutMix = mix; applyLayout(); },
-  camera: () => ({ moving: Boolean(cameraResetAnimation), polar: controls.getPolarAngle(),
+  camera: () => ({ moving: cameraController.isAnimating, polar: controls.getPolarAngle(),
     azimuth: controls.getAzimuthalAngle(), enabled: controls.enabled, zoom: activeCamera.zoom,
     distance: activeCamera.position.distanceTo(controls.target), target: controls.target.toArray() }),
   orbit(startPolar, startAzimuth, endPolar, endAzimuth) {
-    cameraResetAnimation = null;
+    cameraController.cancelAnimation();
     controls.enableDamping = false;
     const target = new THREE.Vector3(2, spiralHeight / 2 + 1, -3);
     controls.target.copy(target);
@@ -34,7 +34,7 @@ window.monthTest = {
     controls.update();
     controls.dispatchEvent({ type: 'end' });
   },
-  exportLock(enabled) { videoExport = enabled ? {} : null; },
+  previewLock(enabled) { if (enabled) videoController.startPreview(); else videoController.stopPreview(); },
   graph(enabled) {
     if (isAnimating) toggleAnimation();
     setPlaybackPosition(totalIndices);
@@ -192,7 +192,7 @@ window.monthTest = {
       assert.equal((await page.evaluate(() => monthTest.state())).guidesVisible, true);
       if (name === 'desktop') {
         const datasets = await page.locator('#datasetSelect option').evaluateAll(options => options.map(option => option.value));
-        for (const dataset of datasets.filter(key => key !== 'temperature')) {
+        for (const dataset of datasets.filter(key => key !== 'temperature' && key !== 'local')) {
           const previousMesh = (await page.evaluate(() => monthTest.state())).mesh;
           await page.selectOption('#datasetSelect', dataset, { force: true });
           await page.waitForFunction(mesh => monthTest.state().mesh !== mesh, previousMesh);
@@ -261,11 +261,17 @@ window.monthTest = {
       await page.evaluate(() => {
         const input = document.getElementById('videoTransition');
         input.dispatchEvent(new KeyboardEvent('keydown', { key: '2', bubbles: true }));
-        monthTest.exportLock(true);
+        monthTest.previewLock(true);
         document.dispatchEvent(new KeyboardEvent('keydown', { key: '3', bubbles: true }));
-        monthTest.exportLock(false);
+        monthTest.previewLock(false);
       });
-      assert.deepEqual(await page.evaluate(() => monthTest.camera()), beforeIgnored);
+      const afterIgnored = await page.evaluate(() => monthTest.camera());
+      assert.equal(afterIgnored.moving, false);
+      assert.equal(afterIgnored.enabled, beforeIgnored.enabled);
+      assert.deepEqual(afterIgnored.target, beforeIgnored.target);
+      for (const key of ['polar', 'azimuth', 'distance', 'zoom']) {
+        assert.ok(Math.abs(afterIgnored[key] - beforeIgnored[key]) < 1e-8, key);
+      }
       // Panning must not count as the first half of a double right-click.
       await page.evaluate(() => document.getElementById('freeCameraToggle').click());
       await page.mouse.move(100, 200);

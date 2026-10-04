@@ -4,11 +4,21 @@
 
 The app uses HTML, CSS, JavaScript modules, and [Three.js](https://threejs.org/). It has no build step. Serve the repository over HTTP so module and data requests work; for example, run `python -m http.server 8000` and open `http://127.0.0.1:8000/`. The first load needs network access for CDN assets. Sea ice CSV parsing uses the vendored, ISC-licensed [d3-dsv](../vendor/d3-dsv/README.md) parser.
 
-With Node.js 20 or newer, run all parser, updater, layout, and export-setting tests with `node --test tests/*.test.mjs`.
+`index.html` holds the interface markup and scene controller. `styles.css` holds the responsive interface styles. `datasets.mjs` is the catalog of active datasets, their source descriptions, file paths, parsers, and capabilities. `dataset-display.mjs` supplies measurement units, precision, legend labels and gradients, marker ranges, and reference labels for the viewer and video exports. Dataset modules handle source parsing and conversion to model values; `gistemp-data.mjs` handles NASA's global temperature table and `co2-data.mjs` handles the Mauna Loa monthly series. Changes to display units or scales should be made in these shared modules.
+
+`dataset-loader.mjs` handles bundled-file loading, imports, and direct/proxy fetches without reading the DOM. New requests abort superseded HTTP requests; stale-result checks also protect against late file reads and dataset switches. It validates parsed data before handing it to the scene controller, which updates the visualization and restores playback. Local location/source downloads remain in `local-temperature-ui.mjs` with their existing cache and cancellation behavior.
+
+`camera-controller.mjs` handles camera reset gestures, keyboard views, and orientation snapping. `video-controller.mjs` owns camera-path settings, previews, recording, cancellation, automatic downloads, and scene restoration. The scene controller provides their current state and geometry/playback operations; the controllers keep their own animation and recording sessions. `video-export.mjs` contains pure framing, timing, and resolution helpers, while `video-mux.mjs` finalizes the encoded file.
+
+`spiral-geometry.mjs` handles spline sampling, tube and thin-line buffers, December-January joins, gap topology, and layout morphing. It receives explicit layout and coordinate-mapping inputs rather than reading scene or UI state. The scene controller still owns dataset colors, materials, labels, and playback.
+
+With Node.js 20 or newer, run `npm ci` and `npm test` for the parser, updater, layout, geometry, and export-setting tests. Three.js is pinned to the viewer's version as a development-only dependency so geometry tests use the real engine; the browser still uses the existing CDN import map and has no build step. `npm run test:geometry` runs the focused geometry tests.
+
+Run `npm run check:geometry` against the local server to check welded joins, smoothing, zero-thickness lines, unfolding and restoration on desktop and mobile. It saves screenshots and geometry hashes under `climate-tube-continuity` in the system temporary directory. An optional directory name passed after `--` keeps a separate baseline for before/after comparisons.
 
 For browser export checks, install dependencies with `npm ci`, install Chrome for Playwright, serve the app at `http://127.0.0.1:8000`, then run `node scripts/check-video-export.cjs`. The script records and decodes sample videos, checks dimensions and visible frames, verifies camera and playback restoration, and saves screenshots under `climate-video-export` in the system temporary directory. An optional argument specifies a Playwright package path.
 
-The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.12`; larger values make the visualization larger within the frame.
+The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame.
 
 ## Data Updates
 
@@ -33,9 +43,11 @@ NASA GISTEMP and Mauna Loa CO2 are downloaded directly by the workflow. The othe
 
 Run `node scripts/check-dataset-framing.cjs` against the local server to check the bundled datasets, reference positions, and both layouts on desktop and mobile. `node scripts/check-local-temperature.cjs` separately tests location search, caching, cancellation, and rendering with deterministic reanalysis fixtures and real bundled station records, including station alternatives and source switching. It saves screenshots under `climate-local-temperature` in the system temporary directory.
 
+`node scripts/check-data-loading.cjs` checks delayed startup, failed and invalid downloads, retrying, rapid dataset switches, imports, and offline reloads with the real cached dataset. It saves desktop and mobile screenshots under `climate-data-loading` in the system temporary directory. Loader unit tests separately cover request cancellation, direct/proxy timeouts, and stale file reads.
+
 ## Weather Station Updates
 
-The [Update weather stations](../.github/workflows/update-weather-stations.yml) workflow runs on the 8th of each month at 06:41 UTC and supports **Run workflow**. Once the code and generated station files are pushed, it uses the repository's existing Actions permissions; no extra token or secret is needed. The separate schedule limits bulk processing and repository changes. README video rotation continues to use the nine global datasets.
+The [Update weather stations](../.github/workflows/update-weather-stations.yml) workflow runs on the 8th of each month at 06:41 UTC and supports **Run workflow**. It uses the repository's existing Actions permissions; no extra token or secret is needed. The separate schedule limits bulk processing and repository changes. README video rotation uses the nine global datasets.
 
 Run `node scripts/update-station-data.mjs` to download NOAA's GHCN-Monthly v4 QCF archive, validate it, and generate `data/weather-stations/catalog.json` plus one JSON file per eligible station. Node.js 20+ and the system `tar` command are required. `node scripts/update-station-data.mjs --archive .cache/ghcn/source.tar.gz` reprocesses an already downloaded archive. The temporary source archive is removed after processing; `.cache/ghcn/` is ignored by Git for optional local copies.
 
@@ -45,13 +57,13 @@ The catalog stores a SHA-256 hash for each station file. The browser checks it b
 
 ## Country Temperature Updates
 
-The [Update country temperatures](../.github/workflows/update-country-temperature.yml) workflow checks CRU-CY on the 12th of each month at 07:17 UTC and supports **Run workflow**. CRU releases normally arrive annually; unchanged release/run identifiers reuse local tables, so monthly checks do not download the whole archive repeatedly. No token, account, or secret is required beyond the existing Actions write permission. Push the new workflow and generated files to enable it.
+The [Update country temperatures](../.github/workflows/update-country-temperature.yml) workflow checks CRU-CY on the 12th of each month at 07:17 UTC and supports **Run workflow**. CRU releases normally arrive annually; unchanged release/run identifiers reuse local tables, so monthly checks do not download the whole archive repeatedly. No token, account, or secret is required beyond the existing Actions write permission.
 
 Run `node scripts/update-country-data.mjs` to discover the latest release on CRU's overview page and generate `data/country-temperature/catalog.json` plus one record per supported country/territory. Explicit filename aliases map provider names to ISO country codes; ambiguous partial-island groups are excluded. Original text, release, and source run are retained. The updater validates all inputs before publication and rejects older releases, missing countries, lost observations, or changed region names. When CRU changes its format or region definitions, review the provider documentation and mapping before accepting the change. It does not silently change geographic scope.
 
 Country files are written atomically and the hash catalog is published last. `.gitattributes` enforces LF for exact hashes on Windows. The small catalog is cached with the app; individual records are cached only when requested. Browser refreshes use network-first requests and IndexedDB, with a daily catalog check and a forced check through **Fetch Latest**. `country-temperature-data.mjs` handles raw table validation, monthly anomalies, country search, and hash verification. Unified search prioritizes exact country names/codes and merges other country matches with geocoded cities, deduplicating country results and excluding unsupported country points. IndexedDB's `local-source` records the active mode; `local-point-source` separately retains the city's reanalysis/station preference. Older saved country points are redirected to country averages on activation. The tests verify every bundled country record. `node scripts/check-local-temperature.cjs` also checks automatic country selection, both layouts, exports' legend attribution, saved selections, integrity errors, and mobile layout.
 
-ENSO remains disabled in the selector and workflow. Its parser, raw snapshot, updater, rendering branches, and tests are retained. To restore it, uncomment its `DATASET_CONFIG` registration and workflow step, add `data/Rnino34.ascii.txt` to the workflow commit paths and service worker assets, and bump the cache version. The retained source is NOAA CPC's [monthly relative Nino 3.4 index](https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt), not the three-month ONI/RONI or an official event classification.
+Inactive datasets are retained under [archive](../archive/README.md), with their data, processing code, optional tests, and restoration notes. They are excluded from the app, offline cache, and scheduled workflows.
 
 ## README Videos
 
@@ -65,4 +77,4 @@ The video updater relies on the exact `README_VIDEO_TOP_*`, `README_VIDEO_BOTTOM
 
 ## Video Export Implementation
 
-The browser records locally at a constant 30 fps. Each frame is advanced explicitly, then [Mediabunny](https://mediabunny.dev/) remuxes the file with `n / 30` timestamps and rebuilds its seek index. The recorder requests a keyframe every 0.5 seconds; exact scheduling depends on the browser. MP4 output uses a regular, non-fragmented container with its index at the start, while WebM receives finalized metadata and an index. The target bitrate scales with resolution, and the browser negotiates the H.264 level. Slower hardware lengthens export time rather than changing the video timeline. These properties apply to newly exported videos, not previously downloaded files.
+The browser records locally at a constant 30 fps. Each frame is advanced explicitly, then [Mediabunny](https://mediabunny.dev/) remuxes the file with `n / 30` timestamps and rebuilds its seek index. The recorder requests a keyframe every 0.5 seconds; exact scheduling depends on the browser. MP4 output uses a regular, non-fragmented container with its index at the start, while WebM receives finalized metadata and an index. The target bitrate scales with resolution, and the browser negotiates the H.264 level. Slower hardware lengthens export time rather than changing the video timeline.

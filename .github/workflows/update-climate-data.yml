@@ -1,11 +1,9 @@
-# .github/workflows/update-climate-data.yml
 name: Update climate data
 
 on:
   workflow_dispatch:
   schedule:
-    # Run weekly on the 10th, 17th, and 24th-ish cadence via Fridays.
-    # UTC time. Pick a non-zero minute to avoid peak queue times.
+    # Fridays at 07:23 UTC.
     - cron: "23 7 * * 5"
 
 permissions:
@@ -44,15 +42,14 @@ jobs:
       - name: Download and validate global methane data
         run: node scripts/update-methane-data.mjs
 
-      # ENSO is disabled in the dataset selector for now.
-      # - name: Download and validate ENSO data
-      #   run: node scripts/update-enso-data.mjs
-
       - name: Download and validate global sea level data
         run: node scripts/update-sea-level-data.mjs
 
+      - name: Install test dependencies
+        run: npm ci --ignore-scripts
+
       - name: Test data handling
-        run: node --test tests/*.test.mjs
+        run: npm test
 
       - name: Commit changed data files
         run: |

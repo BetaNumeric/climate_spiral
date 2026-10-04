@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const { installVideoSessionHook } = require('./browser-test-hooks.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
@@ -19,19 +20,21 @@ mkdirSync(output, { recursive: true });
     })) {
       const context = await browser.newContext({ viewport, serviceWorkers: 'block' });
       const page = await context.newPage();
+      await installVideoSessionHook(page);
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.route('**/index.html', async route => {
         const response = await route.fetch();
         const source = await response.text();
         await route.fulfill({ response, body: source.replace('// --- Configuration ---', `
+          import { getVideoLayout } from './video-export.mjs';
           window.scaleTest = {
             drawLegend(width, height) {
               const canvas = document.createElement('canvas');
               canvas.width = width;
               canvas.height = height;
               const layout = getVideoLayout(width, height, true);
-              drawVideoLegend({ canvas, context: canvas.getContext('2d'), layout });
+              videoController.drawLegend({ canvas, context: canvas.getContext('2d'), layout });
               return { canvas, layout };
             },
             rings() {
@@ -47,15 +50,15 @@ mkdirSync(output, { recursive: true });
               };
             },
             exportFrame() {
-              return videoExport?.canvas.toDataURL('image/png').split(',')[1] ?? null;
+              return videoController.testRecording?.canvas.toDataURL('image/png').split(',')[1] ?? null;
             },
             exportFrameIndex() {
-              return videoExport?.frameIndex ?? 0;
+              return videoController.testRecording?.frameIndex ?? 0;
             },
             seekExportToLastDraw() {
-              videoExport.frameIndex = videoExport.framePlan.startHoldFrames + videoExport.framePlan.drawSteps - 1;
-              videoExport.nextFrameAt = 0;
-              return videoExport.frameIndex + 1;
+              videoController.testRecording.frameIndex = videoController.testRecording.framePlan.startHoldFrames + videoController.testRecording.framePlan.drawSteps - 1;
+              videoController.testRecording.nextFrameAt = 0;
+              return videoController.testRecording.frameIndex + 1;
             },
           };
           // --- Configuration ---`) });
