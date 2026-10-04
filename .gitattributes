@@ -1,2 +1,3 @@
-# Station catalog hashes refer to the exact generated JSON bytes on every platform.
+# Catalog hashes refer to the exact generated JSON bytes on every platform.
 data/weather-stations/** text eol=lf
+data/country-temperature/** text eol=lf

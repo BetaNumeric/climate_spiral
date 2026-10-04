@@ -1,0 +1,43 @@
+name: Update country temperatures
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 12 * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: country-temperature-update
+  cancel-in-progress: false
+
+jobs:
+  update-countries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Test data handling
+        run: node --test tests/*.test.mjs
+
+      - name: Prepare the latest CRU-CY country averages
+        run: node scripts/update-country-data.mjs
+
+      - name: Verify generated country records
+        run: node --test tests/country-temperature-data.test.mjs
+
+      - name: Commit updated country data
+        run: |
+          git add data/country-temperature/
+          if git diff --cached --quiet; then
+            echo "No country data changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update CRU-CY country temperatures"
+          git pull --rebase
+          git push

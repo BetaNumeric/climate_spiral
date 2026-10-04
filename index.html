@@ -506,7 +506,9 @@
         #localStationSelect { text-overflow: ellipsis; }
         #localStationDetails { margin: 0; color: #aaa; font-size: 0.75rem; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; }
         #localStationDetails:empty { display: none; }
+        #localCountryDetails { margin: 0; color: #aaa; font-size: 0.75rem; line-height: 1.5; overflow-wrap: anywhere; }
         .local-radius, .local-source { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .local-source[hidden] { display: none; }
         .local-source label { flex-shrink: 0; }
         #localTemperatureControls #localStationRadius { width: auto; }
         .layout-modes { display: flex; border: 1px solid #555; border-radius: 6px; overflow: hidden; }
@@ -869,19 +871,20 @@
                 <label for="datasetSelect">Dataset</label>
                 <select id="datasetSelect"></select>
                 <div id="localTemperatureControls" hidden>
-                    <div class="local-source">
-                        <label for="localSource">Source</label>
-                        <select id="localSource">
-                            <option value="era5">Reanalysis (Open-Meteo)</option>
-                            <option value="station">Weather station (NOAA)</option>
-                        </select>
-                    </div>
                     <form id="localSearchForm" role="search" aria-label="Find a location">
-                        <input id="localSearch" type="search" placeholder="City or coordinates" aria-label="City or latitude, longitude" maxlength="100" autocomplete="off" spellcheck="false">
+                        <input id="localSearch" type="search" placeholder="City, country or coordinates" aria-label="City, country or latitude, longitude" maxlength="100" autocomplete="off" spellcheck="false">
                         <button class="upload-label" type="submit">Search</button>
                     </form>
                     <ul id="localResults" aria-label="Matching locations"></ul>
                     <span id="localSelected"></span>
+                    <div class="local-source">
+                        <label for="localSource">Source</label>
+                        <select id="localSource">
+                            <option value="era5">Local estimate (ERA5-Land)</option>
+                            <option value="station">Weather station (NOAA)</option>
+                        </select>
+                    </div>
+                    <p id="localCountryDetails" hidden></p>
                     <div id="localStationFields" hidden>
                         <div class="local-radius">
                             <label for="localStationRadius">Search radius</label>
@@ -1157,6 +1160,7 @@
         import { LOCAL_TEMPERATURE_SOURCE, parseLocalTemperatureData, localTemperatureRange, localLocationKey } from './local-temperature-data.mjs';
         import { setupLocalTemperature } from './local-temperature-ui.mjs';
         import { STATION_SOURCE, parseStationTemperatureData } from './station-temperature-data.mjs';
+        import { COUNTRY_SOURCE, parseCountryTemperatureData } from './country-temperature-data.mjs';
         import { ENSO_DATA_URL, ENSO_TICKS, parseENSOData, ensoAnomalyToRadius } from './enso-data.mjs';
         import { SEA_LEVEL_SOURCE_URL, SEA_LEVEL_TICKS, fetchSeaLevelData, parseSeaLevelData,
             seaLevelMmToSpiralValue, spiralValueToSeaLevelMm } from './sea-level-data.mjs';
@@ -1256,7 +1260,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 parse: text => {
                     try {
                         const snapshot = JSON.parse(text);
-                        return snapshot.adjustment === 'QCF' ? parseStationTemperatureData(snapshot) : parseLocalTemperatureData(snapshot);
+                        return snapshot.source === 'CRU-CY' ? parseCountryTemperatureData(snapshot)
+                            : snapshot.adjustment === 'QCF' ? parseStationTemperatureData(snapshot) : parseLocalTemperatureData(snapshot);
                     } catch { return []; }
                 },
                 description: 'Monthly temperature anomalies relative to the local 1951-1980 average for each calendar month. ERA5-Land reanalysis estimates at approximately 11 km resolution, provided by Open-Meteo. Location search: GeoNames. Data: CC BY 4.0.'
@@ -2029,9 +2034,13 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
         function applyDatasetUI() {
             let dataset = getActiveDataset();
-            if (currentDatasetKey === 'local' && (localSnapshot?.station || (!localSnapshot && document.getElementById('localSource').value === 'station'))) {
+            const localMode = localControls?.mode ?? document.getElementById('localSource').value;
+            if (currentDatasetKey === 'local' && (localSnapshot?.station || (!localSnapshot && localMode === 'station'))) {
                 dataset = { ...dataset, metricLabel: 'Station Anomaly', sourceLabel: 'NOAA GHCN-Monthly v4', sourceHref: STATION_SOURCE,
                     description: 'Monthly weather station observations, adjusted by NOAA for discontinuities such as station moves and instrument changes. Anomalies are relative to this station\'s 1951-1980 average for each calendar month. Missing months remain gaps. Location search: Open-Meteo / GeoNames.' };
+            } else if (currentDatasetKey === 'local' && (localSnapshot?.country || (!localSnapshot && localMode === 'country'))) {
+                dataset = { ...dataset, metricLabel: 'Country Anomaly', sourceLabel: 'CRU-CY / University of East Anglia', sourceHref: COUNTRY_SOURCE,
+                    description: 'Area-weighted monthly country temperatures from CRU-CY, relative to the country\'s 1951-1980 average for each calendar month. Provider-defined land regions; some islands and overseas territories are separate. Updated annually. Where observations are sparse, CRU can substitute climatological values; a complete series does not imply complete observational coverage.' };
             }
             const metricLabel = document.getElementById('infoMetricLabel');
             const infoDescription = document.getElementById('infoDescription');
@@ -2045,7 +2054,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             if (metricLabel) metricLabel.innerText = dataset.metricLabel;
             if (infoDescription) infoDescription.innerText = dataset.description;
-            document.getElementById('infoLocation').textContent = currentDatasetKey === 'local' && localSnapshot ? localSnapshot.location.name.replaceAll('_', ' ') : '';
+            document.getElementById('infoLocation').textContent = currentDatasetKey === 'local' && localSnapshot
+                ? localSnapshot.location.name.replaceAll('_', ' ') + (localSnapshot.location.isCountry ? ' (representative point)' : '') : '';
             document.getElementById('localTemperatureControls').hidden = currentDatasetKey !== 'local';
             if (sourceLink) {
                 sourceLink.href = dataset.sourceHref;
@@ -2511,7 +2521,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 context.font = `500 ${Math.min(22 * pixelScale, rect.height * 0.09)}px ${FONT_FAMILY}`;
                 context.fillStyle = '#bbbbbb';
                 context.textAlign = 'left';
-                context.fillText(localSnapshot.location.name.replaceAll('_', ' '), rect.x, rect.y + rect.height * 0.08, rect.width);
+                context.fillText(localSnapshot.location.name.replaceAll('_', ' ') + (localSnapshot.location.isCountry ? ' (representative point)' : ''),
+                    rect.x, rect.y + rect.height * 0.08, rect.width);
             }
             context.font = `700 ${headlineSize}px ${FONT_FAMILY}`;
             while (headlineSize > 11 * pixelScale && context.measureText(date).width + context.measureText(value).width + headlineGap > rect.width) {
@@ -2564,7 +2575,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 context.font = `400 ${Math.min(16 * pixelScale, rect.height * 0.07)}px ${FONT_FAMILY}`;
                 context.fillStyle = '#aaaaaa';
                 context.textAlign = 'left';
-                const attribution = localSnapshot?.station ? 'NOAA GHCN-Monthly v4 (adjusted)' : 'ERA5-Land / Open-Meteo (CC BY 4.0)';
+                const attribution = localSnapshot?.country ? `CRU-CY ${localSnapshot.release} / UEA (country average)`
+                    : localSnapshot?.station ? 'NOAA GHCN-Monthly v4 (adjusted)' : 'ERA5-Land / Open-Meteo (CC BY 4.0)';
                 context.fillText(attribution + ' | Baseline 1951-1980', rect.x, rect.y + rect.height * 0.94, rect.width);
             }
             context.restore();
@@ -3096,7 +3108,8 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
                 },
                 onData: (snapshot, source) => {
                     if (currentDatasetKey !== 'local' || videoExport || videoPreview) return;
-                    const seriesKey = value => value?.station ? 'station:' + value.station.id : value && localLocationKey(value.location);
+                    const seriesKey = value => value?.country ? 'country:' + value.country.code
+                        : value?.station ? 'station:' + value.station.id : value && localLocationKey(value.location);
                     if (!localSnapshot || seriesKey(localSnapshot) !== seriesKey(snapshot)) {
                         datasetPlaybackState.local = { initialized: false, progress: 0, completed: false, wasAnimating: false };
                     }

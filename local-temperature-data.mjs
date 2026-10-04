@@ -2,6 +2,7 @@ export const LOCAL_TEMPERATURE_SOURCE = 'https://open-meteo.com/en/docs/historic
 const MODEL = 'era5_land';
 const DAY = 86400000;
 const FIRST_MONTH = 1950 * 12;
+const COUNTRY_FEATURES = new Set(['PCL', 'PCLD', 'PCLF', 'PCLI', 'PCLS', 'TERR']);
 const monthKey = ordinal => `${Math.floor(ordinal / 12)}-${String(ordinal % 12 + 1).padStart(2, '0')}`;
 const monthNumber = key => /^\d{4}-(0[1-9]|1[0-2])$/.test(key) ? Number(key.slice(0, 4)) * 12 + Number(key.slice(5)) - 1 : NaN;
 const dateString = time => new Date(time).toISOString().slice(0, 10);
@@ -19,7 +20,13 @@ export function normalizeLocation(value) {
         || typeof value.name !== 'string' || !value.name.trim() || value.name.length > 200
         || typeof value.timezone !== 'string') throw new Error('Invalid location.');
     if (value.timezone !== 'auto') new Intl.DateTimeFormat('en', { timeZone: value.timezone });
-    return { name: value.name.trim(), latitude: value.latitude, longitude: value.longitude, timezone: value.timezone };
+    const location = { name: value.name.trim(), latitude: value.latitude, longitude: value.longitude, timezone: value.timezone };
+    if (value.countryCode !== undefined) {
+        if (!/^[A-Z]{2}$/.test(value.countryCode)) throw new Error('Invalid country code.');
+        location.countryCode = value.countryCode;
+    }
+    if (value.isCountry === true) location.isCountry = true;
+    return location;
 }
 
 export function localLocationKey(location) {
@@ -47,6 +54,7 @@ export async function searchLocalPlaces(query, { signal, fetchImpl = fetch } = {
     url.search = new URLSearchParams({ name: text, count: '5', language: 'en', format: 'json' });
     const data = await requestJSON(url, signal, fetchImpl);
     return (data.results ?? []).map(place => normalizeLocation({ ...place,
+        countryCode: place.country_code, isCountry: COUNTRY_FEATURES.has(place.feature_code),
         name: [...new Set([place.name, place.admin1, place.country].filter(Boolean))].join(', ') }));
 }
 

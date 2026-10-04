@@ -48,6 +48,19 @@ test('place search encodes names, preserves distinct locations, and supports coo
         return response({ results: [{ ...location, name: 'Berlin', admin1: 'Berlin', country: 'Germany' }] });
     } });
     assert.equal(places[0].name, 'Berlin, Germany');
+    const [country] = await searchLocalPlaces('Germany', { fetchImpl: async () => response({ results: [
+        { ...location, name: 'Germany', country: 'Germany', country_code: 'DE', feature_code: 'PCLI' },
+    ] }) });
+    assert.equal(country.countryCode, 'DE');
+    assert.equal(country.isCountry, true);
+    assert.deepEqual(normalizeLocation(country), country, 'Country metadata survives saving and reloading');
+    for (const code of ['PCLD', 'PCLF', 'PCLS', 'TERR', 'ADM1', 'PCLIX']) {
+        const [place] = await searchLocalPlaces('A region', { fetchImpl: async () => response({ results: [
+            { ...location, country_code: 'DE', feature_code: code },
+        ] }) });
+        assert.equal(Boolean(place.isCountry), !['ADM1', 'PCLIX'].includes(code), code);
+    }
+    assert.throws(() => normalizeLocation({ ...location, countryCode: '../escape' }));
 });
 
 test('daily aggregation handles leap years and skips missing months without estimating them', () => {

@@ -1,0 +1,1935 @@
+{
+  "version": 1,
+  "source": "CRU-CY",
+  "release": "4.10",
+  "run": "2606161920",
+  "baseline": "1951-1980",
+  "countries": [
+    {
+      "code": "AF",
+      "name": "Afghanistan",
+      "region": "Afghanistan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c73bbae9de5f6742f4f42e380f804d96d8a6a37f4dc1cb9f43b7430ed15347ae"
+    },
+    {
+      "code": "AL",
+      "name": "Albania",
+      "region": "Albania",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1894ccf7b027f2c41ffa2c345810c5da845b32b93f51d63e3cc105d0ec05dfa8"
+    },
+    {
+      "code": "DZ",
+      "name": "Algeria",
+      "region": "Algeria",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "fb3f4a6921343eb913d534d7c3206a68684e09a00f8c2a8534fba51e9f60529b"
+    },
+    {
+      "code": "AD",
+      "name": "Andorra",
+      "region": "Andorra",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ef53d274ec78f8031bceb310af9efcff07afb56d0651300c4e698bed706bb80b"
+    },
+    {
+      "code": "AO",
+      "name": "Angola",
+      "region": "Angola",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "86430ed3917660f5cf0b8bab904a43d506aac37ac2394a44f96411361de59fa6"
+    },
+    {
+      "code": "AI",
+      "name": "Anguilla",
+      "region": "Anguilla",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "84ad6a0745229b812a5c7762553eda6a4c34eb0ce9466f3619b7900bb551df63"
+    },
+    {
+      "code": "AR",
+      "name": "Argentina",
+      "region": "Argentina",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "0e465eaed3cd2d9921f967d7ee2a87af8242114c4737ddae3c223803c2b327cb"
+    },
+    {
+      "code": "AM",
+      "name": "Armenia",
+      "region": "Armenia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2a819355a48aa9c010ea0f5a9986776a487f40f136f70a4122940570d8652d8b"
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "region": "Australia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3911e140890c2eaba6182857ed9614abb255ca9922d965047511ce4b49684397"
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "region": "Austria",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1ff4552bb1ecd475d16bd9c93b04cd797006e1cd8ce776fb7bd649c9c50fe2e5"
+    },
+    {
+      "code": "AZ",
+      "name": "Azerbaijan",
+      "region": "Azerbaijan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "41d1596dd85cdd6305239c8392e0596476a4b2ba7fbd1af3664aa548f0578a86"
+    },
+    {
+      "code": "BS",
+      "name": "Bahamas",
+      "region": "Bahamas",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b0be8ab6919ca265889f0fcac8698f21d03672d6a8af17e2e43a669c5ba40505"
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "region": "Bahrain",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "75ac72b90ea614eb8ba631de6ea8537f91a1cb846cb099037c23ee5c5f60eeb8"
+    },
+    {
+      "code": "BD",
+      "name": "Bangladesh",
+      "region": "Bangladesh",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9db7b49b504820a524a493704f5b7c06103e68c939a5718fb79fce1650a64304"
+    },
+    {
+      "code": "BB",
+      "name": "Barbados",
+      "region": "Barbados",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "173791226211d2e54702991e7c435e60aef8913341f7be5f68b2e3f031f14522"
+    },
+    {
+      "code": "BY",
+      "name": "Belarus",
+      "region": "Belarus",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "97dc96f9a74c342262d6a716ec8ca6977fe5a4a96d14707486c2d8a4ddf2f21b"
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "region": "Belgium",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1f8bf837127ac540b742a578f806edf4619ccc3c6ab5ae2a04525ef1368795c3"
+    },
+    {
+      "code": "BZ",
+      "name": "Belize",
+      "region": "Belize",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9380efa4aa8e6ee731e227af2a607b7e222b6e4921a6e354e66974b761f5691f"
+    },
+    {
+      "code": "BJ",
+      "name": "Benin",
+      "region": "Benin",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c2e0e1cd88e5ba5a18c75577c16674e1340916b53b6fec1574cdd5f713a09e97"
+    },
+    {
+      "code": "BM",
+      "name": "Bermuda",
+      "region": "Bermuda",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b6021441b2d1043f511d0dd7d7a0aa880e0a6f59f0c3c964a6b32501a5c542cf"
+    },
+    {
+      "code": "BT",
+      "name": "Bhutan",
+      "region": "Bhutan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "cf1ca7e660fa87efdd837058544ca15f5bb451334760997eb1cf02623ab0f2eb"
+    },
+    {
+      "code": "BO",
+      "name": "Bolivia",
+      "region": "Bolivia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a4ccc1e24d6637728013b0f1f9e6b5c9fe72db379917904a12d3517656d09c8f"
+    },
+    {
+      "code": "BA",
+      "name": "Bosnia & Herzegovina",
+      "region": "Bosnia-Herzegovinia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "481b9b588995f106d83d2436f75dca7f8e0d2fb2466c2901cfa29338b10eb74a"
+    },
+    {
+      "code": "BW",
+      "name": "Botswana",
+      "region": "Botswana",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "8fb5090b657f06bce4bd924992c34ce7c8266e449bdfdfcd7ad3f2481b060d04"
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "region": "Brazil",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6d60dfc0692f7050c5b8b0c8627f27c163c03c8b8964f8002712f71465e734a0"
+    },
+    {
+      "code": "IO",
+      "name": "British Indian Ocean Territory",
+      "region": "Chagos_Archipelago",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7d35af584fd8f75e1b0150d7056dadc2182173e6c5ef3fdf29d200836330496d"
+    },
+    {
+      "code": "BN",
+      "name": "Brunei",
+      "region": "Brunei",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "faed20faaa489a1d09ddb02cff138f9491a3403c96b27d2cf014194974be7799"
+    },
+    {
+      "code": "BG",
+      "name": "Bulgaria",
+      "region": "Bulgaria",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7fe902fcafad6519b0e533428facc1a18f3b50f0a2c3b0a515d20e2f5570df96"
+    },
+    {
+      "code": "BF",
+      "name": "Burkina Faso",
+      "region": "Burkina_Faso",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c5645b98b15b999e9bd20012544f1cf37496c52792af4fbedbbe007a7a0afe15"
+    },
+    {
+      "code": "BI",
+      "name": "Burundi",
+      "region": "Burundi",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "232bdb3e7e245aa9163547086c1a7e217ef97d5d7030bcb8bad50705747bfb3a"
+    },
+    {
+      "code": "KH",
+      "name": "Cambodia",
+      "region": "Cambodia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c7d29ba191570aa604cdc755bfe20db172622ba8d6af266040ac56cbdaac7231"
+    },
+    {
+      "code": "CM",
+      "name": "Cameroon",
+      "region": "Cameroon",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f9b848e22aea2d68caa16bc0f89b5dccc16a536ae2c8ba66b61aa8dad41975ef"
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "region": "Canada",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "d90626adb491ff8aa15f7b417e68ebdc1bc34efc65c7fb69e35149298e0e6ce5"
+    },
+    {
+      "code": "CV",
+      "name": "Cape Verde",
+      "region": "Cape_Verde_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "d8b3f4554bfd419f7579b39e835aad5f65e2a3844d039e499bff60b27e0d8c62"
+    },
+    {
+      "code": "CF",
+      "name": "Central African Republic",
+      "region": "Central_African_Rep",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9d340488ea8e6d391f83a15d4d1c5b4f29d03ed51da7cd865c8ccbf1d64e2deb"
+    },
+    {
+      "code": "TD",
+      "name": "Chad",
+      "region": "Chad",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f8d45d2bc20842a60f7cf3ea2e6567218736a7b59ec29c198a44e52e4066c054"
+    },
+    {
+      "code": "CL",
+      "name": "Chile",
+      "region": "Chile",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f021f394348ca1c11611395c6dc8d899e0971ab188c0261b88ecec5dd431a4c4"
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "region": "China",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "254c78a1ca7178ae3bf55b71fdd7c5c8ad31d684ad4d0b74f1dc33dbdee979d7"
+    },
+    {
+      "code": "CX",
+      "name": "Christmas Island",
+      "region": "Christmas_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3ec8b9d1a5736c27920b80af17d6086149056b610eef8f165f29d37feebd0a0a"
+    },
+    {
+      "code": "CC",
+      "name": "Cocos (Keeling) Islands",
+      "region": "Cocos_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "85d0e36db9519f54807c4a4dfabdee4de6f9cdcce296c2f1db7801f56515fad3"
+    },
+    {
+      "code": "CO",
+      "name": "Colombia",
+      "region": "Colombia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7d2d6ae75caff7c4c769321e28a50b4ce971798cade413340dba6fb64279ace5"
+    },
+    {
+      "code": "KM",
+      "name": "Comoros",
+      "region": "Comoros",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a0f54a871ba063dd46705a70c57b908a8d779a1217ec30f3ee75183fa6a38790"
+    },
+    {
+      "code": "CD",
+      "name": "Congo - Kinshasa",
+      "region": "DR_Congo",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "66d93d507fa582f9b2dd198e00128e2cedb36bdd01b6fd0b92717a65a4d01ee3"
+    },
+    {
+      "code": "CK",
+      "name": "Cook Islands",
+      "region": "Cook_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1672b1386c90d621687716533a550ce5e44a694e9fa2ae11ffc4d82b68a62894"
+    },
+    {
+      "code": "CR",
+      "name": "Costa Rica",
+      "region": "Costa_Rica",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "958be8dd364a714472cdea682e30a9f0396c665f97d5b97fd73fc430abb88c8a"
+    },
+    {
+      "code": "CI",
+      "name": "Côte d’Ivoire",
+      "region": "Ivory_Coast",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "60cdddbbfc31521e9a280e06013dbbcd610d77b85d16a803d97715408ffb049d"
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "region": "Croatia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "bd61bd345087381635d212067a11185e405a5434289f2e3bf60365595a78b207"
+    },
+    {
+      "code": "CU",
+      "name": "Cuba",
+      "region": "Cuba",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "12eb219394ab7cc56d3eca956ac8de02b4e490ddfd7607e4b998d57eec18a950"
+    },
+    {
+      "code": "CW",
+      "name": "Curaçao",
+      "region": "Curacao_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "35b96c66555675167abe9d7fa6894c3a89bf8b917f434f4026844ba0dbf44b5b"
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "region": "Cyprus",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "93bf7a8fc69a89e7f842e60e35c12f81fd6fd100205f966216e5123af50f86ae"
+    },
+    {
+      "code": "CZ",
+      "name": "Czechia",
+      "region": "Czech_Republic",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6198ef3c402cef4b28ddfb4c024daf214bdcb97fe907a1beab08af89dde11b44"
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "region": "Denmark",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6b45ae2fbffcdb32c49ec3c3fccd24dc756f79f279edde3c1940c2fdfe2de5b7"
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "region": "Djibouti",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c9e8be367f18b35de94c1a01bed4d917381f36cba06a91df3b5df7e7b3c09b95"
+    },
+    {
+      "code": "DM",
+      "name": "Dominica",
+      "region": "Dominica",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "bcf9baffb213812258c1eb42d2b50e53870150f8343b2d6559f8b33358d607b8"
+    },
+    {
+      "code": "DO",
+      "name": "Dominican Republic",
+      "region": "Dominican_Republic",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4ead61d003e511e55111d8d30f4c756bfd241c14ff9def92ee0cb9cf5e0b3835"
+    },
+    {
+      "code": "EC",
+      "name": "Ecuador",
+      "region": "Ecuador",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "8f9210971095c22cc189590c0779ad4a16d9eac7ba752c21206b2249446f49d4"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "region": "Egypt",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "534b56587bca74066565a1af7c9ad232e99ac617b7d98cf1e71d0c0e3785a76c"
+    },
+    {
+      "code": "SV",
+      "name": "El Salvador",
+      "region": "El_Salvador",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b4dc5b3eb5be2b0082fada665039f95863534db1d1c15f2d4ba31abbb0aa1cc4"
+    },
+    {
+      "code": "GQ",
+      "name": "Equatorial Guinea",
+      "region": "Equatorial_Guinea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1c04018ca37803c654503f07cdbcf9c1f3973093b18bd6d74d80ee5d05608e18"
+    },
+    {
+      "code": "ER",
+      "name": "Eritrea",
+      "region": "Eritrea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1ce90917545189c4bd6868c5113100b34235a9f194c118404957c4df66bb9a69"
+    },
+    {
+      "code": "EE",
+      "name": "Estonia",
+      "region": "Estonia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f7eee77dfad66c1c4d6842cf133a76478681ce3577f2d850b2efa45fb8af1200"
+    },
+    {
+      "code": "SZ",
+      "name": "Eswatini",
+      "region": "Swaziland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "26f9db04060422ba6afcc59bb2b5ff2504fab5845a55d7b19ad2e2d2eec9de0f"
+    },
+    {
+      "code": "ET",
+      "name": "Ethiopia",
+      "region": "Ethiopia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "18612bc527e7869da9180ef03b2b83cbe799560f41bcc7e9b3ac36e95d75bc5a"
+    },
+    {
+      "code": "FK",
+      "name": "Falkland Islands",
+      "region": "Falkland_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c44a89f6a8d804443d3ae24644159935336008fcf4779d6c23b1f95cfa7a3b40"
+    },
+    {
+      "code": "FO",
+      "name": "Faroe Islands",
+      "region": "Faeroes",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f2fff2223e90176af5960b08d0c68df27aae168f7ea61df4f9e29c03742f517a"
+    },
+    {
+      "code": "FJ",
+      "name": "Fiji",
+      "region": "Fiji",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a7f00f0e8acd6a6d2a56bee64c14379a1827966e2f75d15cc193e0c1a38979ed"
+    },
+    {
+      "code": "FI",
+      "name": "Finland",
+      "region": "Finland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "41492e092563fde0c9c269fc5eb03e49464e40bfb725f97b45cfd529b43f90b6"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "region": "France",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "122a973cb7f244ba7028e9a7a05993d25295ea82e301b677e6de175aae137324"
+    },
+    {
+      "code": "GF",
+      "name": "French Guiana",
+      "region": "French_Guiana",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ff6a59582e409e676516bc468085f24be165df6e8b9f347383bfefdcdc6d1d7b"
+    },
+    {
+      "code": "GA",
+      "name": "Gabon",
+      "region": "Gabon",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2506ab75ffdd602471b8b2037ac132bba93a6f914081f5ca1a749115911f2539"
+    },
+    {
+      "code": "GM",
+      "name": "Gambia",
+      "region": "Gambia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "77e44094ecb55e9ac92a6013a7bc5e7e335725bb2daaa45bd9b3a11828f76254"
+    },
+    {
+      "code": "GE",
+      "name": "Georgia",
+      "region": "Georgia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6ad280584f40f498607a5a6f67eaadc115d53b6780f2f9ecd4de7e0b098ca4a5"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "region": "Germany",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4b0e8b138d65ec1a35b1a01742917b319c9ecbc1fbe536317d291a2e0412f6f5"
+    },
+    {
+      "code": "GH",
+      "name": "Ghana",
+      "region": "Ghana",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7a674da4f7473195fdf308040286637e64c1466fe6c4fd991b14ae34bbaad890"
+    },
+    {
+      "code": "GI",
+      "name": "Gibraltar",
+      "region": "Gibraltar",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4c56bc5f84167f6ea6c090b0c9409588ac3f37c54b30c76e5c3ee8d92ea4151b"
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "region": "Greece",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "8cf80b8a48db6c1a64058c54adbec1a21791fef1cef52a012ae7985b3814331d"
+    },
+    {
+      "code": "GL",
+      "name": "Greenland",
+      "region": "Greenland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "0f5a05e619799fd4ade243b9d427a55f95b813f9cd955e987da95b251d30b81d"
+    },
+    {
+      "code": "GD",
+      "name": "Grenada",
+      "region": "Grenada",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3bb22bfa22f0d921c154912743f7e403b1f75d282ade3061b3abfe6d72353494"
+    },
+    {
+      "code": "GP",
+      "name": "Guadeloupe",
+      "region": "Guadeloupe",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "833d4e95ccf0a8c615b2c54c02913f8fa5aa5b9f25f6eafe49180ab8472cc15e"
+    },
+    {
+      "code": "GT",
+      "name": "Guatemala",
+      "region": "Guatemala",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "49092856817e23661214143d1f85467b635f8e373e471a6324a6bf85faf6d6ca"
+    },
+    {
+      "code": "GN",
+      "name": "Guinea",
+      "region": "Guinea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "22c4ae5b39f2b6b48bebaf0facc1af0e081eeb68070f7c7e4c89dbc7351be489"
+    },
+    {
+      "code": "GW",
+      "name": "Guinea-Bissau",
+      "region": "Guinea-Bissau",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "63e49c5d1ed7b8879482c8d5d9bf1e5600cbe5c90cc8feb74598faf796542f63"
+    },
+    {
+      "code": "GY",
+      "name": "Guyana",
+      "region": "Guyana",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2063a17ca6a707859e2755b3a98d9a2466b10cb378a539c5f9ad0b72a508c4da"
+    },
+    {
+      "code": "HT",
+      "name": "Haiti",
+      "region": "Haiti",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "520a35f7437a59ff3249397e63c486bb254034895e2b1d4057b8f1d12ab86786"
+    },
+    {
+      "code": "HN",
+      "name": "Honduras",
+      "region": "Honduras",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "989d227d20d834700e4fdb9ced7c2a6b0fb28be8913290e1a9d47954be0543c8"
+    },
+    {
+      "code": "HK",
+      "name": "Hong Kong SAR China",
+      "region": "Hong_Kong",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ce44605f160e78ab6ef12956fb5e1bfe9fc2c935f09d5b363cbb117126c4d98a"
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "region": "Hungary",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "aa3c79cc29d648b791f066e858e89a006bbf08867f2890b3810581124c421722"
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "region": "Iceland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e6991b894484bad807eb472191a98e73898960c46f881c6b9e9cde394ded4e87"
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "region": "India",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f613dc6559767182666c6c98f8fcb65092cf5adf0fe4f2644b682c2f8e0c3aa9"
+    },
+    {
+      "code": "ID",
+      "name": "Indonesia",
+      "region": "Indonesia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "15d23744dccaf8193f2f016ac75394e711a2682d25fdd697b13c1eda0a892b81"
+    },
+    {
+      "code": "IR",
+      "name": "Iran",
+      "region": "Iran",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "cb730035068c548e850b82b49f1b451a5efa0f655402361b71f2f9fdc678013c"
+    },
+    {
+      "code": "IQ",
+      "name": "Iraq",
+      "region": "Iraq",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5513922560951774274fd82b3f22f46c6f2dd7bc15cf1170034d9c6136861bcc"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "region": "Ireland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "cbbee2a5e3eb573ff1c8bfdf20cc0772ea811350f19cfb7c4ec29526df3baad7"
+    },
+    {
+      "code": "IL",
+      "name": "Israel",
+      "region": "Israel",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "eab37ae8dd76bd84ffb95d1eee53da49205d52607c84321ddcab91bb191ac885"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "region": "Italy",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2417303ca32bd4e643a109baaae965473355942727c01f4c71cab56065214815"
+    },
+    {
+      "code": "JM",
+      "name": "Jamaica",
+      "region": "Jamaica",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a678ee2af92d848087ec467810090a4f0f513b66407dab814950d5494d0661e3"
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "region": "Japan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "575bce426f1553a31ac69ef16666c4322432ef0495a67cbc7d446de415c0da1d"
+    },
+    {
+      "code": "JO",
+      "name": "Jordan",
+      "region": "Jordan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7ff6448cece9ae6a1df534043eaae5faf0fca0ba91cb20e762bea853e9b675e2"
+    },
+    {
+      "code": "KZ",
+      "name": "Kazakhstan",
+      "region": "Kazakhstan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "d5edec085f633fae35813eeaea65bf6ddc92769833d0716d1543b696435b0cea"
+    },
+    {
+      "code": "KE",
+      "name": "Kenya",
+      "region": "Kenya",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "84dcdc71800b1d755cdd344110bb6fc488a354b84b670c78cb7910a3466a5bc9"
+    },
+    {
+      "code": "KI",
+      "name": "Kiribati",
+      "region": "Kiribati",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2402aca7cb42b4add3e4101a81751a260150afc9e52540ec3d956ca41c4736e2"
+    },
+    {
+      "code": "XK",
+      "name": "Kosovo",
+      "region": "Kosovo",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9e971b1f2e1f034d391e88146be857149e79a12f6f0d5a6ed1fc847f695930cf"
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "region": "Kuwait",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "dc8d9a9b54b0996f25c4652477e00f413a2919b6d8da928d55c1b596c205ee13"
+    },
+    {
+      "code": "KG",
+      "name": "Kyrgyzstan",
+      "region": "Kyrgyzstan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "deb140e47747bb4e55e2f1a147e2f59a1756a9b8c7b0d7070c9c3729571bdf85"
+    },
+    {
+      "code": "LA",
+      "name": "Laos",
+      "region": "Laos",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "fff3e0ecaf9be13c9a7a9d9f534a68c9410abc0da566e77bc3e6bca0e355cace"
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "region": "Latvia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "75a1e50a776c47a8843c228b7242a6bfce414b8405ff86e5640ee3941c075e25"
+    },
+    {
+      "code": "LB",
+      "name": "Lebanon",
+      "region": "Lebanon",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "be83161c221b04b3b9c85785e2f7762cb9a7ea4db844f7e4e575fa1ede4e9336"
+    },
+    {
+      "code": "LS",
+      "name": "Lesotho",
+      "region": "Lesotho",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "27a22a5f08250ee920bdd06efdc0445430a0bc1a0d4411050cee4fe41f1c370d"
+    },
+    {
+      "code": "LR",
+      "name": "Liberia",
+      "region": "Liberia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f339cfc38fcbad01d193229623805c9241466f6c18a8a782493cd3f82ba0bdc3"
+    },
+    {
+      "code": "LY",
+      "name": "Libya",
+      "region": "Libya",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2bce70c9fc85e5e4d0a0ad9da44d70ae2f7ed59bd88d42f362d4471d63a40915"
+    },
+    {
+      "code": "LI",
+      "name": "Liechtenstein",
+      "region": "Liechtenstein",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "afe4a58ce8948d83a4be7652e0bcf2b48d1bb8bd2d879baefa185f54b2e0c480"
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "region": "Lithuania",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3148ad953d549c93ff46766556cfee6ec9870941ebdba83dfd54a4e65952dfd1"
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "region": "Luxembourg",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c1e3ae6776b1b55a5208dc7ea70b9f7d2f6b351ed65406f2911ca435981b1a3e"
+    },
+    {
+      "code": "MO",
+      "name": "Macao SAR China",
+      "region": "Macau",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c6843d7a19dc9baa24a9190c446ad15e733702fede332033653abcb9cf49d5bf"
+    },
+    {
+      "code": "MG",
+      "name": "Madagascar",
+      "region": "Madagascar",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "d5d429f3a3f55eac6b13309935098e21ebbd6fa6297519e24a4c1351db2a076e"
+    },
+    {
+      "code": "MW",
+      "name": "Malawi",
+      "region": "Malawi",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "595481b48a1a00b7c6a0f143a4f789e5b34a4109e5f76466250ace55eff03425"
+    },
+    {
+      "code": "MY",
+      "name": "Malaysia",
+      "region": "Malaysia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "fd7c37cc50a192880268c218611c8d65ece1b467ea9f6329e2a9a61c3f61f636"
+    },
+    {
+      "code": "MV",
+      "name": "Maldives",
+      "region": "Maldives",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4ec67d1ad8050ae92b6f8903743b527b33b819128118f25927d12bbafa043511"
+    },
+    {
+      "code": "ML",
+      "name": "Mali",
+      "region": "Mali",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e3ffb08034f65ea6263f099c36e33c6739a4132de4f149ea261f57a11216fd7e"
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "region": "Malta",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "503e361beb6676cfd82808d5abc1c4051b32b69e695829829d7c99df1be3f716"
+    },
+    {
+      "code": "MH",
+      "name": "Marshall Islands",
+      "region": "Marshall_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "51a8d113e947aacfce231134b0aed828e1b198cff1e1e6371bc6a52b89de0650"
+    },
+    {
+      "code": "MQ",
+      "name": "Martinique",
+      "region": "Martinique",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "51e61b899cc0fb426277e039fdd7dc72f18499ea8ab18b260f5073b3091bed91"
+    },
+    {
+      "code": "MR",
+      "name": "Mauritania",
+      "region": "Mauritania",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5c4c89cc03fc462c80acd07e3c196c5055948551332ecdf13ae91d1426561acc"
+    },
+    {
+      "code": "MU",
+      "name": "Mauritius",
+      "region": "Mauritius",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "418765a1cb52452de513b10016e1ece7828bf26aceed6b3582c2c63dadc3377e"
+    },
+    {
+      "code": "MX",
+      "name": "Mexico",
+      "region": "Mexico",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a3e89def9f2c532e2a7fd8d3bdab626ec2c3fa6368c6f80a5b9bdd45a5e245c5"
+    },
+    {
+      "code": "MD",
+      "name": "Moldova",
+      "region": "Moldova",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "14fd0facbb16d65ba4e0a5ca99314d51eaf9e4656db0eb4e176f518fc3dedf5a"
+    },
+    {
+      "code": "MC",
+      "name": "Monaco",
+      "region": "Monaco",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9bd7bc99c846f31cb22122130884c3046a03d6610ef6441354b2d50ce1278f3d"
+    },
+    {
+      "code": "MN",
+      "name": "Mongolia",
+      "region": "Mongolia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ddab89de92906ef92f25ac693b5f929fe90f8ce3493fc318aef35ae778ac0077"
+    },
+    {
+      "code": "ME",
+      "name": "Montenegro",
+      "region": "Montenegro",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a7db0b2844bde818b89901604584fad987887cacc31af8c25e31312a75748e7a"
+    },
+    {
+      "code": "MS",
+      "name": "Montserrat",
+      "region": "Montserrat",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e7e89baa4ed9074d062019d1f33ab85580ae52330a89923466bfb0717083af16"
+    },
+    {
+      "code": "MA",
+      "name": "Morocco",
+      "region": "Morocco",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ef50854600114fea4fedf933c56dbb2bd0a25b48987803be37ae01d900a1c39d"
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "region": "Mozambique",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "17b27b7671f7c4f37270b0968119bd4b5509101ef1e4cb466475dee19128d9e8"
+    },
+    {
+      "code": "NA",
+      "name": "Namibia",
+      "region": "Namibia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a7d4af5ef8150f50b0cdff154b7dfc9f2c10691f5715554cf89e25f7e728c71b"
+    },
+    {
+      "code": "NR",
+      "name": "Nauru",
+      "region": "Nauru",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ad1b8b5af529ddfe6a401d2c137dbd5ea325511f590093af9d9768204ea8cef7"
+    },
+    {
+      "code": "NP",
+      "name": "Nepal",
+      "region": "Nepal",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "60528a702e28501b592ede1c98fddf6a145b0ba27445f0c20fd34591c00ccfa1"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "region": "Netherlands",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "91e43fdb0cea56830fc4abd2f840c61e6ef60e2a44fc14434b06df735ab34705"
+    },
+    {
+      "code": "NC",
+      "name": "New Caledonia",
+      "region": "New_Caledonia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "8c19c262b41c7a9e3cfb14f9bcfbeaa4b1e77988907647adfdd17937d29d28a6"
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "region": "New_Zealand",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6bfdae7eb12b0085c09c2841e31896954fdd7dfe9ced62d23e3265445e280671"
+    },
+    {
+      "code": "NI",
+      "name": "Nicaragua",
+      "region": "Nicaragua",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "abd3dbe1393304fcac2632f51d9b7bf95dfc04bdd6b4a44ae18dc5135be9ce0e"
+    },
+    {
+      "code": "NE",
+      "name": "Niger",
+      "region": "Niger",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3109c3caa5a149141238affc019917d7b02b1d44a43f99312e5d7feaaf2d040a"
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "region": "Nigeria",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a9b44f7f73c7f68038fd5429a31e26ac3cc9d36e8c6c1229991d5b8b9551da64"
+    },
+    {
+      "code": "NU",
+      "name": "Niue",
+      "region": "Niue",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "666104b3fea59db2852c83129a5171bb0853746e44bdc05ce3dcdf139b644d9f"
+    },
+    {
+      "code": "NF",
+      "name": "Norfolk Island",
+      "region": "Norfolk_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "73c763c2553ea44ba13860404ad58c57e6c7b76e7cc32bbbec21ae6452f5bd1f"
+    },
+    {
+      "code": "KP",
+      "name": "North Korea",
+      "region": "North_Korea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "716943583a048e292ac352241a8b4b2d036eb09dce50e4dd7539b1684729270f"
+    },
+    {
+      "code": "MK",
+      "name": "North Macedonia",
+      "region": "Macedonia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "95f161af9c7574f2015d41a7120f8426fe4b65fa52ab4ca824369e697633ed96"
+    },
+    {
+      "code": "MP",
+      "name": "Northern Mariana Islands",
+      "region": "Northern_Marianas",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "61e0d539299751dd4253b8a19c88be5423c73e1d5f7ef9800dd4faa60856886f"
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "region": "Norway",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4ab82471ee54ec8f0fd248f1087ff44125d05aba01b1dc6e4aaccab1f3e71478"
+    },
+    {
+      "code": "OM",
+      "name": "Oman",
+      "region": "Oman",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "466e9ff227dde32102998d30f545e6d19017d64f854b1952322336f91f4366ce"
+    },
+    {
+      "code": "PK",
+      "name": "Pakistan",
+      "region": "Pakistan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "d7321e68aa0d25a2aea227249348e5b380e08f266914f51a55b0f790df96e9a7"
+    },
+    {
+      "code": "PW",
+      "name": "Palau",
+      "region": "Palau_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "483f10c9a0cd756a83cf1f60ff02f71cbe99b7ef7eaefc409efe5f216ae01de3"
+    },
+    {
+      "code": "PA",
+      "name": "Panama",
+      "region": "Panama",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b96d7c3079c653040654035ca534b4d2af5c879f300503a2d4fb6b53e83cd420"
+    },
+    {
+      "code": "PG",
+      "name": "Papua New Guinea",
+      "region": "Papua_New_Guinea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "374ab6aaa8eeda0de536de979c180055289d11c3b320526d86320e9382629dd0"
+    },
+    {
+      "code": "PY",
+      "name": "Paraguay",
+      "region": "Paraguay",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2c640bc75260dd4bab675d74de6c255954d7767d2876deeee46e76cc9a2d4f19"
+    },
+    {
+      "code": "PE",
+      "name": "Peru",
+      "region": "Peru",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "59000084f5bec7cb49f14d5f761731beb4f2ddd29e71fb70807a61cc0f8d0af4"
+    },
+    {
+      "code": "PH",
+      "name": "Philippines",
+      "region": "Philippines",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ca16a79322e94b00d42e5199f95652046ecc89168db4db569652f7f9ee55efb4"
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "region": "Poland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e79fc901762b417f12cb03b0f118b45543219f71b324c85e7e53f2c5eb3c90e7"
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "region": "Portugal",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "aa293053abc13f17b83936a390274974774ad9c51c7d4d4068a21146af7e4ce8"
+    },
+    {
+      "code": "PR",
+      "name": "Puerto Rico",
+      "region": "Puerto_Rica",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b5963e42a320f8c62aa0432ef07ec4045e972553b9aa64f8ca2c8b9edbe601ae"
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "region": "Qatar",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b5b6328bba488b8d74f892382345131427166dfa1c07db59e1f6271f033a5efc"
+    },
+    {
+      "code": "RE",
+      "name": "Réunion",
+      "region": "Reunion",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "8519bfe65990ab1b97ff4f281e35e3f062e2110b49629b390c61cd0fe3319d9b"
+    },
+    {
+      "code": "RO",
+      "name": "Romania",
+      "region": "Romania",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5d2ce52b977094661d4be74414c06b982f94577a07c82ad581bf1a986d34b2f1"
+    },
+    {
+      "code": "RU",
+      "name": "Russia",
+      "region": "Russia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "05622acf86efcabf5ffb638469773714db1107bf8738d9d8802723610f0c6063"
+    },
+    {
+      "code": "RW",
+      "name": "Rwanda",
+      "region": "Rwanda",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a1b5e1b543da3db1af04ffd7f286bbd05eb4b5bcee335398a4268703afa2f653"
+    },
+    {
+      "code": "WS",
+      "name": "Samoa",
+      "region": "Samoa",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f71364f0a0e398e8f5a0fad12f1ea8030bd0855cc721156ee4015efca39fe373"
+    },
+    {
+      "code": "SM",
+      "name": "San Marino",
+      "region": "San_Marino",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9994e14e2d1d09852ba4655953108205c240b942cb3c4aad2ada9296e600111d"
+    },
+    {
+      "code": "ST",
+      "name": "São Tomé & Príncipe",
+      "region": "Sao_Tome_+_Principe",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1aca7699b6705c557ac326614345c6a9e94a794a76d19e5ad64d1a02c76dea73"
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "region": "Saudi_Arabia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "0e5e2e5ad8a1c6d941acb010c90481dbf1a24e9d581ab38e16842f8c4b6e7778"
+    },
+    {
+      "code": "SN",
+      "name": "Senegal",
+      "region": "Senegal",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f7d3efaf4032d11a3c91f431e04a4f4f2072c1175744f5030e87e2870b418d9a"
+    },
+    {
+      "code": "RS",
+      "name": "Serbia",
+      "region": "Serbia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "4765b53da7128c7b0e179fa28ccfb04112833d841d59395d9b322cecc49e2a23"
+    },
+    {
+      "code": "SC",
+      "name": "Seychelles",
+      "region": "Seychelles",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7d821e1c51bd833a12fb7bb872f43c9fb04609f3478f0ee73dfef4ecccc70c73"
+    },
+    {
+      "code": "SL",
+      "name": "Sierra Leone",
+      "region": "Sierra_Leone",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "9fc4b7586605fe7ea21c718a5b80dbd0dc2dd3f89b3c31c2815f9d26fcbfd5e9"
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "region": "Singapore",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "301f544ac17299e0f4bfab397ef550f46202aea1ddbd8897603ebf524a4f27b0"
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "region": "Slovakia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "53c3bc3d6dd2f5264c220baa601d2543c946118d873b1b68cc8d47d7524b3645"
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "region": "Slovenia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "767865120a389261c3db4aa1d2280e23555f522695f972305a0ec36013750008"
+    },
+    {
+      "code": "SB",
+      "name": "Solomon Islands",
+      "region": "Solomon_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "90a15ae3ea9ecdd48ebd90ef957b9d09d325f3cf90deb053e4081d2e51580452"
+    },
+    {
+      "code": "SO",
+      "name": "Somalia",
+      "region": "Somalia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e9641e8b3f415a6eac04f9b85f38f78fe7416b3ccb100a51cdb0ae9834bc1da0"
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "region": "South_Africa",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a2425b00000693b957545974900c70a7eaeacfcfa697fb51b04988a2ac57dc7f"
+    },
+    {
+      "code": "KR",
+      "name": "South Korea",
+      "region": "South_Korea",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5c03f0fa9fee032a9df191d03b9e6228b88456f9ba08e1eda1c73f7fb23606cd"
+    },
+    {
+      "code": "SS",
+      "name": "South Sudan",
+      "region": "South_Sudan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "dad1fd6e1362b24ccbc20043e7973a0c959ecda013a050618f08d8e1eb02054a"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "region": "Spain",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "03fed4a3f5dfe87e80ab9fc2a55407b40e129cc5aa83b908baccfd07913a4e55"
+    },
+    {
+      "code": "LK",
+      "name": "Sri Lanka",
+      "region": "Sri_Lanka",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c2b1d094ad98484ba4e540d43eb8bef7e784c1610f7cf29213df4bdfa989d28f"
+    },
+    {
+      "code": "KN",
+      "name": "St. Kitts & Nevis",
+      "region": "St_Kitts_and_Nevis",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "881fb8df258eca29c04199c0c0054340f8cd74f2249b9e69b5580193cc3db4ff"
+    },
+    {
+      "code": "LC",
+      "name": "St. Lucia",
+      "region": "St_Lucia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "28e668ee15309d6b3aa246d80ccfd962f40e75a7150ebb1aa9c29f10c36ed812"
+    },
+    {
+      "code": "VC",
+      "name": "St. Vincent & Grenadines",
+      "region": "St_Vincent",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "2a421ec382e0a6d846ff4560e9f2c5625f9b8b7f4ab89a0b7369ed74121e9272"
+    },
+    {
+      "code": "SD",
+      "name": "Sudan",
+      "region": "Sudan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ac715b914ad4bf64e509b647bc21f70f13a1da347b997e344e75aeebbb2ad030"
+    },
+    {
+      "code": "SR",
+      "name": "Suriname",
+      "region": "Suriname",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5465121c93d3e96545f54606bd0204b15475d8e1fe789ec94babedbec9abf61a"
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "region": "Sweden",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1177fa6588e9fd6e86c465ac6d6bf8bdd2521d02f98f5b0198ca7c202c543aad"
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "region": "Switzerland",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "93a2a305c7a57ba770c1004d888449b8d0f7fc7bd8dc2911b6994a18eeccb0ba"
+    },
+    {
+      "code": "SY",
+      "name": "Syria",
+      "region": "Syria",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "5057ba1a0a5174b89dfed701d9ab7aa354c017a58539a4c0c76a006e0c9995be"
+    },
+    {
+      "code": "TJ",
+      "name": "Tajikistan",
+      "region": "Tajikistan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "cb2a9663dfc883fad21a896b9126e32f8d5ed259e1b5513b1fe4a3f5ace9423f"
+    },
+    {
+      "code": "TZ",
+      "name": "Tanzania",
+      "region": "Tanzania",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "1c57555c270aefe07faa6f39d9b64a66cb2807b61e2b380c0c273ba74629f741"
+    },
+    {
+      "code": "TH",
+      "name": "Thailand",
+      "region": "Thailand",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7cade461ea7c0552d962108c3f527143755cb21b2f4f14509ac512387c3740b8"
+    },
+    {
+      "code": "TL",
+      "name": "Timor-Leste",
+      "region": "East_Timor",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c06bbc7a1dfb715d31ed3d622f715d2af51b97a0129e69440501a059d385d9c0"
+    },
+    {
+      "code": "TG",
+      "name": "Togo",
+      "region": "Togo",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b1caf5d907f0a66b5f53f1e3acf4e1c13737136c4ee28c6143fda5715597e5d5"
+    },
+    {
+      "code": "TK",
+      "name": "Tokelau",
+      "region": "Tokelau_Isl",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "41d406c82afbf9b6b7504dd9193dadc29bff74a4ddcb7a769a3fe7c4e62b0942"
+    },
+    {
+      "code": "TO",
+      "name": "Tonga",
+      "region": "Tonga",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "6afe888392ed1bcc37cae82b1bd6c5e4242a640efad3933b696a2a8259e98488"
+    },
+    {
+      "code": "TN",
+      "name": "Tunisia",
+      "region": "Tunisia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3018e66ef7bc087ca2375f4c22bf43f26038a2cdb1122df46086e17222f87ab6"
+    },
+    {
+      "code": "TR",
+      "name": "Türkiye",
+      "region": "Turkey",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b53aced641efe8d08a51d38072772091e08cb684fe675eab9c081de6c1a7624b"
+    },
+    {
+      "code": "TM",
+      "name": "Turkmenistan",
+      "region": "Turkmenistan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "ba884a6bec3c3937b9d63df659812f561e76640efde9239254fc34ade231de3e"
+    },
+    {
+      "code": "TV",
+      "name": "Tuvalu",
+      "region": "Tuvalu",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3dd1175b1b0d297e3007c807f59fa92c20b967588da3f0f559c4f603301b0f86"
+    },
+    {
+      "code": "UG",
+      "name": "Uganda",
+      "region": "Uganda",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "52a8dea08122e11a94e55da0aa5bc928922ca43cf4b632e7164363b43c0cf752"
+    },
+    {
+      "code": "UA",
+      "name": "Ukraine",
+      "region": "Ukraine",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "eeb9598ddd9b193b6010956101b71ac3bb03c218a41648eb20ce0d5d6d67cdfd"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "region": "United_Arab_Emirates",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a179dde685635c90aedc714605c9b0553abdee140314f8b7eff136f5ad80a551"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "region": "United_Kingdom",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "e1399bb4af03ed10339cde3c204f8e569673ff8e97046991f7867ac1aab6853e"
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "region": "USA",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "338db2818aaa051d4b76d6d3d85f05928c4ea99670d2a7d263ae04c4ced01fc9"
+    },
+    {
+      "code": "UY",
+      "name": "Uruguay",
+      "region": "Uruguay",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "f439f52b4dcaedf556a4016e70d0a466442543c662716a508eb87bdfd5a91261"
+    },
+    {
+      "code": "UZ",
+      "name": "Uzbekistan",
+      "region": "Uzbekistan",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a1eb82c038f26ae786149f5e4453ee7dcf55989b49758bec5a9905e7897f3a8a"
+    },
+    {
+      "code": "VU",
+      "name": "Vanuatu",
+      "region": "Vanatu",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "b72f6577c6d79b48af4c67a9e1ab1ee5c455b6cf0c323c15f8bff2d0822fe949"
+    },
+    {
+      "code": "VE",
+      "name": "Venezuela",
+      "region": "Venezuela",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "a86a379268cc14918566f755f40492acc4a93b616e7b2bc0577854451cf52957"
+    },
+    {
+      "code": "VN",
+      "name": "Vietnam",
+      "region": "Vietnam",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "72dea8604891326db5dbbd08d72b88f06b0c0b7d78d5990437903337038dcb1e"
+    },
+    {
+      "code": "EH",
+      "name": "Western Sahara",
+      "region": "Western_Sahara",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "c7bb9f4214c2f72493067c45206519ed28e922b635ee1c1fd9a8bbe23bad2aa7"
+    },
+    {
+      "code": "YE",
+      "name": "Yemen",
+      "region": "Yemen",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "3b0a54e98a9a03eff40bd85f2cbe469ae6fa52503795b9cf9e2226c320cd8958"
+    },
+    {
+      "code": "ZM",
+      "name": "Zambia",
+      "region": "Zambia",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "83c69313460b1ef96d102add2d81f93c4d015be7d419c01d0d4547485456b865"
+    },
+    {
+      "code": "ZW",
+      "name": "Zimbabwe",
+      "region": "Zimbabwe",
+      "first": "1901-01",
+      "last": "2025-12",
+      "months": 1500,
+      "hash": "7a2a5f096fab54a11b4efad10241a01b621b63986d89514268821fc24ea88d5c"
+    }
+  ]
+}

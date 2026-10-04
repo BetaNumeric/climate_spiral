@@ -2,6 +2,8 @@ import { createLocalTemperatureCache, fetchLocalTemperature, localLocationKey, n
     parseLocalTemperatureData, readLocalSnapshot, searchLocalPlaces } from './local-temperature-data.mjs';
 import { fetchStationCatalog, fetchStationData, nearbyStations, readStationCatalog, readStationSnapshot,
     stationCoverage } from './station-temperature-data.mjs';
+import { combineCountryPlaces, fetchCountryCatalog, fetchCountryData, findExactCountry,
+    readCountryCatalog, readCountrySnapshot, searchCountries } from './country-temperature-data.mjs';
 
 export function setupLocalTemperature({ isActive, onData, onClear }) {
     const cache = createLocalTemperatureCache();
@@ -12,19 +14,37 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
     const action = document.getElementById('localAction');
     const selected = document.getElementById('localSelected');
     const source = document.getElementById('localSource');
+    const sourceRow = source.closest('.local-source');
     const stationFields = document.getElementById('localStationFields');
     const stationSelect = document.getElementById('localStationSelect');
     const stationLabel = document.getElementById('localStationLabel');
     const radius = document.getElementById('localStationRadius');
     const stationDetails = document.getElementById('localStationDetails');
+    const countryDetails = document.getElementById('localCountryDetails');
     let generation = 0, controller = null, searchController = null, location = null;
+    let countryCode = null;
+    let mode = source.value;
     let sourceRestored = false;
     const choiceKey = place => `station-choice:${place.latitude.toFixed(4)}:${place.longitude.toFixed(4)}`;
     const isCurrent = token => token === generation && isActive();
 
     function updateSourceControls() {
-        stationFields.hidden = source.value !== 'station';
+        sourceRow.hidden = mode === 'country';
+        stationFields.hidden = mode !== 'station';
+        countryDetails.hidden = mode !== 'country' || !countryDetails.textContent;
     }
+    function setMode(value) {
+        mode = value;
+        sourceRestored = true;
+        if (value !== 'country') {
+            source.value = value;
+            void cache.set('local-point-source', value);
+        }
+        updateSourceControls();
+        void cache.set('local-source', value);
+    }
+    const placeLabel = place => place.name + (place.isCountry ? ' (representative point)' : '');
+    const prompt = 'Choose a location.';
 
     function message(text, retry = false) {
         status.textContent = text;
@@ -39,10 +59,94 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         searchController?.abort();
         searchController = null;
         results.replaceChildren();
-        if (pending) message(location ? 'Download paused.' : 'Choose a location.', Boolean(location));
+        if (pending) message('Download paused.', mode === 'country' ? Boolean(countryCode) : Boolean(location));
+    }
+
+    async function countryCatalog(force, token, signal) {
+        let saved = await cache.get('country-catalog');
+        if (!isCurrent(token)) return null;
+        try {
+            if (saved) { readCountryCatalog(saved.data); if (!Number.isFinite(saved.checkedAt)) saved = null; }
+        } catch { saved = null; }
+        let catalog = saved?.data, offline = false;
+        if (force || !catalog || Date.now() - saved.checkedAt >= 86400000) {
+            try {
+                catalog = await fetchCountryCatalog({ signal });
+                if (!isCurrent(token)) return null;
+                await cache.set('country-catalog', { data: catalog, checkedAt: Date.now() });
+            } catch (error) {
+                if (signal.aborted || !catalog) throw error;
+                offline = true;
+            }
+        }
+        return { catalog, offline };
+    }
+
+    async function loadCountry(code, force = false) {
+        cancel();
+        const changed = mode !== 'country' || countryCode !== code;
+        setMode('country');
+        if (changed) {
+            selected.textContent = '';
+            countryDetails.textContent = '';
+            onClear();
+        }
+        countryCode = code;
+        const token = generation;
+        controller = new AbortController();
+        const signal = controller.signal;
+        updateSourceControls();
+        message('Checking country data...');
+        try {
+            const result = await countryCatalog(force, token, signal);
+            if (!result || !isCurrent(token)) return;
+            const country = result.catalog.countries.find(country => country.code === code);
+            if (!country) throw new Error('No country average is available for this region. Choose another country.');
+            const key = 'country:v1:' + code;
+            let saved = await cache.get(key);
+            if (!isCurrent(token)) return;
+            try {
+                if (saved && readCountrySnapshot(saved.data).country.code !== code) saved = null;
+            } catch { saved = null; }
+            const display = snapshot => {
+                onData(snapshot, `CRU-CY ${snapshot.release} / University of East Anglia`);
+                selected.textContent = snapshot.location.name;
+                countryDetails.textContent = `1901 to ${snapshot.through}; CRU-CY ${snapshot.release}. Area-weighted land average; baseline 1951-1980. Annual releases.`;
+                updateSourceControls();
+            };
+            if (saved) display(readCountrySnapshot(saved.data));
+            if (!saved || saved.hash !== country.hash || force) {
+                message('Loading country average...');
+                const snapshot = await fetchCountryData(country, { signal });
+                if (!isCurrent(token)) return;
+                await cache.set(key, { data: snapshot, hash: country.hash });
+                if (!isCurrent(token)) return;
+                display(snapshot);
+            }
+            await cache.set('last-country', code);
+            if (!isCurrent(token)) return;
+            controller = null;
+            message(result.offline ? 'Using saved country data; catalog update unavailable.'
+                : cache.persistent ? 'Saved on this device.' : 'Storage unavailable; saved for this session.', result.offline);
+        } catch (error) {
+            if (!isCurrent(token)) return;
+            controller = null;
+            message(error.name === 'TypeError' ? 'Unable to connect. Any loaded data is still available.' : error.message, true);
+        }
+    }
+
+    async function activateSource() {
+        const token = generation;
+        if (mode === 'country') {
+            const code = countryCode ?? await cache.get('last-country') ?? location?.countryCode;
+            if (!isCurrent(token)) return;
+            if (code) await loadCountry(code);
+            else message(prompt);
+        } else if (location) await load(location);
+        else message(prompt);
     }
     async function loadStations(force, token, signal, restoreChoice) {
-        selected.textContent = location.name;
+        selected.textContent = placeLabel(location);
         let savedCatalog = await cache.get('station-catalog');
         if (!isCurrent(token)) return;
         try {
@@ -119,8 +223,16 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
     }
 
     async function load(place, force = false, restoreChoice = true) {
+        if (place.isCountry) {
+            if (place.countryCode) return loadCountry(place.countryCode, force);
+            onClear();
+            message('Search for this country again to load its average.');
+            return;
+        }
         cancel();
-        if (location && localLocationKey(location) !== localLocationKey(place)) {
+        const changed = mode === 'country' || (location && localLocationKey(location) !== localLocationKey(place));
+        setMode(source.value);
+        if (changed) {
             onClear();
             stationSelect.replaceChildren();
             stationDetails.textContent = '';
@@ -135,16 +247,16 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         try {
             await cache.set('last-location', location);
             if (!isCurrent(token)) return;
-            if (source.value === 'station') {
+            if (mode === 'station') {
                 await loadStations(force, token, signal, restoreChoice);
                 return;
             }
             let cached = await cache.get(key);
             if (token !== generation || !isActive()) return;
-            try { if (cached) cached = readLocalSnapshot(cached); } catch { cached = null; }
+            try { if (cached) cached = { ...readLocalSnapshot(cached), location }; } catch { cached = null; }
             if (cached && parseLocalTemperatureData(cached).length) {
                 onData(cached, 'Saved on this device');
-                selected.textContent = cached.location.name;
+                selected.textContent = placeLabel(cached.location);
             }
             const snapshot = await fetchLocalTemperature(location, { cached, force, signal,
                 onProgress: progress => {
@@ -155,7 +267,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
             });
             if (token !== generation || !isActive()) return;
             if (!cached || snapshot.fetchedAt !== cached.fetchedAt) onData(snapshot, 'Open-Meteo / ERA5-Land');
-            selected.textContent = snapshot.location.name;
+            selected.textContent = placeLabel(snapshot.location);
             controller = null;
             message(cache.persistent ? 'Saved on this device.' : 'Storage unavailable; saved for this session.');
         } catch (error) {
@@ -165,15 +277,14 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         }
     }
     source.addEventListener('change', () => {
-        sourceRestored = true;
         cancel();
-        updateSourceControls();
+        setMode(source.value);
         selected.textContent = '';
         stationDetails.textContent = '';
+        countryDetails.textContent = '';
+        updateSourceControls();
         onClear();
-        void cache.set('local-source', source.value);
-        if (location) void load(location);
-        else message('Choose a location.');
+        void activateSource();
     });
     radius.addEventListener('change', () => { if (location && isActive()) void load(location, false, false); });
     stationSelect.addEventListener('change', () => {
@@ -190,18 +301,33 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         results.replaceChildren();
         message('Searching...');
         try {
-            const places = await searchLocalPlaces(input.value, { signal: request.signal });
+            const token = generation;
+            const query = input.value;
+            let catalog = null;
+            try { catalog = await countryCatalog(false, token, request.signal); }
+            catch (error) { if (request.signal.aborted) throw error; }
+            if (searchController !== request || !isCurrent(token)) return;
+            const exact = catalog && findExactCountry(catalog.catalog, query);
+            let places = [];
+            if (!exact) {
+                try { places = await searchLocalPlaces(query, { signal: request.signal }); }
+                catch (error) {
+                    if (request.signal.aborted || !catalog || !searchCountries(catalog.catalog, query).length) throw error;
+                }
+            }
             if (searchController !== request || !isActive()) return;
-            results.replaceChildren(...places.map(place => {
+            const matches = exact ? [exact] : combineCountryPlaces(catalog?.catalog, query, places);
+            results.replaceChildren(...matches.map(place => {
                 const item = document.createElement('li');
                 const button = document.createElement('button');
                 button.type = 'button';
-                button.textContent = place.name;
-                button.addEventListener('click', () => { void load(place); });
+                button.textContent = place.code ? `${place.name} (country average)` : place.name;
+                button.addEventListener('click', () => { if (place.code) void loadCountry(place.code); else void load(place); });
                 item.append(button);
                 return item;
             }));
-            message(places.length ? '' : 'No places found.');
+            message(matches.length ? '' : places.some(place => place.isCountry)
+                ? 'No country average is available for this region.' : 'No places found.');
         } catch (error) {
             if (!request.signal.aborted && isActive()) message(error.name === 'TypeError' ? 'Search unavailable. Please try again.' : error.message);
         } finally {
@@ -213,16 +339,25 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         if (event.key === 'ArrowDown') { results.querySelector('button')?.focus(); event.preventDefault(); }
         if (event.key === 'Escape') { searchController?.abort(); results.replaceChildren(); }
     });
-    action.addEventListener('click', () => { if (controller) cancel(); else if (location) void load(location, true, false); });
+    action.addEventListener('click', () => {
+        if (controller) cancel();
+        else if (mode === 'country' && countryCode) void loadCountry(countryCode, true);
+        else if (mode !== 'country' && location) void load(location, true, false);
+    });
     return {
         cancel,
+        get mode() { return mode; },
         async activate() {
             cancel();
             const token = generation;
             if (!sourceRestored) {
                 const savedSource = await cache.get('local-source');
                 if (!isCurrent(token)) return;
-                source.value = savedSource === 'station' ? 'station' : 'era5';
+                const savedPointSource = await cache.get('local-point-source');
+                if (!isCurrent(token)) return;
+                source.value = savedPointSource === 'station' || (!savedPointSource && savedSource === 'station') ? 'station' : 'era5';
+                mode = ['station', 'country'].includes(savedSource) ? savedSource : 'era5';
+                if (mode !== 'country') source.value = mode;
                 sourceRestored = true;
                 updateSourceControls();
                 onClear();
@@ -230,16 +365,39 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
             const previous = location ?? await cache.get('last-location');
             if (token !== generation || !isActive()) return;
             if (previous) {
-                try { await load(normalizeLocation(previous)); }
-                catch { message('Choose a location.'); }
-            } else message('Choose a location.');
+                try { location = normalizeLocation(previous); }
+                catch { location = null; }
+            }
+            await activateSource();
         },
-        refresh() { if (location) return load(location, true, false); message('Choose a location.'); },
+        refresh() {
+            if (mode === 'country' && countryCode) return loadCountry(countryCode, true);
+            if (mode !== 'country' && location) return load(location, true, false);
+            message(prompt);
+        },
         async importSnapshot(text) {
             try {
-                if (source.value === 'station') {
+                const data = JSON.parse(text);
+                if (data.source === 'CRU-CY') {
+                    const snapshot = readCountrySnapshot(text);
+                    cancel();
+                    setMode('country');
+                    countryCode = snapshot.country.code;
+                    onData(snapshot, 'Imported CRU-CY country average');
+                    selected.textContent = snapshot.location.name;
+                    countryDetails.textContent = `CRU-CY ${snapshot.release}; through ${snapshot.through}. Area-weighted land average; baseline 1951-1980.`;
+                    updateSourceControls();
+                    const token = generation;
+                    await cache.set('country:v1:' + countryCode, { data: snapshot, hash: null });
+                    await cache.set('last-country', countryCode);
+                    if (!isCurrent(token)) return;
+                    message('Imported country record.');
+                    return;
+                }
+                if (data.adjustment === 'QCF') {
                     const snapshot = readStationSnapshot(text);
                     cancel();
+                    setMode('station');
                     onData(snapshot, 'Imported NOAA station observations');
                     selected.textContent = snapshot.station.name.replaceAll('_', ' ');
                     stationSelect.replaceChildren();
@@ -253,9 +411,10 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
                 const snapshot = readLocalSnapshot(text);
                 if (!parseLocalTemperatureData(snapshot).length) throw new Error('The 1951-1980 reference period is incomplete.');
                 cancel();
+                setMode('era5');
                 location = snapshot.location;
                 onData(snapshot, 'Imported local data');
-                selected.textContent = location.name;
+                selected.textContent = placeLabel(location);
                 const token = generation;
                 await cache.set(localLocationKey(location), snapshot);
                 await cache.set('last-location', location);

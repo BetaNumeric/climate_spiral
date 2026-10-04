@@ -45,7 +45,9 @@ test('service worker caches the retained datasets and clears the previous app ca
         await completion;
     };
     await dispatch('install');
-    assert.equal(requests.filter(url => url.startsWith(origin + 'data/')).length, 9);
+    assert.equal(requests.filter(url => url.startsWith(origin + 'data/')).length, 10);
+    assert(requests.includes(origin + 'data/country-temperature/catalog.json'));
+    assert(!requests.some(url => /data\/country-temperature\/[A-Z]{2}\.json$/.test(url)), 'Country records are cached on demand');
     assert(requests.includes(origin + 'data/piomas-monthly.txt'));
     assert(requests.includes(origin + 'data/sea-ice-north.json'));
     assert(requests.includes(origin + 'data/sea-ice-south.json'));

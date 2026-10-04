@@ -9,6 +9,7 @@ mkdirSync(output, { recursive: true });
 const hooks = `
 window.localTest = {
   ready: () => Boolean(spiralMesh && monthLabelsGroup?.children.length === 12),
+  snapshot: () => JSON.stringify(localSnapshot),
   frame(graph = false) {
     if (isAnimating) toggleAnimation();
     layoutTransition = cameraResetAnimation = null;
@@ -37,7 +38,7 @@ window.localTest = {
       monthRadius: monthLabelsGroup && Math.hypot(monthLabelsGroup.children[0].position.x, monthLabelsGroup.children[0].position.z),
       outerRadius: getSpiralRadius(getOuterRingValue(currentMaxAnomaly)),
       minRadius: currentDatasetKey === 'local' ? getSpiralRadius(-localRange.extent) : null,
-      location: localSnapshot?.location.name, stationId: localSnapshot?.station?.id, months: timelineStops.length,
+      location: localSnapshot?.location.name, stationId: localSnapshot?.station?.id, countryCode: localSnapshot?.country?.code, months: timelineStops.length,
       labels: Array.from(document.querySelectorAll('.legend-labels span'), label => label.textContent),
       overflow: document.documentElement.scrollWidth > innerWidth ||
         document.getElementById('settingsPanel').scrollWidth > document.getElementById('settingsPanel').clientWidth,
@@ -79,16 +80,22 @@ function weather(url) {
     for (const [name, viewport] of Object.entries({ desktop: { width: 1280, height: 800 }, mobile: { width: 390, height: 844 } })) {
       const context = await browser.newContext({ viewport, serviceWorkers: 'block', isMobile: name === 'mobile', hasTouch: name === 'mobile' });
       const page = await context.newPage();
-      const errors = [], requests = [], stationRequests = [];
+      const errors = [], requests = [], stationRequests = [], countryRequests = [], geocodingRequests = [];
       let failWeather = false, delayWeather = false;
       page.on('pageerror', error => errors.push(error.message));
       page.on('request', request => { if (request.url().includes('/data/weather-stations/')) stationRequests.push(request.url()); });
+      page.on('request', request => { if (request.url().includes('/data/country-temperature/')) countryRequests.push(request.url()); });
+      page.on('request', request => { if (request.url().startsWith('https://geocoding-api.open-meteo.com/')) geocodingRequests.push(request.url()); });
       await page.route('**/index.html', async route => {
         const response = await route.fetch();
         await route.fulfill({ response, body: (await response.text()).replace('// --- Configuration ---', hooks + '// --- Configuration ---') });
       });
-      await page.route('https://geocoding-api.open-meteo.com/**', route => route.fulfill({ json: { results: [
-        { name: 'Berlin', admin1: 'Berlin', country: 'Germany', latitude: 52.52, longitude: 13.41, timezone: 'Europe/Berlin' },
+      await page.route('https://geocoding-api.open-meteo.com/**', route => route.fulfill({ json: { results: new URL(route.request().url()).searchParams.get('name') === 'Micronesia' ? [
+        { name: 'Micronesia', country: 'Micronesia', country_code: 'FM', feature_code: 'PCLI', latitude: 6.9, longitude: 158.2, timezone: 'Pacific/Pohnpei' },
+      ] : ['Germany', 'Deutschland'].includes(new URL(route.request().url()).searchParams.get('name')) ? [
+        { name: 'Germany', country: 'Germany', country_code: 'DE', feature_code: 'PCLI', latitude: 51.5, longitude: 10.5, timezone: 'Europe/Berlin' },
+      ] : [
+        { name: 'Berlin', admin1: 'Berlin', country: 'Germany', country_code: 'DE', latitude: 52.52, longitude: 13.41, timezone: 'Europe/Berlin' },
         { name: 'Another place with a long name to check narrow screen wrapping', country: 'Germany', latitude: 50, longitude: 13, timezone: 'Europe/Berlin' },
       ] } }));
       await page.route('https://archive-api.open-meteo.com/**', async route => {
@@ -249,8 +256,124 @@ function weather(url) {
       await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('No station within'));
       await page.waitForTimeout(1000);
       assert.equal(await page.evaluate(() => localTest.ready()), false, 'A stale reanalysis response cannot replace a station selection');
+
+      // Country mode uses actual bundled area averages, not the geocoder or weather API.
+      delayWeather = false;
+      const pointRequestCount = requests.length;
+      const geocodingRequestCount = geocodingRequests.length;
+      await page.fill('#localSearch', 'Germany');
+      await page.locator('#localSearchForm button').click();
+      await page.getByRole('button', { name: 'Germany (country average)', exact: true }).click();
+      await saved();
+      await page.evaluate(() => localTest.frame());
+      const country = await page.evaluate(() => localTest.state());
+      assert.equal(country.countryCode, 'DE');
+      assert.equal(country.months, 1500);
+      assert.ok(country.finite && country.litPixels > 300 && !country.overflow);
+      assert.equal(country.monthRadius, global.monthRadius);
+      assert.equal(requests.length, pointRequestCount, 'Country averages make no point-weather requests');
+      assert.equal(geocodingRequests.length, geocodingRequestCount, 'Exact country names work without geocoding');
+      assert.equal(await page.locator('#localSource').isVisible(), false, 'Country data has no unnecessary source picker');
+      assert.equal(await page.locator('#localSource option').count(), 2, 'Only the two city sources remain');
+      assert.equal(await page.locator('#localStationFields').isVisible(), false);
+      assert.match(await page.locator('#localCountryDetails').textContent(), /2025-12/);
+      assert.match(await page.locator('#settingsSourceLink').textContent(), /CRU-CY/);
+      await page.screenshot({ path: join(output, name + '-country-settings.png') });
+      const countryLegend = await page.evaluate(() => localTest.legend());
+      assert.ok(countryLegend.text.includes('Germany (country average)'));
+      assert.ok(countryLegend.text.some(text => text.includes('CRU-CY 4.10')));
+      assert.equal(countryLegend.text.some(text => text.includes('Open-Meteo') || text.includes('NOAA')), false);
+      await page.click('#settingsBtn');
+      await page.click('#infoBtn');
+      await page.screenshot({ path: join(output, name + '-country-spiral.png') });
+      await page.evaluate(() => localTest.frame(true));
+      await page.waitForTimeout(150);
+      const countryGraph = await page.evaluate(() => localTest.state());
+      assert.ok(countryGraph.finite && countryGraph.litPixels > 300);
+      await page.screenshot({ path: join(output, name + '-country-unwrapped.png') });
+      await page.click('#settingsBtn');
+      await page.fill('#localSearch', 'France');
+      await page.locator('#localSearchForm button').click();
+      await page.getByRole('button', { name: 'France (country average)', exact: true }).click();
+      await saved();
+      const countryRequestCount = countryRequests.length;
+      await page.reload();
+      await page.waitForFunction(() => window.localTest?.ready());
+      await openLocal();
+      await saved();
+      assert.equal(await page.locator('#localSource').isVisible(), false);
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'FR');
+      assert.equal(countryRequests.length, countryRequestCount, 'Country record and selection reload without a new download');
+      await page.locator('#dataSettings summary').click();
+      await page.route('**/data/country-temperature/FR.json', route => route.fulfill({ json: { invalid: true } }));
+      await page.click('#fetchBtn');
+      await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('being updated'));
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'FR', 'Integrity failures keep the cached country');
+      await page.unroute('**/data/country-temperature/FR.json');
+      await page.click('#localAction');
+      await saved();
+
+      // One search changes geographic scope and restores the last point-source preference.
+      await chooseBerlin();
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.ok((await page.evaluate(() => localTest.state())).stationId);
+      await page.fill('#localSearch', 'FR');
+      await page.locator('#localSearchForm button').click();
+      await page.getByRole('button', { name: 'France (country average)', exact: true }).click();
+      await saved();
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'FR');
+      await chooseBerlin();
+      await page.selectOption('#localSource', 'era5');
+      await saved();
+      await page.fill('#localSearch', 'Deutschland');
+      await page.locator('#localSearchForm button').click();
+      await page.getByRole('button', { name: 'Germany (country average)', exact: true }).click();
+      await saved();
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'DE', 'Localized geocoding results also open country averages');
+      assert.equal(await page.getByRole('button', { name: /representative point/ }).count(), 0);
+      await page.fill('#localSearch', 'Micronesia');
+      await page.locator('#localSearchForm button').click();
+      await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('No country average'));
+      assert.equal(await page.locator('#localResults button').count(), 0);
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'DE', 'Unsupported countries never become point estimates');
+      await chooseBerlin();
+      assert.equal(await page.locator('#localSource').inputValue(), 'era5');
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, undefined);
+      await page.screenshot({ path: join(output, name + '-unified-city-settings.png') });
+
+      // Existing saved country points migrate to averages instead of fetching their coordinates.
+      const beforeMigration = requests.length;
+      await page.evaluate(async () => {
+        const { createLocalTemperatureCache } = await import('./local-temperature-data.mjs');
+        const cache = createLocalTemperatureCache();
+        await cache.set('last-location', { name: 'Germany', countryCode: 'DE', isCountry: true,
+          latitude: 51.5, longitude: 10.5, timezone: 'Europe/Berlin' });
+        await cache.set('local-source', 'era5');
+        await cache.set('local-point-source', 'era5');
+      });
+      await page.reload();
+      await page.waitForFunction(() => window.localTest?.ready());
+      await openLocal();
+      await saved();
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'DE');
+      assert.equal(requests.length, beforeMigration, 'Legacy country points do not fetch coordinate temperatures');
+      await chooseBerlin();
+      const pointSnapshot = await page.evaluate(() => localTest.snapshot());
+      await page.locator('#fileUpload').setInputFiles(join(__dirname, '..', 'data', 'country-temperature', 'FR.json'));
+      await page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Imported country record.');
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'FR');
+      assert.equal(await page.locator('#localSource').isVisible(), false);
+      await page.locator('#fileUpload').setInputFiles(join(__dirname, '..', 'data', 'weather-stations', alternatives[1].slice(0, 2), alternatives[1] + '.json'));
+      await page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Imported station record.');
+      assert.equal((await page.evaluate(() => localTest.state())).stationId, alternatives[1]);
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.equal(await page.locator('#localSource').isVisible(), true);
+      await page.locator('#fileUpload').setInputFiles({ name: 'berlin.json', mimeType: 'application/json', buffer: Buffer.from(pointSnapshot) });
+      await saved();
+      assert.equal(await page.locator('#localSource').inputValue(), 'era5');
+      assert.equal((await page.evaluate(() => localTest.state())).location, 'Berlin, Germany');
       assert.deepEqual(errors, []);
-      console.log(name + ': reanalysis and NOAA stations passed search, rendering, persistence, errors, and switching checks');
+      console.log(name + ': reanalysis, NOAA stations, and CRU countries passed search, rendering, persistence, errors, and switching checks');
       await context.close();
     }
     console.log('Screenshots: ' + output);
