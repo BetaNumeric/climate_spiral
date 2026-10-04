@@ -3985,8 +3985,30 @@ Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            // January has two rings for unwrapping. Weld them in the spiral so both sides
+            // contribute to the same surface normals, without changing timeline slots.
+            const ringSources = Uint32Array.from({ length: numPoints }, (_, i) => i);
+            if (!flat) {
+                for (let i = 1; i < numPoints; i++) {
+                    if (!visibleSegments[i - 1] || !points[i].equals(points[i - 1])) continue;
+                    ringSources[i] = ringSources[i - 1];
+                    const source = ringSources[i] * radialSegments * 3;
+                    positionArray.copyWithin(i * radialSegments * 3, source, source + radialSegments * 3);
+                }
+                for (let i = 0; i < indexArray.length; i++) {
+                    const vertex = indexArray[i], ring = Math.floor(vertex / radialSegments);
+                    if (ring < numPoints) indexArray[i] = ringSources[ring] * radialSegments + vertex % radialSegments;
+                }
+            }
             geometry.setIndex(indexArray);
             geometry.computeVertexNormals();
+            // Keep the unused copies ready to separate smoothly during the layout morph.
+            const normals = geometry.attributes.normal.array;
+            for (let i = 1; i < numPoints; i++) {
+                if (ringSources[i] === i) continue;
+                const source = ringSources[i] * radialSegments * 3;
+                normals.copyWithin(i * radialSegments * 3, source, source + radialSegments * 3);
+            }
             
             return geometry;
         }
