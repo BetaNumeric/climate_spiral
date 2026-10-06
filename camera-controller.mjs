@@ -6,8 +6,11 @@ const DOUBLE_TAP_MAX_DELAY_MS = 500;
 const TAP_MAX_DURATION_MS = 300;
 const TAP_MAX_MOVEMENT_PX = 12;
 const DOUBLE_TAP_MAX_DISTANCE_PX = 28;
+const LAYOUT_PINCH_MIN_MOVEMENT_PX = 12;
+const LAYOUT_PINCH_MIN_SCALE = 0.15;
 
-export function createCameraController({ THREE, OrbitControls, canvas, getSceneState, isBusy, defaultDistance }) {
+export function createCameraController({ THREE, OrbitControls, canvas, getSceneState, isBusy, defaultDistance,
+    onLayoutGesture = () => {} }) {
     const DEFAULT_ORTHOGRAPHIC_DISTANCE = defaultDistance;
     const defaultCameraQuaternion = getSceneState().orthographicCamera.quaternion.clone();
     let lastCameraResetTime = -Infinity;
@@ -292,9 +295,40 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         }, { passive: true });
     }
 
+    function setupLayoutPinchGesture() {
+        let pinch = null;
+        const spread = touches => {
+            const distance = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+            return (distance(touches[0], touches[1]) + distance(touches[1], touches[2])
+                + distance(touches[2], touches[0])) / 3;
+        };
+        const isThreeFingers = event => event.touches.length === 3 && event.targetTouches.length === 3;
+
+        canvas.addEventListener('touchstart', event => {
+            pinch = isThreeFingers(event) && !isBusy() ? { spread: spread(event.touches), triggered: false } : null;
+            if (pinch) event.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchmove', event => {
+            if (!pinch) return;
+            if (!isThreeFingers(event) || isBusy()) { pinch = null; return; }
+            event.preventDefault();
+            if (pinch.triggered) return;
+            const change = spread(event.touches) - pinch.spread;
+            if (Math.abs(change) < Math.max(LAYOUT_PINCH_MIN_MOVEMENT_PX, pinch.spread * LAYOUT_PINCH_MIN_SCALE)) return;
+            pinch.triggered = true;
+            onLayoutGesture(change > 0 ? 'graph' : 'spiral');
+        }, { passive: false });
+        const endPinch = () => { pinch = null; };
+        canvas.addEventListener('touchend', endPinch, { passive: true });
+        canvas.addEventListener('touchcancel', endPinch, { passive: true });
+    }
+
     return {
         createControls: createOrbitControls,
-        setupGestures: () => setupCameraResetGestures(canvas),
+        setupGestures() {
+            setupCameraResetGestures(canvas);
+            setupLayoutPinchGesture();
+        },
         setView: setCameraView,
         update: updateCameraResetAnimation,
         get isAnimating() { return Boolean(cameraResetAnimation); },

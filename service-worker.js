@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v45`;
+const CACHE_NAME = `${CACHE_PREFIX}v46`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",

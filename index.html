@@ -545,7 +545,8 @@
                 THREE, OrbitControls, canvas: renderer.domElement,
                 getSceneState: () => ({ controls, activeCamera, perspectiveCamera, orthographicCamera, spiralHeight }),
                 isBusy: () => videoController?.isBusy ?? false,
-                defaultDistance: DEFAULT_ORTHOGRAPHIC_DISTANCE
+                defaultDistance: DEFAULT_ORTHOGRAPHIC_DISTANCE,
+                onLayoutGesture: setChartLayout
             });
             controls = cameraController.createControls(activeCamera, new THREE.Vector3());
             cameraController.setupGestures();
@@ -1134,6 +1135,11 @@
                 settingsPanel.classList.toggle('visible');
                 infoPanel.classList.remove('visible');
             });
+            document.addEventListener('click', (event) => {
+                if (!window.matchMedia('(hover: none) and (pointer: coarse)').matches
+                    || settingsPanel.contains(event.target) || settingsBtn.contains(event.target)) return;
+                settingsPanel.classList.remove('visible');
+            });
             infoDetailsToggle.addEventListener('click', () => {
                 setInfoDetailsExpanded(!infoPanel.classList.contains('details-expanded'));
             });
@@ -1146,10 +1152,7 @@
             orthoSwitch.addEventListener('change', (e) => switchCamera(e.target.checked));
             document.querySelectorAll('input[name="chartLayout"]').forEach(input => {
                 input.addEventListener('change', () => {
-                    if (!input.checked || videoController.isRecording) return;
-                    const to = input.value === 'graph' ? 1 : 0;
-                    layoutTransition = { from: layoutMix, to, start: performance.now(), duration: LAYOUT_TRANSITION_MS * Math.abs(to - layoutMix) };
-                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishLayoutTransition();
+                    if (input.checked) setChartLayout(input.value);
                 });
             });
             
@@ -1731,6 +1734,18 @@
             }
             updateSpiralVisuals();
             updateTimelineState(animationIndex);
+        }
+
+        function setChartLayout(layout) {
+            if (videoController.isRecording) return;
+            document.querySelectorAll('input[name="chartLayout"]').forEach(input => {
+                input.checked = input.value === layout;
+            });
+            const to = layout === 'graph' ? 1 : 0;
+            if ((layoutTransition?.to ?? layoutMix) === to) return;
+            layoutTransition = { from: layoutMix, to, start: performance.now(),
+                duration: LAYOUT_TRANSITION_MS * Math.abs(to - layoutMix) };
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishLayoutTransition();
         }
 
         function updateLayoutTransition() {

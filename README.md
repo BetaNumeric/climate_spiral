@@ -44,7 +44,9 @@ The animation starts automatically. Use the controls and timeline at the bottom 
 
 Choose **Local Temperature** and search for a city, country, or `latitude, longitude`. Selecting a country automatically opens its CRU country average, with no source switch needed; country names and codes can be searched offline. For cities and coordinates, **Local estimate (ERA5-Land)** is the default, with **Weather station (NOAA)** available as a separate source. Station search recommends a nearby record and offers alternatives with distance, history, and completeness. All three sources use 1951-1980 and save data on your device. Country averages begin in 1901 and receive annual releases. The first reanalysis download takes longer.
 
-Drag to rotate and scroll or pinch to zoom. Enable **Free Camera** in Settings to pan with a right-button drag. Press `1`, `2`, or `3` for the top, front, or right view; double-click or double-tap to reset to the top view. A double right-click selects the front view. The camera also snaps into those orientations after a nearby rotational drag.
+Drag to rotate and scroll or use a two-finger pinch to zoom. Enable **Free Camera** in Settings to pan with a right-button drag. Press `1`, `2`, or `3` for the top, front, or right view; double-click or double-tap to reset to the top view. A double right-click selects the front view. The camera also snaps into those orientations after a nearby rotational drag.
+
+On mobile, spread three fingers to unwrap the spiral and pinch them together to wrap it again. Tap outside Settings to close it. Some iOS system gestures can take precedence; the Settings layout toggle remains available.
 
 The app can be installed as a standalone web app from your mobile browser's **Add to Home Screen** command. After an initial online load, its service worker caches the app and local datasets for offline use.
 
