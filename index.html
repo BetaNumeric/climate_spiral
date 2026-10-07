@@ -73,6 +73,7 @@
             <span id="legendLabel2">+1.0</span>
             <span id="legendLabel3">+2.0</span>
         </div>
+        <div id="legendCaption"></div>
     </div>
 
     <!-- Settings Box -->
@@ -227,6 +228,20 @@
                             <option value="12">12</option>
                             <option value="24">24</option>
                         </select>
+                    </div>
+                    <div class="setting-row">
+                        <label for="colorMode">Color By</label>
+                        <select id="colorMode">
+                            <option value="value" selected>Value</option>
+                            <option value="year">Year</option>
+                            <option value="seasonal">Monthly Anomaly</option>
+                            <option value="annual">Yearly Anomaly</option>
+                            <option value="single">Single Color</option>
+                        </select>
+                    </div>
+                    <div id="singleColorRow" class="setting-row" hidden>
+                        <label for="singleColor">Line Color</label>
+                        <input id="singleColor" type="color" value="#d7e3ea">
                     </div>
                 </div>
             </details>
@@ -403,6 +418,8 @@
         import { createVideoController } from './video-controller.mjs';
         import { createSpiralGeometry } from './spiral-geometry.mjs';
         import { createSpiralLine } from './spiral-line.mjs';
+        import { YEAR_COLOR_STOPS, ANOMALY_COLOR_STOPS, UNAVAILABLE_ANOMALY_COLOR, createSeasonalColorModel,
+            getYearColorFraction, getSpiralColorDisplay, sampleColorStops, recolorSpiral } from './spiral-colors.mjs';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
         import { calendarYear, layoutEase, graphLayout, unrollPolar, unrollFrame,
@@ -479,6 +496,7 @@
         let currentDatasetKey = "temperature";
         let currentDataText = '';
         let generatedGeometryData = null; // Store data for animation mapping
+        let seasonalColorModel = null;
         let pointsPerObservation = 1;
         const datasetPlaybackState = Object.fromEntries(
             Object.keys(DATASET_CONFIG).map(key => [
@@ -588,7 +606,7 @@
                 getSceneState: () => ({ activeCamera, controls, spiralMesh, timelineStops, monthsPerFrame,
                     layoutMix, animationIndex, isAnimating, totalIndices, currentDatasetKey, startYear, endYear,
                     localSnapshot, spiralHeight }),
-                getActiveDisplay, getFraming: getVideoFraming, finishLayoutTransition,
+                getActiveColorDisplay, getFraming: getVideoFraming, finishLayoutTransition,
                 cancelLocalLoad: () => localControls.cancel(),
                 setPlaybackPosition, toggleAnimation,
                 setLayoutMix: mix => { layoutMix = mix; applyLayout(false); },
@@ -697,6 +715,39 @@
             return getDatasetDisplay(currentDatasetKey, localRange);
         }
 
+        function getActiveColorDisplay() {
+            return getSpiralColorDisplay(document.getElementById('colorMode').value, getActiveDisplay(), {
+                startYear, endYear, color: document.getElementById('singleColor').value, seasonal: seasonalColorModel
+            });
+        }
+
+        function updateSpiralColors() {
+            const mode = document.getElementById('colorMode').value;
+            document.getElementById('singleColorRow').hidden = mode !== 'single';
+            updateLegendLabels();
+            if (!spiralMesh || !generatedGeometryData?.length) return;
+            const single = new THREE.Color(document.getElementById('singleColor').value);
+            const yearColors = YEAR_COLOR_STOPS.map(([, color]) => new THREE.Color(color));
+            const anomalyColors = ANOMALY_COLOR_STOPS.map(([, color]) => new THREE.Color(color));
+            const unavailableColor = new THREE.Color(UNAVAILABLE_ANOMALY_COLOR);
+            const extent = getActiveColorDisplay().legendRange?.[1];
+            const color = new THREE.Color();
+            recolorSpiral(spiralMesh.geometry, generatedGeometryData, CONFIG.radialSegments, point => {
+                if (mode === 'value') return point.valueColor;
+                if (mode === 'single') return single;
+                if (mode === 'seasonal' || mode === 'annual') {
+                    const value = mode === 'annual' ? point.yearlyAnomaly : point.seasonalAnomaly;
+                    if (!Number.isFinite(value)) return unavailableColor;
+                    const fraction = THREE.MathUtils.clamp((value / extent + 1) / 2, 0, 1);
+                    return sampleColorStops(ANOMALY_COLOR_STOPS, anomalyColors, fraction, color);
+                }
+                const fraction = getYearColorFraction(point.decimalYear, startYear, endYear);
+                return sampleColorStops(YEAR_COLOR_STOPS, yearColors, fraction, color);
+            });
+            updateSpiralVisuals();
+            updateTimelineState(animationIndex);
+        }
+
         function formatMetricValue(displayValue) {
             return formatDatasetValue(displayValue, getActiveDisplay());
         }
@@ -764,7 +815,8 @@
         }
 
         function updateLegendLabels() {
-            const display = getActiveDisplay();
+            const display = getActiveColorDisplay();
+            document.getElementById('legendCaption').textContent = display.caption ?? '';
             const stops = display.legendStops.map(([position, color]) => `${color} ${position * 100}%`);
             document.querySelector('.legend').style.background = `linear-gradient(to right, ${stops.join(', ')})`;
             document.querySelector('.legend-labels').replaceChildren(...display.legendLabels.map(value => {
@@ -1369,6 +1421,12 @@
             document.getElementById('tubeToggle').addEventListener('change', () => updateLineSettings());
             document.getElementById('tubeSides').addEventListener('change', () => updateLineSettings());
             document.getElementById('curveSegments').addEventListener('change', () => updateLineSettings());
+            document.getElementById('colorMode').addEventListener('change', () => {
+                if (!videoController.isBusy) updateSpiralColors();
+            });
+            document.getElementById('singleColor').addEventListener('input', () => {
+                if (!videoController.isBusy) updateSpiralColors();
+            });
 
             applyDatasetUI();
         }
@@ -1401,10 +1459,18 @@
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
                     document.getElementById('infoTemp').innerText = ptData.spiralMissing ? 'No data' : formatMetricValue(currentDisplayValue);
-                    document.getElementById('legendMarker').hidden = Boolean(ptData.spiralMissing);
-                    
-                    const percent = getLegendPercent(currentDisplayValue, getActiveDisplay());
-                    document.getElementById('legendMarker').style.left = percent + "%";
+                    const colorDisplay = getActiveColorDisplay();
+                    const mode = document.getElementById('colorMode').value;
+                    const legendValue = mode === 'year' ? displayYear
+                        : mode === 'seasonal' ? ptData.seasonalAnomaly
+                        : mode === 'annual' ? ptData.yearlyAnomaly : currentDisplayValue;
+                    document.getElementById('legendCaption').textContent = (colorDisplay.caption ?? '')
+                        + (mode === 'annual' && !Number.isFinite(legendValue) ? ' \u00b7 Incomplete year' : '');
+                    document.getElementById('legendMarker').hidden = Boolean(ptData.spiralMissing)
+                        || !colorDisplay.showMarker || !Number.isFinite(legendValue);
+                    if (colorDisplay.showMarker) {
+                        if (Number.isFinite(legendValue)) document.getElementById('legendMarker').style.left = getLegendPercent(legendValue, colorDisplay) + "%";
+                    }
                     
                     // Update Color
                     if (ptData.color) {
@@ -1568,6 +1634,8 @@
             yearIndicatorMesh.visible = false;
             currentDataText = '';
             generatedGeometryData = null;
+            seasonalColorModel = null;
+            document.getElementById('legendCaption').textContent = '';
             totalIndices = animationIndex = 0;
             timelineStops = [];
             for (const id of ['infoMonth', 'infoYear', 'timelineStart', 'timelineEnd']) document.getElementById(id).textContent = '--';
@@ -1612,12 +1680,17 @@
             }));
             // Normalize display radii, leaving values and labeled reference ticks in their source units.
             datasetRadiusScale = CONFIG.outerRadius / getUnscaledSpiralRadius(getOuterRingValue(currentMaxAnomaly));
+            seasonalColorModel = createSeasonalColorModel(rawData);
             createSpiral(processedData);
+            generatedGeometryData?.forEach(point => {
+                point.seasonalAnomaly = point.spiralMissing ? null : seasonalColorModel.anomalyAt(point.decimalYear);
+                point.yearlyAnomaly = point.spiralMissing ? null : seasonalColorModel.yearlyAnomalyAt(point.decimalYear);
+            });
             const ringValue = getOuterRingValue(currentMaxAnomaly);
             createMonthRing(getSpiralRadius(ringValue) + CONFIG.monthLabelOffset);
             createTemperatureGrid();
             applyLayout();
-            updateLegendLabels();
+            updateSpiralColors();
             return true;
         }
 

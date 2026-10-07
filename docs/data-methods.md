@@ -1,6 +1,6 @@
 # Data Sources and Methods
 
-The spiral shows monthly measurements and model estimates. One turn represents a calendar year; radius and color encode the selected measurement. Different datasets use different units and display scales, so equal radii or colors across datasets do not imply equal climate effects.
+The spiral shows monthly measurements and model estimates. One turn represents a calendar year; radius and the default Value coloring encode the selected measurement. Different datasets use different units and display scales, so equal radii or colors across datasets do not imply equal climate effects.
 
 | Dataset | Source | Local snapshot | Measurement |
 | --- | --- | --- | --- |
@@ -13,6 +13,18 @@ The spiral shows monthly measurements and model estimates. One turn represents a
 | Global CO2 | [NOAA GML Mauna Loa trends](https://gml.noaa.gov/ccgg/trends/mlo.html), [monthly means](https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt) | [`co2_mm_mlo.txt`](../data/co2_mm_mlo.txt) | Atmospheric CO2 at Mauna Loa, ppm |
 | Global Methane | [NOAA GML methane trends](https://gml.noaa.gov/ccgg/trends_ch4/), [monthly means](https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.txt) | [`ch4_mm_gl.txt`](../data/ch4_mm_gl.txt) | Globally averaged marine surface CH4 mole fraction, ppb |
 | Global Sea Level | [University of Colorado Sea Level Research Group](https://sealevel.colorado.edu/), [processing methods](https://sealevel.colorado.edu/data-processing-methods) | [`global-sea-level.json`](../data/global-sea-level.json) | Change in global mean sea level, mm relative to 1993 |
+
+## Anomaly Coloring
+
+**Monthly Anomaly** (previously called Seasonal Anomaly) colors each source month by its value minus the mean for that same calendar month: January against January, February against February, and so on. The default reference is 1991-2020, the current [WMO standard normals period](https://wmo.int/wmo-climatological-normals). These are app-derived monthly means, not provider-published or certified climate normals. The app uses this period only when every calendar month has at least 20 distinct observed years within it; this is an app coverage policy, not an implementation of all WMO completeness rules. For shorter or sparse records, it uses each calendar month's available-record mean instead and labels the actual record range and fallback in the legend. Reference months with no values are not estimated.
+
+The calculation uses parsed source monthly values in their original display units, before optional gap filling or curve smoothing. It excludes missing/nonfinite values and counts each year-month once. Intermediate rendering points interpolate deviations only between adjacent observed months; they do not contribute to reference means or invent missing-month colors.
+
+**Yearly Anomaly** gives each complete calendar year one color: the arithmetic mean of its twelve monthly deviations from the same reference used by Monthly Anomaly. Months have equal weight; this is an app-derived annual statistic, not a provider's annual product or a day-weighted annual mean. Every month must be present and finite. Missing months, incomplete recent years, and interpolated years are not included in annual statistics. Their visible lines are dark gray, the anomaly marker is hidden, and the current legend caption identifies an incomplete year. Geometry and the main readout still show the original monthly values.
+
+Both modes use a symmetric blue/gray/red scale covering the full observed anomaly range for that mode, with signed labels in the dataset's units. Yearly ranges use only complete-year averages. Endpoints are rounded upward to two significant figures (or the measurement's displayed precision), avoiding the large unused range of coarse 1/2/5 rounding. The value axis and marker positions remain linear and zero-centered; more saturated intermediate colors make modest deviations distinguishable without clipping extreme values or changing measurements. Gray near zero means close to the reference; dark gray indicates unavailable anomalies. The legend uses the same palette and identifies the color reference in the viewer and video exports.
+
+Only coloring changes. Radius, reference guides, and the main monthly readout retain the source measurement and its original baseline. For temperature series that already contain monthly anomalies, this mode rebases the colors to 1991-2020 (or the labeled fallback), rather than removing the seasonal cycle a second time. Blue/red means below/above the reference, not universally good/bad: declining ice, for example, is below-reference blue. Fallback means and the displayed color range can change when more source months are added; the 1991-2020 reference does not include later years, though provider revisions can change its values.
 
 ## Temperature
 

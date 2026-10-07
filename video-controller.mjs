@@ -12,7 +12,7 @@ const VIDEO_VIEW_PRESETS = {
 };
 
 export function createVideoController({ THREE, renderer, cameraController, fontFamily, getSceneState,
-    getActiveDisplay, getFraming, finishLayoutTransition, cancelLocalLoad, setPlaybackPosition,
+    getActiveColorDisplay, getFraming, finishLayoutTransition, cancelLocalLoad, setPlaybackPosition,
     toggleAnimation, setLayoutMix, advanceToObservation }) {
     let videoExport = null;
     let videoPreview = null;
@@ -277,7 +277,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         const barY = rect.y + rect.height * 0.47;
         const barHeight = Math.max(6 * pixelScale, Math.min(18 * pixelScale, rect.height * 0.075));
         const gradient = context.createLinearGradient(rect.x, 0, rect.x + rect.width, 0);
-        getActiveDisplay().legendStops.forEach(([position, color]) => gradient.addColorStop(position, color));
+        getActiveColorDisplay().legendStops.forEach(([position, color]) => gradient.addColorStop(position, color));
         context.fillStyle = gradient;
         context.fillRect(rect.x, barY, rect.width, barHeight);
 
@@ -307,6 +307,13 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
             context.textAlign = index === 0 ? 'left' : index === labels.length - 1 ? 'right' : 'center';
             context.fillText(label, rect.x + rect.width * fraction, labelY);
         });
+        const caption = document.getElementById('legendCaption').textContent;
+        if (caption) {
+            context.font = `400 ${Math.min(18 * pixelScale, rect.height * 0.08)}px ${fontFamily}`;
+            context.fillStyle = '#aaaaaa';
+            context.textAlign = 'left';
+            context.fillText(caption, rect.x, rect.y + rect.height * 0.83, rect.width);
+        }
         if (currentDatasetKey === 'local') {
             context.font = `400 ${Math.min(16 * pixelScale, rect.height * 0.07)}px ${fontFamily}`;
             context.fillStyle = '#aaaaaa';

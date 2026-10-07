@@ -338,6 +338,9 @@ a:hover { text-decoration: underline; }
     font-size: 0.8rem;
     margin-top: 4px;
 }
+.legend-labels:empty { display: none; }
+#legendCaption { margin-top: 6px; color: #aaa; font-size: 0.75rem; overflow-wrap: anywhere; }
+#legendCaption:empty { display: none; }
 #infoLocation { margin-bottom: 8px; color: #bbb; font-size: 0.8rem; overflow-wrap: anywhere; }
 #infoLocation:empty { display: none; }
 
@@ -432,7 +435,7 @@ a:hover { text-decoration: underline; }
 .settings-layout label { flex: 1; text-align: center; }
 .settings-layout span { padding-block: 8px; }
 #settingsPanel input[type=range] { box-sizing: border-box; margin-inline: 0; }
-#datasetSelect, #cameraViewSelect, #tubeSides, #curveSegments, #videoAdvanced select, #localTemperatureControls select {
+#datasetSelect, #cameraViewSelect, #colorMode, #tubeSides, #curveSegments, #videoAdvanced select, #localTemperatureControls select {
     width: 100%;
     min-width: 0;
     height: 38px;
@@ -446,7 +449,10 @@ a:hover { text-decoration: underline; }
     font-size: 16px;
 }
 #cameraViewSelect { width: 140px; max-width: 55%; }
+#colorMode { width: 190px; max-width: 65%; }
 #tubeSides, #curveSegments { width: 90px; max-width: 55%; }
+#singleColorRow[hidden] { display: none; }
+#singleColor { width: 42px; height: 30px; padding: 3px; border: 1px solid #555; border-radius: 4px; background: #222; cursor: pointer; }
 #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
 #localTemperatureControls { display: grid; gap: 8px; min-width: 0; }
 #localTemperatureControls[hidden] { display: none; }
