@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v51`;
+const CACHE_NAME = `${CACHE_PREFIX}v53`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -23,6 +23,8 @@ const CORE_ASSETS = [
   "./dataset-loader.mjs",
   "./gistemp-data.mjs",
   "./camera-controller.mjs",
+  "./keyboard-shortcuts.mjs",
+  "./timeline-controls.mjs",
   "./video-controller.mjs",
   "./manifest.json",
   "./temperature-data.mjs",

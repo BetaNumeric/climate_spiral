@@ -335,33 +335,33 @@
 
         <!-- Timeline Controls -->
         <div id="transportGroup">
-            <button id="skipStartBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to Beginning" aria-label="Skip to beginning">
+            <button id="skipStartBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to Beginning (Home)" aria-label="Skip to beginning" aria-keyshortcuts="Home">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-bar"></span>
                     <span class="transport-triangle backward"></span>
                     <span class="transport-triangle backward"></span>
                 </span>
             </button>
-            <button id="stepBackBtn" class="icon-btn paused-only" type="button" title="Previous Month" aria-label="Previous month">
+            <button id="stepBackBtn" class="icon-btn paused-only" type="button" title="Previous Month (,); Shift: Previous Year; Hold to Repeat" aria-label="Previous month" aria-keyshortcuts=", Shift+,">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-bar"></span>
                     <span class="transport-triangle backward"></span>
                 </span>
             </button>
-            <button id="playBtn" class="icon-btn" type="button" title="Play Animation" aria-label="Play animation" aria-pressed="false">
+            <button id="playBtn" class="icon-btn" type="button" title="Play Animation (Space)" aria-label="Play animation" aria-pressed="false" aria-keyshortcuts="Space">
                 <span id="playIcon" class="playback-icon" aria-hidden="true">
                     <span class="pause-bar"></span>
                     <span class="pause-bar"></span>
                     <span class="playback-triangle"></span>
                 </span>
             </button>
-            <button id="stepForwardBtn" class="icon-btn paused-only" type="button" title="Next Month" aria-label="Next month">
+            <button id="stepForwardBtn" class="icon-btn paused-only" type="button" title="Next Month (.); Shift: Next Year; Hold to Repeat" aria-label="Next month" aria-keyshortcuts=". Shift+.">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-triangle forward"></span>
                     <span class="transport-bar"></span>
                 </span>
             </button>
-            <button id="skipEndBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to End" aria-label="Skip to end">
+            <button id="skipEndBtn" class="icon-btn skip-btn playing-only" type="button" title="Skip to End (End)" aria-label="Skip to end" aria-keyshortcuts="End">
                 <span class="transport-icon" aria-hidden="true">
                     <span class="transport-triangle forward"></span>
                     <span class="transport-triangle forward"></span>
@@ -372,11 +372,11 @@
 
         <!-- Utility Buttons -->
         <div id="buttonGroup">
-            <button id="settingsBtn" class="icon-btn" title="Settings">
+            <button id="settingsBtn" class="icon-btn" title="Settings (S)" aria-keyshortcuts="s">
                 <img src="icons/settings.png" alt="Settings" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                 <span class="btn-text">⚙</span>
             </button>
-            <button id="infoBtn" class="icon-btn" title="Info">
+            <button id="infoBtn" class="icon-btn" title="Info (I)" aria-keyshortcuts="i">
                 <img src="icons/info.png" alt="Info" class="btn-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                 <span class="btn-text">i</span>
             </button>
@@ -386,6 +386,8 @@
     <script type="module">
         import * as THREE from 'three';
         import { createCameraController } from './camera-controller.mjs';
+        import { setupKeyboardShortcuts } from './keyboard-shortcuts.mjs';
+        import { getCalendarStepIndex, setupStepButtons } from './timeline-controls.mjs';
         import { createVideoController } from './video-controller.mjs';
         import { createSpiralGeometry } from './spiral-geometry.mjs';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -1146,15 +1148,43 @@
                 infoDetailsToggle.setAttribute('aria-label', expanded ? 'Hide information' : 'Show information');
             };
 
-            toggleBtn.addEventListener('click', () => {
+            const toggleInfoPanel = () => {
                 const willOpen = !infoPanel.classList.contains('visible');
                 infoPanel.classList.toggle('visible', willOpen);
                 if (willOpen) setInfoDetailsExpanded(false);
                 settingsPanel.classList.remove('visible');
-            });
-            settingsBtn.addEventListener('click', () => {
+            };
+            const toggleSettingsPanel = () => {
                 settingsPanel.classList.toggle('visible');
                 infoPanel.classList.remove('visible');
+            };
+            toggleBtn.addEventListener('click', toggleInfoPanel);
+            settingsBtn.addEventListener('click', toggleSettingsPanel);
+            setupKeyboardShortcuts({
+                isBusy: () => videoController.isBusy,
+                hasData: () => Boolean(spiralMesh && totalIndices > 0),
+                actions: {
+                    toggleLayout: () => {
+                        const layout = document.querySelector('input[name="chartLayout"]:checked').value;
+                        setChartLayout(layout === 'spiral' ? 'graph' : 'spiral');
+                    },
+                    togglePlayback: toggleAnimation,
+                    stepBack: months => stepTimeline(-1, months),
+                    stepForward: months => stepTimeline(1, months),
+                    skipStart: skipToStart,
+                    skipEnd: skipToEnd,
+                    toggleSettings: toggleSettingsPanel,
+                    toggleInfo: toggleInfoPanel,
+                    closePanels: () => {
+                        const opener = settingsPanel.classList.contains('visible') ? settingsBtn
+                            : infoPanel.classList.contains('visible') ? toggleBtn : null;
+                        if (!opener) return false;
+                        settingsPanel.classList.remove('visible');
+                        infoPanel.classList.remove('visible');
+                        opener.focus({ preventScroll: true });
+                        return true;
+                    }
+                }
             });
             document.addEventListener('click', (event) => {
                 // Search results can be removed before this click finishes bubbling.
@@ -1261,8 +1291,11 @@
             hideTimeline();
 
             playBtn.addEventListener('click', toggleAnimation);
-            stepBackBtn.addEventListener('click', () => stepTimeline(-1));
-            stepForwardBtn.addEventListener('click', () => stepTimeline(1));
+            setupStepButtons({
+                buttons: [{ button: stepBackBtn, direction: -1 }, { button: stepForwardBtn, direction: 1 }],
+                step: stepTimeline,
+                isBusy: () => videoController.isBusy
+            });
             skipStartBtn.addEventListener('click', skipToStart);
             skipEndBtn.addEventListener('click', skipToEnd);
             
@@ -1354,7 +1387,7 @@
                 playIcon.classList.remove('show-play');
                 
                 playBtn.classList.add('active');
-                playBtn.title = "Pause Animation";
+                playBtn.title = "Pause Animation (Space)";
                 playBtn.setAttribute('aria-label', 'Pause animation');
                 playBtn.setAttribute('aria-pressed', 'true');
                 bottomWrapper.classList.add('is-playing');
@@ -1372,7 +1405,7 @@
                 playIcon.classList.add('show-play');
                 
                 playBtn.classList.remove('active');
-                playBtn.title = "Play Animation";
+                playBtn.title = "Play Animation (Space)";
                 playBtn.setAttribute('aria-label', 'Play animation');
                 playBtn.setAttribute('aria-pressed', 'false');
                 bottomWrapper.classList.remove('is-playing');
@@ -1400,8 +1433,8 @@
             document.getElementById('timelineSlider').disabled = totalIndices <= 0;
             const atStart = totalIndices <= 0 || animationIndex <= 0.5;
             const atEnd = totalIndices <= 0 || animationIndex >= totalIndices - 0.5;
-            document.getElementById('stepBackBtn').disabled = isAnimating || atStart;
-            document.getElementById('stepForwardBtn').disabled = isAnimating || atEnd;
+            document.getElementById('stepBackBtn').disabled = atStart;
+            document.getElementById('stepForwardBtn').disabled = atEnd;
             document.getElementById('skipStartBtn').disabled = atStart;
             document.getElementById('skipEndBtn').disabled = atEnd;
         }
@@ -1424,8 +1457,18 @@
             return timelineStops[timelineStops.length - 1];
         }
 
-        function stepTimeline(direction) {
-            setPlaybackPosition(getAdjacentTimelineStop(direction));
+        function stepTimeline(direction, months = 1) {
+            if (videoController.isBusy || !spiralMesh || !timelineStops.length) return false;
+            const previousIndex = animationIndex;
+            const monthAt = index => {
+                const point = generatedGeometryData[Math.min(Math.floor(index / (CONFIG.radialSegments * 6)), generatedGeometryData.length - 1)];
+                return Math.floor(point.decimalYear * 12 + 1e-5);
+            };
+            const nextIndex = months === 1 ? getAdjacentTimelineStop(direction)
+                : getCalendarStepIndex(timelineStops.map(index => ({ index, month: monthAt(index) })),
+                    monthAt(animationIndex), direction, months);
+            setPlaybackPosition(nextIndex);
+            return animationIndex !== previousIndex;
         }
 
         function skipToStart() {

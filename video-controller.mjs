@@ -650,6 +650,9 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         document.getElementById('videoPreviewBtn').addEventListener('click', startVideoPreview);
         document.getElementById('videoPreviewStop').addEventListener('click', stopVideoPreview);
         document.addEventListener('keydown', event => {
+            if (event.defaultPrevented || event.repeat || event.isComposing
+                || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey
+                || event.getModifierState?.('AltGraph')) return;
             if (event.key === 'Escape' && videoPreview) { event.preventDefault(); stopVideoPreview(); }
         });
         updateVideoPathControls();
