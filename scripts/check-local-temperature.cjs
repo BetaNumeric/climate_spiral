@@ -79,6 +79,21 @@ function weather(url) {
   try {
     for (const [name, viewport] of Object.entries({ desktop: { width: 1280, height: 800 }, mobile: { width: 390, height: 844 } })) {
       const context = await browser.newContext({ viewport, serviceWorkers: 'block', isMobile: name === 'mobile', hasTouch: name === 'mobile' });
+      await context.addInitScript(() => {
+        const nativeLocate = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
+        window.deviceLocationTest = { calls: 0, mode: 'native', pending: [], complete() {
+          this.pending.shift().success({ coords: { latitude: 45, longitude: 5 } });
+        } };
+        Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
+          getCurrentPosition(success, error, options) {
+            const state = window.deviceLocationTest;
+            state.calls++;
+            if (state.mode === 'pending') state.pending.push({ success, error });
+            else if (typeof state.mode === 'number') queueMicrotask(() => error({ code: state.mode }));
+            else nativeLocate(success, error, options);
+          },
+        } });
+      });
       const page = await context.newPage();
       const errors = [], requests = [], stationRequests = [], countryRequests = [], geocodingRequests = [];
       let failWeather = false, delayWeather = false;
@@ -113,9 +128,10 @@ function weather(url) {
       const saved = () => page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Saved on this device.');
       const chooseBerlin = async () => {
         await page.fill('#localSearch', 'Berlin');
-        await page.locator('#localSearchForm button').click();
+        await page.locator('#localSearchForm button[type="submit"]').click();
         await page.getByRole('button', { name: 'Berlin, Germany', exact: true }).click();
         await saved();
+        assert.equal(await page.locator('#settingsPanel').isVisible(), true, 'Selecting a result must not count as tapping outside Settings');
       };
       await page.goto('http://127.0.0.1:8000/index.html');
       await page.waitForFunction(() => window.localTest?.ready());
@@ -124,6 +140,7 @@ function weather(url) {
       await openLocal();
       assert.equal(await page.locator('#playBtn').isDisabled(), true);
       await page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Choose a location.');
+      assert.equal(await page.evaluate(() => deviceLocationTest.calls), 0, 'Opening Local Temperature must not request device location');
       await chooseBerlin();
       assert.ok(requests.length >= 15);
       await page.evaluate(() => localTest.frame());
@@ -172,7 +189,7 @@ function weather(url) {
       // Cancel after one successful batch, then resume from that persisted checkpoint.
       delayWeather = true;
       await page.fill('#localSearch', '50, 13');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: '50.000, 13.000', exact: true }).click();
       await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('1955-1959'));
       await page.click('#localAction');
@@ -243,7 +260,7 @@ function weather(url) {
       await saved();
 
       await page.fill('#localSearch', '0, 0');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: '0.000, 0.000', exact: true }).click();
       await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('No station within 100 km'));
       assert.equal(await page.locator('#playBtn').isDisabled(), true);
@@ -262,7 +279,7 @@ function weather(url) {
       const pointRequestCount = requests.length;
       const geocodingRequestCount = geocodingRequests.length;
       await page.fill('#localSearch', 'Germany');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: 'Germany (country average)', exact: true }).click();
       await saved();
       await page.evaluate(() => localTest.frame());
@@ -293,7 +310,7 @@ function weather(url) {
       await page.screenshot({ path: join(output, name + '-country-unwrapped.png') });
       await page.click('#settingsBtn');
       await page.fill('#localSearch', 'France');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: 'France (country average)', exact: true }).click();
       await saved();
       const countryRequestCount = countryRequests.length;
@@ -318,7 +335,7 @@ function weather(url) {
       assert.equal(await page.locator('#localSource').inputValue(), 'station');
       assert.ok((await page.evaluate(() => localTest.state())).stationId);
       await page.fill('#localSearch', 'FR');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: 'France (country average)', exact: true }).click();
       await saved();
       assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'FR');
@@ -326,13 +343,13 @@ function weather(url) {
       await page.selectOption('#localSource', 'era5');
       await saved();
       await page.fill('#localSearch', 'Deutschland');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.getByRole('button', { name: 'Germany (country average)', exact: true }).click();
       await saved();
       assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'DE', 'Localized geocoding results also open country averages');
       assert.equal(await page.getByRole('button', { name: /representative point/ }).count(), 0);
       await page.fill('#localSearch', 'Micronesia');
-      await page.locator('#localSearchForm button').click();
+      await page.locator('#localSearchForm button[type="submit"]').click();
       await page.waitForFunction(() => document.getElementById('localStatus').textContent.includes('No country average'));
       assert.equal(await page.locator('#localResults button').count(), 0);
       assert.equal((await page.evaluate(() => localTest.state())).countryCode, 'DE', 'Unsupported countries never become point estimates');
@@ -372,8 +389,109 @@ function weather(url) {
       await saved();
       assert.equal(await page.locator('#localSource').inputValue(), 'era5');
       assert.equal((await page.evaluate(() => localTest.state())).location, 'Berlin, Germany');
+
+      // Native browser geolocation opts in once and shares the normal point-source cache.
+      assert.equal(await page.evaluate(() => deviceLocationTest.calls), 0, 'Searches and imports must not access device location');
+      await context.grantPermissions(['geolocation']);
+      await context.setGeolocation({ latitude: 52.52, longitude: 13.41 });
+      const beforeLocateGeocoding = geocodingRequests.length;
+      await page.getByRole('button', { name: 'Use my location', exact: true }).click();
+      await saved();
+      await page.evaluate(() => localTest.frame());
+      const located = await page.evaluate(() => localTest.state());
+      assert.equal(located.location, '52.520, 13.410');
+      assert.ok(located.finite && located.litPixels > 300 && !located.overflow);
+      assert.equal(await page.locator('#localSearch').inputValue(), located.location);
+      assert.equal(await page.locator('#localSource').inputValue(), 'era5');
+      assert.equal(geocodingRequests.length, beforeLocateGeocoding, 'Device coordinates need no geocoding');
+      assert.equal(await page.evaluate(() => deviceLocationTest.calls), 1);
+      assert.equal(JSON.parse(await page.evaluate(() => localTest.snapshot())).location.timezone, 'auto');
+      const field = await page.locator('.local-search-field').boundingBox();
+      const button = await page.locator('#localLocateBtn').boundingBox();
+      assert.ok(button.width >= 36 && button.height >= 36 && button.x >= field.x && button.x + button.width <= field.x + field.width);
+      const iconMask = await page.locator('#localLocateBtn span').evaluate(icon => getComputedStyle(icon).maskImage);
+      assert.match(iconMask, /locate-fixed\.svg/);
+      const iconResponse = await page.request.get('http://127.0.0.1:8000/icons/locate-fixed.svg');
+      assert.ok(iconResponse.ok());
+      await page.screenshot({ path: join(output, name + '-device-location.png') });
+      const locatedRequests = requests.length;
+      await page.reload();
+      await page.waitForFunction(() => window.localTest?.ready());
+      await openLocal();
+      await saved();
+      assert.equal(await page.evaluate(() => deviceLocationTest.calls), 0, 'Reload restores coordinates without asking the device again');
+      assert.equal(requests.length, locatedRequests, 'Located data reloads from IndexedDB');
+      assert.equal((await page.evaluate(() => localTest.state())).location, located.location);
+
+      await page.selectOption('#localSource', 'station');
+      await saved();
+      await page.click('#localLocateBtn');
+      await saved();
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.ok((await page.evaluate(() => localTest.state())).stationId, 'Device location retains the station source');
+      await page.fill('#localSearch', 'France');
+      await page.locator('#localSearchForm button[type="submit"]').click();
+      await page.getByRole('button', { name: 'France (country average)', exact: true }).click();
+      await saved();
+      await page.click('#localLocateBtn');
+      await saved();
+      assert.equal(await page.locator('#localSource').isVisible(), true);
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.equal((await page.evaluate(() => localTest.state())).countryCode, undefined, 'Device coordinates select a point, not a country average');
+      await page.selectOption('#localSource', 'era5');
+      await saved();
+
+      const beforeFailures = requests.length;
+      const retainedMesh = (await page.evaluate(() => localTest.state())).mesh;
+      for (const [code, message] of [[1, 'Location access denied.'], [2, 'Unable to get your location.'], [3, 'Location request timed out.']]) {
+        await page.evaluate(code => { deviceLocationTest.mode = code; }, code);
+        await page.click('#localLocateBtn');
+        await page.waitForFunction(message => document.getElementById('localStatus').textContent.startsWith(message), message);
+        assert.equal(await page.locator('#localLocateBtn').isDisabled(), false);
+        assert.equal(await page.locator('#localAction').isVisible(), false);
+        assert.equal((await page.evaluate(() => localTest.state())).mesh, retainedMesh, 'Location errors retain the displayed graph');
+      }
+      await page.evaluate(() => { Object.defineProperty(navigator, 'geolocation', { value: undefined, configurable: true }); });
+      await page.click('#localLocateBtn');
+      await page.waitForFunction(() => document.getElementById('localStatus').textContent.startsWith('Device location unavailable.'));
+      assert.equal((await page.evaluate(() => localTest.state())).mesh, retainedMesh);
+      assert.equal(requests.length, beforeFailures, 'Location errors never request weather data');
+      await page.reload();
+      await page.waitForFunction(() => window.localTest?.ready());
+      await openLocal();
+      await saved();
+
+      // A cancelled or superseded native request must never replace a newer selection.
+      await page.evaluate(() => { deviceLocationTest.mode = 'pending'; });
+      await page.click('#localLocateBtn');
+      assert.equal(await page.locator('#localLocateBtn').isDisabled(), true);
+      assert.equal(await page.locator('#localLocateBtn').getAttribute('aria-busy'), 'true');
+      await page.click('#localAction');
+      assert.equal(await page.locator('#localStatus').textContent(), 'Location request cancelled.');
+      await page.evaluate(() => deviceLocationTest.complete());
+      assert.equal((await page.evaluate(() => localTest.state())).location, located.location);
+      await page.click('#localLocateBtn');
+      await chooseBerlin();
+      const afterManualSearch = requests.length;
+      await page.evaluate(() => deviceLocationTest.complete());
+      await page.waitForTimeout(100);
+      assert.equal((await page.evaluate(() => localTest.state())).location, 'Berlin, Germany');
+      assert.equal(requests.length, afterManualSearch);
+      await page.click('#localLocateBtn');
+      await page.selectOption('#localSource', 'station');
+      await saved();
+      await page.evaluate(() => deviceLocationTest.complete());
+      assert.ok((await page.evaluate(() => localTest.state())).stationId);
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      await page.click('#localLocateBtn');
+      await page.selectOption('#datasetSelect', 'temperature');
+      await page.waitForFunction(() => localTest.ready() && localTest.state().dataset === 'temperature');
+      await page.evaluate(() => deviceLocationTest.complete());
+      await page.waitForTimeout(100);
+      assert.equal((await page.evaluate(() => localTest.state())).dataset, 'temperature');
+      assert.equal(await page.locator('#localLocateBtn').isDisabled(), false);
       assert.deepEqual(errors, []);
-      console.log(name + ': reanalysis, NOAA stations, and CRU countries passed search, rendering, persistence, errors, and switching checks');
+      console.log(name + ': reanalysis, NOAA stations, CRU countries, and device location passed search, rendering, persistence, errors, and switching checks');
       await context.close();
     }
     console.log('Screenshots: ' + output);

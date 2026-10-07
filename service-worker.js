@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v46`;
+const CACHE_NAME = `${CACHE_PREFIX}v51`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -47,6 +47,7 @@ const CORE_ASSETS = [
   "./icons/icon_512.png",
   "./icons/settings.png",
   "./icons/info.png",
+  "./icons/locate-fixed.svg",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/exporters/GLTFExporter.js",

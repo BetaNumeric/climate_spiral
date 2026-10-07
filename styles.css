@@ -432,7 +432,7 @@ a:hover { text-decoration: underline; }
 .settings-layout label { flex: 1; text-align: center; }
 .settings-layout span { padding-block: 8px; }
 #settingsPanel input[type=range] { box-sizing: border-box; margin-inline: 0; }
-#datasetSelect, #videoAdvanced select, #localTemperatureControls select {
+#datasetSelect, #cameraViewSelect, #videoAdvanced select, #localTemperatureControls select {
     width: 100%;
     min-width: 0;
     height: 38px;
@@ -445,16 +445,30 @@ a:hover { text-decoration: underline; }
     font: inherit;
     font-size: 16px;
 }
+#cameraViewSelect { width: 140px; max-width: 55%; }
 #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
 #localTemperatureControls { display: grid; gap: 8px; min-width: 0; }
 #localTemperatureControls[hidden] { display: none; }
 #localSearchForm { display: flex; gap: 6px; }
+.local-search-field { position: relative; flex: 1; min-width: 0; }
 #localSearch {
     min-width: 0; width: 100%; height: 38px; box-sizing: border-box;
-    padding: 0 10px; border: 1px solid #555; border-radius: 4px;
+    padding: 0 38px 0 10px; border: 1px solid #555; border-radius: 4px;
     background: #222; color: white; color-scheme: dark; font: inherit; font-size: 16px;
     -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
 }
+#localLocateBtn {
+    position: absolute; top: 1px; right: 1px; width: 36px; height: 36px;
+    display: grid; place-items: center; padding: 0; border: 0; border-radius: 3px;
+    background: transparent; color: #aaa; cursor: pointer; touch-action: manipulation;
+}
+#localLocateBtn span {
+    width: 18px; height: 18px; background: currentColor;
+    -webkit-mask: url('./icons/locate-fixed.svg') center / contain no-repeat;
+    mask: url('./icons/locate-fixed.svg') center / contain no-repeat;
+}
+#localLocateBtn:hover { background: #333; color: #fff; }
+#localLocateBtn:disabled { opacity: 0.45; cursor: wait; background: transparent; }
 #localSearchForm .upload-label { flex-shrink: 0; }
 #localResults { list-style: none; padding: 0; margin: 0; }
 #localResults button {

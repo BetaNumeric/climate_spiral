@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { getDatasetDisplay, formatDatasetValue, formatReferenceValue, getLegendPercent } from '../dataset-display.mjs';
+import { SEA_ICE_VOLUME_SCALE, getDatasetDisplay, formatDatasetValue, formatReferenceValue, getLegendPercent } from '../dataset-display.mjs';
 import { localTemperatureRange } from '../local-temperature-data.mjs';
+import { parseSeaIceVolumeData } from '../sea-ice-volume-data.mjs';
+import { readFile } from 'node:fs/promises';
 
 test('temperature formatting preserves signs, precision, and Celsius units', () => {
     for (const key of ['temperature', 'ocean', 'land', 'local']) {
@@ -30,7 +32,7 @@ test('reference labels reverse the model scaling to source units', () => {
         ['sealevel', ['0 mm', '75 mm', '150 mm']],
         ['arctic', ['5 M km\u00b2', '10 M km\u00b2', '15 M km\u00b2', '20 M km\u00b2']],
         ['arcticvolume', ['10 10\u00b3 km\u00b3', '20 10\u00b3 km\u00b3', '30 10\u00b3 km\u00b3',
-            '40 10\u00b3 km\u00b3', '50 10\u00b3 km\u00b3', '60 10\u00b3 km\u00b3']],
+            '40 10\u00b3 km\u00b3']],
     ]) {
         const display = getDatasetDisplay(key);
         assert.deepEqual(display.referenceValues.map(value => formatReferenceValue(value, display)), expected);
@@ -41,7 +43,7 @@ test('legend markers use native values and clamp values outside the display rang
     for (const [key, min, mid, max] of [
         ['temperature', -1, 0.5, 2], ['co2', 280, 355, 430],
         ['methane', 1500, 1800, 2100], ['arctic', 0, 10, 20],
-        ['arcticvolume', 0, 30, 60], ['sealevel', 0, 75, 150],
+        ['arcticvolume', 0, 20, 40], ['sealevel', 0, 75, 150],
     ]) {
         const display = getDatasetDisplay(key);
         assert.equal(getLegendPercent(min, display), 0);
@@ -49,6 +51,26 @@ test('legend markers use native values and clamp values outside the display rang
         assert.equal(getLegendPercent(max, display), 100);
         assert.equal(getLegendPercent(min - 100, display), 0);
         assert.equal(getLegendPercent(max + 100, display), 100);
+    }
+});
+
+test('PIOMAS uses a tighter display range while preserving native volumes and shared outer framing', async () => {
+    const display = getDatasetDisplay('arcticvolume');
+    const data = parseSeaIceVolumeData(await readFile(new URL('../data/piomas-monthly.txt', import.meta.url), 'utf8'));
+    const peak = Math.max(...data.flatMap(entry => entry.displayValues));
+    assert.equal(SEA_ICE_VOLUME_SCALE.max, 40);
+    assert.deepEqual(display.legendLabels, ['0', '10', '20', '30', '40']);
+    assert.deepEqual(display.legendRange, [0, 40]);
+    assert.deepEqual(display.referenceValues, SEA_ICE_VOLUME_SCALE.ticks.map(SEA_ICE_VOLUME_SCALE.toSpiralValue));
+    assert.ok(peak / SEA_ICE_VOLUME_SCALE.max > 0.8 && peak / SEA_ICE_VOLUME_SCALE.max < 1);
+    assert.equal(getLegendPercent(20, display), 50);
+    const outer = SEA_ICE_VOLUME_SCALE.toSpiralValue(SEA_ICE_VOLUME_SCALE.max);
+    const referenceRadii = display.referenceValues.map(value => value / outer * 20);
+    assert.deepEqual(referenceRadii, [5, 10, 15, 20]);
+    for (const entry of data) {
+        entry.anomalies.forEach((value, index) => {
+            assert.ok(Math.abs(display.fromSpiralValue(value) - entry.displayValues[index]) < 1e-10);
+        });
     }
 });
 

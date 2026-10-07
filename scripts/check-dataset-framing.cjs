@@ -133,11 +133,13 @@ window.framingTest = {
         }
         if (volumeDatasets.has(dataset)) {
           assert.match(state.metric, /10\u00b3 km\u00b3/);
-          assert.deepEqual(state.legend, ['0', '10', '20', '30', '40', '50', '60']);
-          assert.deepEqual(state.referenceValues, [10, 20, 30, 40, 50, 60]);
-          assert.equal(state.colorMax, 60);
+          assert.deepEqual(state.legend, ['0', '10', '20', '30', '40']);
+          assert.deepEqual(state.referenceValues, [10, 20, 30, 40]);
+          assert.equal(state.colorMax, 40);
+          assert.ok(state.dataRadius / state.outerRadius > 0.8 && state.dataRadius < state.outerRadius,
+            'PIOMAS should fill most of its reference circles without extending past the outer ring');
           state.referenceRadii.forEach((radius, index) => {
-            assert.ok(Math.abs(radius - (index + 1) * 20 / 6) < 1e-6, dataset + ': volume reference radius');
+            assert.ok(Math.abs(radius - (index + 1) * 5) < 1e-6, dataset + ': volume reference radius');
           });
           await page.click('#infoBtn');
           await page.screenshot({ path: join(output, name + '-' + dataset + '-legend.png') });

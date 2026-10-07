@@ -34,6 +34,32 @@ export function localLocationKey(location) {
     return `${MODEL}:v1:${value.latitude.toFixed(4)}:${value.longitude.toFixed(4)}:${value.timezone}`;
 }
 
+export async function getDeviceLocation({ signal, geolocation = globalThis.navigator?.geolocation } = {}) {
+    signal?.throwIfAborted();
+    if (!geolocation) throw new Error('Device location unavailable. Use HTTPS or search for a place.');
+    const position = await new Promise((resolve, reject) => {
+        const finish = (error, position) => {
+            signal?.removeEventListener('abort', abort);
+            if (error) reject(error); else resolve(position);
+        };
+        // The native one-shot request cannot be cancelled; ignore its result after aborting.
+        const abort = () => finish(signal.reason);
+        signal?.addEventListener('abort', abort, { once: true });
+        try {
+            geolocation.getCurrentPosition(position => finish(null, position), error => finish(new Error(
+                error.code === 1 ? 'Location access denied. Allow it in your browser settings or search for a place.'
+                    : error.code === 3 ? 'Location request timed out. Try again or search for a place.'
+                        : 'Unable to get your location. Try again or search for a place.'
+            )), { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
+        } catch {
+            finish(new Error('Device location unavailable. Search for a place instead.'));
+        }
+    });
+    const { latitude, longitude } = position.coords;
+    return normalizeLocation({ name: `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`,
+        latitude, longitude, timezone: 'auto' });
+}
+
 async function requestJSON(url, signal, fetchImpl) {
     const response = await fetchImpl(url, { signal: signal
         ? AbortSignal.any([signal, AbortSignal.timeout(60000)]) : AbortSignal.timeout(60000), cache: 'no-store' });

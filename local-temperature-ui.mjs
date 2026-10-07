@@ -1,4 +1,4 @@
-import { createLocalTemperatureCache, fetchLocalTemperature, localLocationKey, normalizeLocation,
+import { createLocalTemperatureCache, fetchLocalTemperature, getDeviceLocation, localLocationKey, normalizeLocation,
     parseLocalTemperatureData, readLocalSnapshot, searchLocalPlaces } from './local-temperature-data.mjs';
 import { fetchStationCatalog, fetchStationData, nearbyStations, readStationCatalog, readStationSnapshot,
     stationCoverage } from './station-temperature-data.mjs';
@@ -9,6 +9,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
     const cache = createLocalTemperatureCache();
     const form = document.getElementById('localSearchForm');
     const input = document.getElementById('localSearch');
+    const locate = document.getElementById('localLocateBtn');
     const results = document.getElementById('localResults');
     const status = document.getElementById('localStatus');
     const action = document.getElementById('localAction');
@@ -22,6 +23,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
     const stationDetails = document.getElementById('localStationDetails');
     const countryDetails = document.getElementById('localCountryDetails');
     let generation = 0, controller = null, searchController = null, location = null;
+    let locateController = null;
     let countryCode = null;
     let mode = source.value;
     let sourceRestored = false;
@@ -48,18 +50,27 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
 
     function message(text, retry = false) {
         status.textContent = text;
-        action.hidden = !retry && !controller;
-        action.textContent = controller ? 'Cancel' : 'Retry';
+        action.hidden = !retry && !controller && !locateController;
+        action.textContent = controller || locateController ? 'Cancel' : 'Retry';
+    }
+    function endLocationRequest() {
+        locateController?.abort();
+        locateController = null;
+        locate.disabled = false;
+        locate.removeAttribute('aria-busy');
     }
     function cancel() {
-        const pending = Boolean(controller || searchController);
+        const locating = Boolean(locateController);
+        const pending = Boolean(controller || searchController || locating);
         generation++;
         controller?.abort();
         controller = null;
         searchController?.abort();
         searchController = null;
+        endLocationRequest();
         results.replaceChildren();
-        if (pending) message('Download paused.', mode === 'country' ? Boolean(countryCode) : Boolean(location));
+        if (pending) message(locating ? 'Location request cancelled.' : 'Download paused.',
+            !locating && (mode === 'country' ? Boolean(countryCode) : Boolean(location)));
     }
 
     async function countryCatalog(force, token, signal) {
@@ -292,9 +303,32 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
         onClear();
         void load(location, false, false);
     });
+    locate.addEventListener('click', async () => {
+        if (!isActive()) return;
+        cancel();
+        const token = generation;
+        const request = new AbortController();
+        locateController = request;
+        locate.disabled = true;
+        locate.setAttribute('aria-busy', 'true');
+        message('Getting your location...');
+        try {
+            const place = await getDeviceLocation({ signal: request.signal });
+            if (locateController !== request || !isCurrent(token)) return;
+            input.value = place.name;
+            await load(place);
+        } catch (error) {
+            if (locateController !== request || !isCurrent(token)) return;
+            endLocationRequest();
+            message(error.message);
+        } finally {
+            if (locateController === request) endLocationRequest();
+        }
+    });
     form.addEventListener('submit', async event => {
         event.preventDefault();
         if (!isActive()) return;
+        if (locateController) cancel();
         searchController?.abort();
         const request = new AbortController();
         searchController = request;
@@ -334,13 +368,21 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
             if (searchController === request) searchController = null;
         }
     });
-    input.addEventListener('input', () => { searchController?.abort(); results.replaceChildren(); });
+    input.addEventListener('input', () => {
+        if (locateController) cancel();
+        searchController?.abort();
+        results.replaceChildren();
+    });
     input.addEventListener('keydown', event => {
         if (event.key === 'ArrowDown') { results.querySelector('button')?.focus(); event.preventDefault(); }
-        if (event.key === 'Escape') { searchController?.abort(); results.replaceChildren(); }
+        if (event.key === 'Escape') {
+            if (locateController) cancel();
+            searchController?.abort();
+            results.replaceChildren();
+        }
     });
     action.addEventListener('click', () => {
-        if (controller) cancel();
+        if (controller || locateController) cancel();
         else if (mode === 'country' && countryCode) void loadCountry(countryCode, true);
         else if (mode !== 'country' && location) void load(location, true, false);
     });

@@ -8,6 +8,14 @@ const TAP_MAX_MOVEMENT_PX = 12;
 const DOUBLE_TAP_MAX_DISTANCE_PX = 28;
 const LAYOUT_PINCH_MIN_MOVEMENT_PX = 12;
 const LAYOUT_PINCH_MIN_SCALE = 0.15;
+const CAMERA_VIEWS = {
+    top: { polar: 0, azimuth: 0 },
+    front: { polar: Math.PI / 2, azimuth: 0 },
+    right: { polar: Math.PI / 2, azimuth: Math.PI / 2 },
+    left: { polar: Math.PI / 2, azimuth: -Math.PI / 2 },
+    back: { polar: Math.PI / 2, azimuth: Math.PI }
+};
+const SIDE_VIEWS = ['front', 'right', 'back', 'left'];
 
 export function createCameraController({ THREE, OrbitControls, canvas, getSceneState, isBusy, defaultDistance,
     onLayoutGesture = () => {} }) {
@@ -54,14 +62,10 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
     }
 
     function nearestCameraView(direction) {
-        const candidates = [
-            ['top', new THREE.Vector3(0, 1, 0)],
-            ['front', new THREE.Vector3(0, 0, 1)],
-            ['right', new THREE.Vector3(1, 0, 0)]
-        ];
         let nearest = null;
         let nearestAngle = Infinity;
-        for (const [view, targetDirection] of candidates) {
+        for (const [view, { polar, azimuth }] of Object.entries(CAMERA_VIEWS)) {
+            const targetDirection = new THREE.Vector3().setFromSphericalCoords(1, polar, azimuth);
             const angle = direction.angleTo(targetDirection);
             if (angle < nearestAngle) {
                 nearest = view;
@@ -75,8 +79,23 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         setCameraView('top');
     }
 
+    function cycleSideView(step = 1, { fromTop = true } = {}) {
+        if (isBusy()) return false;
+        const { activeCamera, controls } = getSceneState();
+        if (!activeCamera || !controls) return false;
+        const current = new THREE.Spherical().setFromVector3(activeCamera.position.clone().sub(controls.target));
+        // Repeated gestures continue from the destination even while a turn is in progress.
+        const polar = cameraResetAnimation?.endPolar ?? current.phi;
+        const azimuth = cameraResetAnimation
+            ? cameraResetAnimation.startSpherical.theta + cameraResetAnimation.thetaDelta : current.theta;
+        if (polar < Math.PI / 4 && !fromTop) return false;
+        const next = (Math.round(azimuth / (Math.PI / 2)) + step + SIDE_VIEWS.length) % SIDE_VIEWS.length;
+        setCameraView(polar < Math.PI / 4 ? 'front' : SIDE_VIEWS[next]);
+        return true;
+    }
+
     function setCameraView(view, { preserveFraming = false, duration = CAMERA_RESET_DURATION_MS } = {}) {
-        if (isBusy()) return;
+        if (!Object.hasOwn(CAMERA_VIEWS, view) || isBusy()) return;
         const { controls, activeCamera, perspectiveCamera, orthographicCamera, spiralHeight } = getSceneState();
         const now = performance.now();
         if (!controls || !activeCamera || (!preserveFraming && view === lastCameraView && now - lastCameraResetTime < 250)) return;
@@ -111,8 +130,7 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
             startPosition.clone().sub(startTarget)
         );
         if (preserveFraming) endDistance = startSpherical.radius;
-        const endPolar = view === 'top' ? 0 : Math.PI / 2;
-        const endAzimuth = view === 'right' ? Math.PI / 2 : 0;
+        const { polar: endPolar, azimuth: endAzimuth } = CAMERA_VIEWS[view];
         const thetaDelta = Math.atan2(
             Math.sin(endAzimuth - startSpherical.theta),
             Math.cos(endAzimuth - startSpherical.theta)
@@ -175,9 +193,11 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
     }
 
     function setupCameraResetGestures(canvas) {
-        const activeTouchPointers = new Set();
+        const activeTouchPointers = new Map();
         let tapCandidate = null;
         let previousTap = null;
+        let twoFingerCandidate = null;
+        let previousTwoFingerTap = null;
         let rightClickCandidate = null;
         let previousRightClick = null;
 
@@ -189,7 +209,12 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         document.addEventListener('keydown', (event) => {
             if (event.defaultPrevented || event.repeat || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey
                 || event.target.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]')) return;
-            const view = { '1': 'top', '2': 'front', '3': 'right' }[event.key];
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                if (cycleSideView(event.key === 'ArrowLeft' ? -1 : 1, { fromTop: false })) event.preventDefault();
+                return;
+            }
+            const view = { '1': 'top', '2': 'front', '3': 'right', '4': 'left', '5': 'back',
+                ArrowUp: 'top', ArrowDown: 'front' }[event.key];
             if (!view || isBusy()) return;
             event.preventDefault();
             setCameraView(view);
@@ -205,8 +230,19 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
             }
             if (event.pointerType !== 'touch') return;
 
-            activeTouchPointers.add(event.pointerId);
+            const now = performance.now();
+            activeTouchPointers.set(event.pointerId, { x: event.clientX, y: event.clientY, moved: false });
             if (activeTouchPointers.size > 1) {
+                // Only a fresh pair qualifies; held fingers, pinches, and a third contact do not.
+                if (activeTouchPointers.size === 2 && tapCandidate && !tapCandidate.moved
+                    && now - tapCandidate.startTime <= TAP_MAX_DURATION_MS && !isBusy()) {
+                    const points = [...activeTouchPointers.values()];
+                    twoFingerCandidate = { startTime: tapCandidate.startTime,
+                        x: (points[0].x + points[1].x) / 2, y: (points[0].y + points[1].y) / 2 };
+                } else {
+                    twoFingerCandidate = null;
+                    previousTwoFingerTap = null;
+                }
                 tapCandidate = null;
                 previousTap = null;
                 return;
@@ -214,14 +250,21 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
 
             tapCandidate = {
                 pointerId: event.pointerId,
-                startTime: performance.now(),
+                startTime: now,
                 startX: event.clientX,
                 startY: event.clientY,
-                moved: false
+                moved: isBusy()
             };
         }, { passive: true });
 
         canvas.addEventListener('pointermove', (event) => {
+            const touch = activeTouchPointers.get(event.pointerId);
+            if (event.pointerType === 'touch' && touch
+                && (isBusy() || Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > TAP_MAX_MOVEMENT_PX)) {
+                touch.moved = true;
+                twoFingerCandidate = null;
+                previousTwoFingerTap = null;
+            }
             if (rightClickCandidate && event.pointerId === rightClickCandidate.pointerId
                 && Math.hypot(event.clientX - rightClickCandidate.startX, event.clientY - rightClickCandidate.startY) > TAP_MAX_MOVEMENT_PX) {
                 rightClickCandidate.moved = true;
@@ -243,7 +286,7 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
                     && Math.hypot(event.clientX - previousRightClick.x, event.clientY - previousRightClick.y) <= DOUBLE_TAP_MAX_DISTANCE_PX) {
                     event.preventDefault();
                     previousRightClick = null;
-                    setCameraView('front');
+                    cycleSideView();
                 } else {
                     previousRightClick = isClick ? { time: now, x: event.clientX, y: event.clientY } : null;
                 }
@@ -252,8 +295,29 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
             }
             if (event.pointerType !== 'touch') return;
 
+            const touch = activeTouchPointers.get(event.pointerId);
+            if (!touch) return;
             const involvedMultiplePointers = activeTouchPointers.size > 1;
+            if (isBusy() || touch.moved
+                || Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > TAP_MAX_MOVEMENT_PX) {
+                twoFingerCandidate = null;
+                previousTwoFingerTap = null;
+            }
             activeTouchPointers.delete(event.pointerId);
+            if (twoFingerCandidate && activeTouchPointers.size === 0) {
+                const now = performance.now();
+                const tap = twoFingerCandidate;
+                const isTap = now - tap.startTime <= TAP_MAX_DURATION_MS;
+                const isDoubleTap = isTap && previousTwoFingerTap
+                    && now - previousTwoFingerTap.time <= DOUBLE_TAP_MAX_DELAY_MS
+                    && Math.hypot(tap.x - previousTwoFingerTap.x, tap.y - previousTwoFingerTap.y) <= DOUBLE_TAP_MAX_DISTANCE_PX;
+                twoFingerCandidate = null;
+                previousTwoFingerTap = isTap && !isDoubleTap ? { time: now, x: tap.x, y: tap.y } : null;
+                if (isDoubleTap) {
+                    event.preventDefault();
+                    requestAnimationFrame(() => cycleSideView());
+                }
+            }
             if (
                 involvedMultiplePointers ||
                 !tapCandidate ||
@@ -265,7 +329,8 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
 
             const now = performance.now();
             const duration = now - tapCandidate.startTime;
-            const isTap = !tapCandidate.moved && duration <= TAP_MAX_DURATION_MS;
+            const isTap = !isBusy() && !touch.moved && !tapCandidate.moved && duration <= TAP_MAX_DURATION_MS;
+            previousTwoFingerTap = null;
 
             if (isTap) {
                 const isDoubleTap = previousTap &&
@@ -292,6 +357,8 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
             activeTouchPointers.delete(event.pointerId);
             tapCandidate = null;
             previousTap = null;
+            twoFingerCandidate = null;
+            previousTwoFingerTap = null;
         }, { passive: true });
     }
 

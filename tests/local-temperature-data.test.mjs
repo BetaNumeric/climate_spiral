@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { aggregateLocalDays, createLocalTemperatureCache, fetchLocalTemperature, latestLocalMonth,
+import { aggregateLocalDays, createLocalTemperatureCache, fetchLocalTemperature, getDeviceLocation, latestLocalMonth,
     localLocationKey, localTemperatureRange, normalizeLocation, parseLocalTemperatureData,
     readLocalSnapshot, searchLocalPlaces } from '../local-temperature-data.mjs';
 
@@ -30,6 +30,46 @@ function daily(start, end) {
 }
 
 const response = data => ({ ok: true, status: 200, json: async () => data });
+
+test('device location uses a bounded, low-power one-shot request and the existing coordinate format', async () => {
+    let calls = 0;
+    const place = await getDeviceLocation({ geolocation: { getCurrentPosition(success, error, options) {
+        calls++;
+        assert.deepEqual(options, { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
+        success({ coords: { latitude: location.latitude, longitude: location.longitude, accuracy: 50 } });
+    } } });
+    assert.equal(calls, 1);
+    assert.deepEqual(place, { name: '52.520, 13.410', latitude: 52.52, longitude: 13.41, timezone: 'auto' });
+    assert.equal(localLocationKey(place), localLocationKey({ ...place, name: 'A searched point' }));
+});
+
+test('device location explains denied access, timeout, unavailable devices, and unsupported browsers', async () => {
+    for (const [code, message] of [[1, /access denied/], [2, /Unable to get/], [3, /timed out/]]) {
+        await assert.rejects(getDeviceLocation({ geolocation: { getCurrentPosition(success, error) {
+            error({ code, message: 'Browser-specific message' });
+        } } }), message);
+    }
+    await assert.rejects(getDeviceLocation({ geolocation: null }), /HTTPS or search/);
+    await assert.rejects(getDeviceLocation({ geolocation: { getCurrentPosition() { throw new Error('Unavailable'); } } }), /Search for a place/);
+    await assert.rejects(getDeviceLocation({ geolocation: { getCurrentPosition(success) {
+        success({ coords: { latitude: 91, longitude: 0 } });
+    } } }), /Invalid location/);
+});
+
+test('cancelling device location rejects immediately and ignores late native callbacks', async () => {
+    const controller = new AbortController();
+    let success, failure;
+    const pending = getDeviceLocation({ signal: controller.signal, geolocation: {
+        getCurrentPosition(resolve, reject) { success = resolve; failure = reject; },
+    } });
+    controller.abort();
+    await assert.rejects(pending, { name: 'AbortError' });
+    success({ coords: { latitude: 10, longitude: 20 } });
+    failure({ code: 1 });
+    await assert.rejects(getDeviceLocation({ signal: controller.signal, geolocation: {
+        getCurrentPosition() { assert.fail('An already cancelled request must not access the device'); },
+    } }), { name: 'AbortError' });
+});
 
 test('local coverage excludes unpublished and incomplete months around year and month boundaries', () => {
     assert.equal(latestLocalMonth(new Date('2026-10-03T12:00:00Z')), '2026-08');

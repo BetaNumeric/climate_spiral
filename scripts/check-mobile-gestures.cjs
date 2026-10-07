@@ -10,6 +10,11 @@ const hooks = `
 window.gestureTest = {
   ready: () => Boolean(spiralMesh && controls),
   prepare() {
+    // Keep native touch timing reliable when Chrome renders through SwiftShader.
+    document.getElementById('smoothSpiralToggle').checked = false;
+    updateDataVisualization();
+    renderer.setPixelRatio(0.5);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     if (isAnimating) toggleAnimation();
     cameraController.cancelAnimation();
     controls.enableDamping = false;
@@ -19,7 +24,7 @@ window.gestureTest = {
   stopPreview: () => videoController.stopPreview(),
   state: () => ({ mix: layoutMix, moving: Boolean(layoutTransition),
     cameraMoving: cameraController.isAnimating, previewing: videoController.isPreviewing,
-    zoom: activeCamera.zoom, polar: controls.getPolarAngle(),
+    zoom: activeCamera.zoom, polar: controls.getPolarAngle(), azimuth: controls.getAzimuthalAngle(),
     position: activeCamera.position.toArray(), quaternion: activeCamera.quaternion.toArray(),
     enabled: controls.enabled, index: animationIndex, finite: spiralMesh.geometry.attributes.position.array.every(Number.isFinite) }),
   pixels() {
@@ -65,6 +70,26 @@ async function settle(page, mix) {
   await page.waitForFunction(mix => !gestureTest.state().moving && gestureTest.state().mix === mix, mix);
 }
 
+async function doubleTwoFingerTap(page, session, viewport, reverse = false) {
+  const points = touchPoints(viewport, 2);
+  for (let tap = 0; tap < 2; tap++) {
+    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points.slice(0, 1) });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [points[reverse ? 0 : 1]] });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    if (tap === 0) await page.waitForTimeout(70);
+  }
+}
+
+async function cameraView(page, polar, azimuth = 0) {
+  await page.waitForFunction(({ polar, azimuth }) => {
+    const state = gestureTest.state();
+    const yaw = Math.atan2(Math.sin(state.azimuth - azimuth), Math.cos(state.azimuth - azimuth));
+    return !state.cameraMoving && Math.abs(state.polar - polar) < 0.001
+      && (polar === 0 || Math.abs(yaw) < 0.001);
+  }, { polar, azimuth });
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true,
     args: ['--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader'] });
@@ -95,6 +120,17 @@ async function settle(page, mix) {
       if (mobile) await page.locator('.layout-modes label').first().tap();
       else await page.locator('.layout-modes label').first().click();
       assert.equal(await settings.isVisible(), true, 'Taps within Settings must not close it');
+      await page.locator('#viewSettings > summary').click();
+      for (const [view, polar, azimuth] of [['front', Math.PI / 2, 0], ['right', Math.PI / 2, Math.PI / 2],
+        ['back', Math.PI / 2, Math.PI], ['left', Math.PI / 2, -Math.PI / 2], ['top', 0, 0]]) {
+        await page.locator('#cameraViewSelect').selectOption(view);
+        await cameraView(page, polar, azimuth);
+        assert.equal(await page.locator('#cameraViewSelect').inputValue(), '', 'View menu offers commands, not stale camera state');
+        assert.equal(await settings.isVisible(), true);
+      }
+      assert.equal(await settings.evaluate(element => element.scrollWidth <= element.clientWidth), true,
+        'Camera view control must not cause horizontal overflow');
+      await page.screenshot({ path: join(output, name + '-camera-settings.png') });
       if (mobile) await page.touchscreen.tap(10, 50);
       else await page.mouse.click(10, 50);
       assert.equal(await settings.isVisible(), !mobile, 'Only touch-first devices dismiss Settings outside');
@@ -143,6 +179,18 @@ async function settle(page, mix) {
         await page.waitForFunction(() => !gestureTest.state().cameraMoving && gestureTest.state().polar < 0.001);
         assert.equal((await state(page)).zoom, 1, 'Double-tap reset must still work after multi-touch');
 
+        for (const [index, azimuth] of [0, Math.PI / 2, Math.PI, -Math.PI / 2, 0].entries()) {
+          await doubleTwoFingerTap(page, session, viewport, index % 2 === 0);
+          await cameraView(page, Math.PI / 2, azimuth);
+          assert.equal((await state(page)).index, before.index, 'Camera gestures must not change the data timeline');
+        }
+        assert.ok(await page.evaluate(() => gestureTest.pixels()) > 300);
+        await page.screenshot({ path: join(output, name + '-two-finger-front.png') });
+        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
+        await page.waitForTimeout(70);
+        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
+        await cameraView(page, 0);
+
         await page.emulateMedia({ reducedMotion: 'reduce' });
         await pinch(page, session, viewport, 3, 1.5);
         const reduced = await state(page);
@@ -150,6 +198,9 @@ async function settle(page, mix) {
         assert.equal(reduced.moving, false);
         await pinch(page, session, viewport, 3, 0.5);
         await settle(page, 0);
+        await doubleTwoFingerTap(page, session, viewport);
+        await cameraView(page, Math.PI / 2, 0);
+        assert.equal((await state(page)).cameraMoving, false);
 
         await page.evaluate(() => {
           document.getElementById('videoTransition').value = '10';
@@ -157,6 +208,7 @@ async function settle(page, mix) {
         });
         assert.equal((await state(page)).previewing, true);
         await pinch(page, session, viewport, 3, 1.5);
+        await doubleTwoFingerTap(page, session, viewport);
         assert.equal((await state(page)).mix, 0, 'Gestures must not interfere with a video preview');
         assert.equal(await page.locator('input[name="chartLayout"][value="spiral"]').isChecked(), true);
         await page.evaluate(() => gestureTest.stopPreview());

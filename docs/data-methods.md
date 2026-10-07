@@ -66,7 +66,7 @@ Citation: Fetterer et al. (2025), *Sea Ice Index*, Version 4, NSIDC, [doi:10.726
 
 ## Sea Ice Volume
 
-The Arctic PIOMAS volume series uses its v2.1 monthly total-volume table, beginning in January 1979. Values are thousands of cubic kilometers (10³ km³), not ice-covered area or anomalies. PIOMAS combines an ocean/sea-ice model with observations; total volume is a model estimate, not a direct measurement. Radius is linear from zero, with a fixed 0-60 thousand km³ radius and color range. The spiral's enclosed area is not proportional to volume.
+The Arctic PIOMAS volume series uses its v2.1 monthly total-volume table, beginning in January 1979. Values are thousands of cubic kilometers (10³ km³), not ice-covered area or anomalies. PIOMAS combines an ocean/sea-ice model with observations; total volume is a model estimate, not a direct measurement. Radius is linear from zero, with a fixed 0-40 thousand km³ radius and color range. Reference rings mark 10, 20, 30, and 40 thousand km³; the shared outer frame and month-label positions stay the same as in the other datasets. The spiral's enclosed area is not proportional to volume.
 
 The snapshot retains the source table unchanged. Its `-1` placeholders are omitted without shifting later months or predicting unavailable months. The updater accepts a complete history from January 1979 through the latest available month, accepts revisions, and rejects downloads that lose historical observations or shorten the record.
 

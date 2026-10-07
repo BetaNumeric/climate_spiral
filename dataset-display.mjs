@@ -2,7 +2,7 @@ import { CO2_BASELINE_PPM, CO2_REFERENCE_RINGS_PPM, co2PpmToSpiralValue, spiralV
 import { METHANE_AXIS_MIN, METHANE_TICKS, methanePpbToSpiralValue, spiralValueToMethanePpb } from './methane-data.mjs';
 import { SEA_LEVEL_TICKS, seaLevelMmToSpiralValue, spiralValueToSeaLevelMm } from './sea-level-data.mjs';
 import { SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS, seaIceExtentToSpiralValue, spiralValueToSeaIceExtent } from './sea-ice-data.mjs';
-import { SEA_ICE_MAX_VOLUME, SEA_ICE_VOLUME_TICKS, seaIceVolumeToSpiralValue, spiralValueToSeaIceVolume } from './sea-ice-volume-data.mjs';
+import { seaIceVolumeToSpiralValue, spiralValueToSeaIceVolume } from './sea-ice-volume-data.mjs';
 
 export const SEA_ICE_EXTENT_SCALE = {
     max: SEA_ICE_MAX_EXTENT, ticks: SEA_ICE_TICKS,
@@ -10,7 +10,8 @@ export const SEA_ICE_EXTENT_SCALE = {
     unit: 'M km\u00b2',
 };
 export const SEA_ICE_VOLUME_SCALE = {
-    max: SEA_ICE_MAX_VOLUME, ticks: SEA_ICE_VOLUME_TICKS,
+    // Fit PIOMAS without changing the parsers' existing internal model-value conversion.
+    max: 40, ticks: [10, 20, 30, 40],
     toSpiralValue: seaIceVolumeToSpiralValue, fromSpiralValue: spiralValueToSeaIceVolume,
     unit: '10\u00b3 km\u00b3',
 };
@@ -36,9 +37,9 @@ const displays = {
     arctic: seaIce, antarctic: seaIce,
     arcticvolume: {
         ...seaIce, unit: SEA_ICE_VOLUME_SCALE.unit,
-        legendLabels: [0, ...SEA_ICE_VOLUME_TICKS].map(String),
-        legendRange: [0, SEA_ICE_MAX_VOLUME],
-        referenceValues: SEA_ICE_VOLUME_TICKS.map(seaIceVolumeToSpiralValue),
+        legendLabels: [0, ...SEA_ICE_VOLUME_SCALE.ticks].map(String),
+        legendRange: [0, SEA_ICE_VOLUME_SCALE.max],
+        referenceValues: SEA_ICE_VOLUME_SCALE.ticks.map(seaIceVolumeToSpiralValue),
         fromSpiralValue: spiralValueToSeaIceVolume,
     },
     co2: {

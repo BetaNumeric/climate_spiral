@@ -91,7 +91,12 @@
                 <select id="datasetSelect"></select>
                 <div id="localTemperatureControls" hidden>
                     <form id="localSearchForm" role="search" aria-label="Find a location">
-                        <input id="localSearch" type="search" placeholder="City, country or coordinates" aria-label="City, country or latitude, longitude" maxlength="100" autocomplete="off" spellcheck="false">
+                        <div class="local-search-field">
+                            <input id="localSearch" type="search" placeholder="City, country or coordinates" aria-label="City, country or latitude, longitude" maxlength="100" autocomplete="off" spellcheck="false">
+                            <button id="localLocateBtn" type="button" title="Use my location" aria-label="Use my location" aria-describedby="localStatus">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
                         <button class="upload-label" type="submit">Search</button>
                     </form>
                     <ul id="localResults" aria-label="Matching locations"></ul>
@@ -143,6 +148,17 @@
             <details id="viewSettings" class="settings-section">
                 <summary>View</summary>
                 <div class="settings-section-content">
+                    <div class="setting-row">
+                        <label for="cameraViewSelect">Camera View</label>
+                        <select id="cameraViewSelect">
+                            <option value="" selected disabled>Choose...</option>
+                            <option value="top">Top</option>
+                            <option value="front">Front</option>
+                            <option value="right">Right</option>
+                            <option value="back">Back</option>
+                            <option value="left">Left</option>
+                        </select>
+                    </div>
                     <div class="setting-row">
                         <label for="helpersToggle">Show Annotations</label>
                         <span class="switch">
@@ -1119,6 +1135,11 @@
             });
             datasetSelect.value = currentDatasetKey;
 
+            document.getElementById('cameraViewSelect').addEventListener('change', event => {
+                cameraController.setView(event.target.value);
+                event.target.value = '';
+            });
+
             const setInfoDetailsExpanded = (expanded) => {
                 infoPanel.classList.toggle('details-expanded', expanded);
                 infoDetailsToggle.setAttribute('aria-expanded', String(expanded));
@@ -1136,8 +1157,10 @@
                 infoPanel.classList.remove('visible');
             });
             document.addEventListener('click', (event) => {
+                // Search results can be removed before this click finishes bubbling.
+                const path = event.composedPath();
                 if (!window.matchMedia('(hover: none) and (pointer: coarse)').matches
-                    || settingsPanel.contains(event.target) || settingsBtn.contains(event.target)) return;
+                    || path.includes(settingsPanel) || path.includes(settingsBtn)) return;
                 settingsPanel.classList.remove('visible');
             });
             infoDetailsToggle.addEventListener('click', () => {
@@ -1837,26 +1860,17 @@
                     }
                     rawColors.push(c);
                 });
-
-                if (entry.year % 10 === 0) {
-                    const yearOffset = entry.year - startYearData;
-                    const y = (yearOffset) * CONFIG.heightPerYear;
-                    const sprite = addYearLabel(entry.year, y, yearLabelRadius);
-                    sprite.material.opacity = opacityFade;
-                    yearLabels.add(sprite);
-                }
             });
             
-            // Add next decade label
-            const lastEntry = data[data.length - 1];
-            const lastYear = lastEntry.year;
-            // E.g. if lastYear is 2025 -> 2030. If 2030 -> 2040.
+            // Axis ticks span the calendar range, including decades without observations.
+            const lastYear = data[data.length - 1].year;
             const nextDecade = Math.floor(lastYear / 10) * 10 + 10;
-            const yearOffset = nextDecade - startYearData;
-            const y = yearOffset * CONFIG.heightPerYear;
-            const sprite = addYearLabel(nextDecade, y, yearLabelRadius);
-            sprite.material.opacity = opacityFade;
-            yearLabels.add(sprite);
+            for (let year = Math.ceil(startYearData / 10) * 10; year <= nextDecade; year += 10) {
+                const y = (year - startYearData) * CONFIG.heightPerYear;
+                const sprite = addYearLabel(year, y, yearLabelRadius);
+                sprite.material.opacity = opacityFade;
+                yearLabels.add(sprite);
+            }
             
             yearLabels.rotation.y = azimuthAngle;
             spiralHeight = (data[data.length-1].year - startYearData + 1) * CONFIG.heightPerYear;
