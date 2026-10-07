@@ -265,21 +265,6 @@
                             </div>
                             <span class="video-path-label">Then move to</span>
                             <div id="videoViewList" class="video-view-list" aria-label="Camera path">
-                                <div class="video-view-step">
-                                    <select class="video-step-view" aria-label="View 1">
-                                        <option value="spiral-top">Spiral · Top</option>
-                                        <option value="spiral-front" selected>Spiral · Front</option>
-                                        <option value="spiral-right">Spiral · Right</option>
-                                        <option value="graph-top">Unwrapped · Top</option>
-                                        <option value="graph-front">Unwrapped · Front</option>
-                                        <option value="graph-right">Unwrapped · Right</option>
-                                        <option value="pause">Pause</option>
-                                    </select>
-                                    <button class="video-step-button" type="button" data-action="up" aria-label="Move view up" title="Move view up">↑</button>
-                                    <button class="video-step-button" type="button" data-action="down" aria-label="Move view down" title="Move view down">↓</button>
-                                    <button class="video-step-button" type="button" data-action="remove" aria-label="Remove view" title="Remove view">×</button>
-                                    <label class="video-pause-duration" hidden>Pause length (s)<input class="video-pause-seconds video-number" type="number" min="0.5" max="30" step="0.5" value="2" inputmode="decimal"></label>
-                                </div>
                             </div>
                             <div class="setting-row video-path-actions">
                                 <button id="videoAddView" class="upload-label video-add-view" type="button">Add view</button>
@@ -287,7 +272,7 @@
                             </div>
                             <div id="videoTransitionRow" class="setting-row">
                                 <label for="videoTransition">Seconds per move</label>
-                                <input id="videoTransition" class="video-number" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal">
+                                <input id="videoTransition" class="video-number" type="number" min="0.5" max="10" step="0.5" value="2" inputmode="decimal">
                             </div>
                             <div class="setting-row">
                                 <label for="videoLegendToggle">Include legend</label>

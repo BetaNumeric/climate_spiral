@@ -378,9 +378,12 @@ const hooks = `
         assert.ok(gltf.meshes.every(mesh => mesh.primitives.every(primitive => primitive.mode === 1)), 'Thin model must contain lines');
         assert.ok(!model.includes(Buffer.from('layoutMorph')));
         await page.click('#videoAdvanced > summary');
-        assert.deepEqual(await page.locator('#videoViewList .video-step-view').evaluateAll(elements => elements.map(element => element.value)), ['spiral-front']);
+        assert.deepEqual(await page.locator('#videoViewList .video-step-view').evaluateAll(elements => elements.map(element => element.value)),
+          ['pause', 'spiral-front', 'pause']);
         await page.selectOption('#videoCamera', 'graph-top');
-        await page.click('#videoViewList [data-action="remove"]');
+        while (await page.locator('#videoViewList [data-action="remove"]').count()) {
+          await page.locator('#videoViewList [data-action="remove"]').first().click();
+        }
         assert.equal(await page.locator('#videoTransitionRow').isHidden(), true);
         await page.click('#videoExportBtn');
         await page.waitForFunction(() => layoutTest.exportState().frames > 3, null, { timeout: 60_000 });

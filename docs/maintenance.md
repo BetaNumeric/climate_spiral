@@ -28,6 +28,8 @@ Run `npm run check:geometry` against the local server to check welded joins, smo
 
 For browser export checks, install dependencies with `npm ci`, install Chrome for Playwright, serve the app at `http://127.0.0.1:8000`, then run `node scripts/check-video-export.cjs`. The script records and decodes sample videos, checks dimensions and visible frames, verifies camera and playback restoration, and saves screenshots under `climate-video-export` in the system temporary directory. An optional argument specifies a Playwright package path.
 
+`node scripts/check-readme-camera-paths.mjs` checks the default two-second movements and one-second pauses, both README camera paths, stationary pauses, preview restoration, and nonblank frames on desktop and mobile. Screenshots are saved under `climate-readme-camera-paths` in the system temporary directory. It uses the local server at port 8000, or `README_VIDEO_BASE_URL` when set.
+
 The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame.
 
 ## Data Updates
@@ -81,7 +83,9 @@ Inactive datasets are retained under [archive](../archive/README.md), with their
 
 ## README Videos
 
-The [Refresh README videos](../.github/workflows/refresh-readme-videos.yml) workflow runs monthly on the 22nd at 08:37 UTC and can be started manually. It renders Global Temperature and one randomly chosen other bundled dataset, excluding the prior secondary choice. Local Temperature is not included. It uses checked-in data and the app's default Full HD landscape export settings. Videos are attached to a dedicated GitHub issue, keeping large binaries out of the repository. The workflow validates the uploads, updates the two README links, and skips a scheduled run when the month's videos have already been published.
+The [Refresh README videos](../.github/workflows/refresh-readme-videos.yml) workflow runs monthly on the 22nd at 08:37 UTC and can be started manually. It renders Global Temperature and one randomly chosen other bundled dataset, excluding the prior secondary choice. Local Temperature is not included. It uses checked-in data and Full HD landscape with the default speed and legend. Both videos begin at Spiral Top. One follows Spiral Front → Unwrapped Right → Unwrapped Top; the other follows Unwrapped Top → Unwrapped Front → Unwrapped Right. The two paths randomly swap slots on each refresh. Movements take two seconds, with one-second pauses after drawing, between views, and at the end (in addition to the standard final half-second hold). Videos are attached to a dedicated GitHub issue, keeping large binaries out of the repository. The workflow validates the uploads, updates the two README links, and skips a scheduled run when the month's videos have already been published.
+
+`scripts/configure-readme-video.mjs` applies the paths through the same editable controls as manual exports. `video-export.mjs` defines the shared default movement/pause durations and the viewer's initial Top → pause → Front → pause path. `scripts/readme-video.mjs` chooses the two README paths; their selections are included in `readme-videos/selection.json`. FFmpeg keeps 1920 × 1080 at 30 fps and adjusts its capped bitrate for longer paths, targeting at most 7.5 MiB before container overhead, below the existing 9 MiB upload guard.
 
 Keep each upload below GitHub's [10 MB free-plan attachment limit](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files). Standard GitHub-hosted runners are [free for this public repository](https://docs.github.com/en/billing/concepts/product-billing/github-actions). The workflow does not use AI tokens.
 

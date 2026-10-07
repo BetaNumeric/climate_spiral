@@ -2,13 +2,15 @@ import { execFileSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
-import { chooseSecondaryDataset, previousSecondaryDataset } from './readme-video.mjs';
+import { chooseSecondaryDataset, previousSecondaryDataset, chooseReadmeCameraPaths, readmeVideoBitrate } from './readme-video.mjs';
+import { configureReadmeVideo } from './configure-readme-video.mjs';
 
 const outputDirectory = 'readme-videos';
 const baseUrl = process.env.README_VIDEO_BASE_URL || 'http://127.0.0.1:8765';
 const month = new Date().toISOString().slice(0, 7);
 const previous = previousSecondaryDataset(readFileSync('README.md', 'utf8'));
 const secondary = chooseSecondaryDataset(previous, process.env.README_VIDEO_DATASET || null);
+const cameraPaths = chooseReadmeCameraPaths();
 const monthsPerFrameOverride = process.env.README_VIDEO_MONTHS_PER_FRAME
   ? Number(process.env.README_VIDEO_MONTHS_PER_FRAME) : null;
 if (monthsPerFrameOverride !== null
@@ -46,7 +48,7 @@ async function checkDecodedFrame(page) {
   });
 }
 
-async function renderDataset(browser, datasetKey) {
+async function renderDataset(browser, datasetKey, cameraPath) {
   const context = await browser.newContext({
     acceptDownloads: true,
     serviceWorkers: 'block',
@@ -76,7 +78,7 @@ async function renderDataset(browser, datasetKey) {
     }
     await page.click('#exportSettings > summary');
     await page.click('#videoAdvanced > summary');
-    await page.selectOption('#videoResolution', '1080p');
+    await configureReadmeVideo(page, cameraPath);
 
     const downloadPromise = page.waitForEvent('download', { timeout: 10 * 60_000 });
     await page.click('#videoExportBtn');
@@ -97,10 +99,11 @@ async function renderDataset(browser, datasetKey) {
       if (extension !== 'mp4') throw new Error('Skipping transcoding requires an MP4 browser recording.');
       copyFileSync(rawPath, finalPath);
     } else {
+      const bitrate = readmeVideoBitrate(preview.duration);
       execFileSync(process.env.README_VIDEO_FFMPEG || 'ffmpeg', [
         '-y', '-i', rawPath, '-an', '-vf', 'scale=1920:1080:flags=lanczos', '-r', '30', '-fps_mode', 'cfr',
         '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
-        '-b:v', '4800k', '-maxrate', '5200k', '-bufsize', '10400k',
+        '-b:v', String(bitrate), '-maxrate', String(bitrate), '-bufsize', String(bitrate * 2),
         '-movflags', '+faststart', finalPath,
       ], { stdio: 'inherit' });
       const probe = JSON.parse(execFileSync('ffprobe', [
@@ -130,9 +133,9 @@ const browser = await chromium.launch({
   args: ['--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader'],
 });
 try {
-  await renderDataset(browser, 'temperature');
-  await renderDataset(browser, secondary.key);
-  writeFileSync(join(outputDirectory, 'selection.json'), JSON.stringify({ month, secondary }, null, 2) + '\n');
+  await renderDataset(browser, 'temperature', cameraPaths.top);
+  await renderDataset(browser, secondary.key, cameraPaths.bottom);
+  writeFileSync(join(outputDirectory, 'selection.json'), JSON.stringify({ month, secondary, cameraPaths }, null, 2) + '\n');
 } finally {
   await browser.close();
 }

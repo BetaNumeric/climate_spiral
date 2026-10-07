@@ -5,7 +5,7 @@ async function installVideoSessionHook(page) {
     const marker = '    return {\n        setupUI,';
     if (!source.includes(marker)) throw new Error('Video controller test hook marker is missing.');
     await route.fulfill({ response, body: source.replace(marker,
-      '    return {\n        get testRecording() { return videoExport; },\n        setupUI,') });
+      '    return {\n        get testRecording() { return videoExport; },\n        get testPreview() { return videoPreview; },\n        setupUI,') });
   });
 }
 

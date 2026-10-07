@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { chooseSecondaryDataset, previousSecondaryDataset, updateReadmeVideos, videoMonth,
-  SECONDARY_DATASETS } from '../scripts/readme-video.mjs';
+  SECONDARY_DATASETS, chooseReadmeCameraPaths, readmeVideoBitrate } from '../scripts/readme-video.mjs';
+import { DEFAULT_VIDEO_MOVE_SECONDS, DEFAULT_VIDEO_PAUSE_SECONDS, getVideoFramePlan, getVideoFrameTiming } from '../video-export.mjs';
 
 const original = `# Climate Spiral
 <!-- README_VIDEO_TOP_START -->
@@ -13,6 +14,46 @@ https://github.com/user-attachments/assets/2222
 <!-- README_VIDEO_BOTTOM_END -->
 Footer.
 `;
+
+test('README videos use both requested camera paths, randomly swapping their slots', () => {
+  const paths = chooseReadmeCameraPaths(() => 0);
+  assert.deepEqual(paths.top.steps.filter(step => step.type === 'view').map(step => step.view),
+    ['spiral-front', 'graph-right', 'graph-top']);
+  assert.deepEqual(paths.bottom.steps.filter(step => step.type === 'view').map(step => step.view),
+    ['graph-top', 'graph-front', 'graph-right']);
+  assert.deepEqual(chooseReadmeCameraPaths(() => 1), { top: paths.bottom, bottom: paths.top });
+  for (const path of Object.values(paths)) {
+    assert.equal(path.start, 'spiral-top');
+    assert.deepEqual(path.steps.map(step => step.type), ['pause', 'view', 'pause', 'view', 'pause', 'view', 'pause']);
+    assert.ok(path.steps.filter(step => step.type === 'pause').every(step => step.seconds === DEFAULT_VIDEO_PAUSE_SECONDS));
+    const plan = getVideoFramePlan(120, 7, DEFAULT_VIDEO_MOVE_SECONDS,
+      path.steps.map(step => ({ type: step.type, seconds: step.seconds ?? DEFAULT_VIDEO_MOVE_SECONDS })));
+    assert.deepEqual(plan.stepFrames, [30, 60, 30, 60, 30, 60, 30]);
+    assert.equal(plan.turnFrames, 300);
+    let offset = plan.startHoldFrames + plan.drawSteps;
+    for (const [index, frames] of plan.stepFrames.entries()) {
+      assert.equal(getVideoFrameTiming(offset, plan).moveIndex, index);
+      assert.equal(getVideoFrameTiming(offset + frames - 1, plan).moveIndex, index);
+      offset += frames;
+    }
+  }
+});
+
+test('camera path selection returns fresh steps on each run', () => {
+  const first = chooseReadmeCameraPaths(() => 0);
+  first.top.steps[0].seconds = 30;
+  assert.equal(chooseReadmeCameraPaths(() => 0).top.steps[0].seconds, 1);
+});
+
+test('longer README videos receive a bitrate within the attachment budget', () => {
+  assert.equal(readmeVideoBitrate(5), 4_800_000);
+  for (const duration of [15, 20, 60, 120]) {
+    const bitrate = readmeVideoBitrate(duration);
+    assert.ok(bitrate > 0 && bitrate <= 4_800_000);
+    assert.ok(bitrate * duration / 8 <= 7.5 * 1024 * 1024);
+  }
+  for (const duration of [0, -1, NaN, Infinity]) assert.throws(() => readmeVideoBitrate(duration));
+});
 
 test('monthly selection excludes the previous active dataset', () => {
   for (const previous of SECONDARY_DATASETS) {

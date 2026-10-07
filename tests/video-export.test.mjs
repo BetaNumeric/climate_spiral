@@ -1,7 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { VIDEO_EXPORT_FPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming,
-  getVideoLayout, getVideoOrbitFrame, getVideoRecorderOptions } from '../video-export.mjs';
+  getVideoLayout, getVideoOrbitFrame, getVideoRecorderOptions, DEFAULT_VIDEO_CAMERA_PATH,
+  DEFAULT_VIDEO_MOVE_SECONDS } from '../video-export.mjs';
+
+test('default camera path draws top-down and holds before and after its two-second front move', () => {
+  assert.equal(DEFAULT_VIDEO_CAMERA_PATH.start, 'spiral-top');
+  assert.deepEqual(DEFAULT_VIDEO_CAMERA_PATH.steps.map(step => step.type === 'pause' ? 'pause' : step.view),
+    ['pause', 'spiral-front', 'pause']);
+  assert.equal(DEFAULT_VIDEO_MOVE_SECONDS, 2);
+  const plan = getVideoFramePlan(120, 7, DEFAULT_VIDEO_MOVE_SECONDS,
+    DEFAULT_VIDEO_CAMERA_PATH.steps.map(step => ({ type: step.type, seconds: step.seconds ?? DEFAULT_VIDEO_MOVE_SECONDS })));
+  assert.deepEqual(plan.stepFrames, [30, 60, 30]);
+  assert.equal(plan.turnFrames, 120);
+});
 
 test('video presets use fixed encoder-friendly dimensions', () => {
   for (const [preset, expected] of Object.entries({

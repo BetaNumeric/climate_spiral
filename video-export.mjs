@@ -6,6 +6,16 @@ const PRESETS = {
 
 export const VIDEO_EXPORT_FPS = 30;
 export const MAX_VIDEO_PATH_STEPS = 20;
+export const DEFAULT_VIDEO_MOVE_SECONDS = 2;
+export const DEFAULT_VIDEO_PAUSE_SECONDS = 1;
+export const DEFAULT_VIDEO_CAMERA_PATH = {
+  start: 'spiral-top',
+  steps: [
+    { type: 'pause', seconds: DEFAULT_VIDEO_PAUSE_SECONDS },
+    { type: 'view', view: 'spiral-front' },
+    { type: 'pause', seconds: DEFAULT_VIDEO_PAUSE_SECONDS },
+  ],
+};
 
 export function getVideoLayout(width, height, includeLegend = false) {
   const fullFrame = { x: 0, y: 0, width, height };

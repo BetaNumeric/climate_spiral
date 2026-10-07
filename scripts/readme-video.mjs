@@ -1,4 +1,24 @@
 import { randomInt } from 'node:crypto';
+import { DEFAULT_VIDEO_PAUSE_SECONDS } from '../video-export.mjs';
+
+export function chooseReadmeCameraPaths(pick = randomInt) {
+  const sequences = [
+    ['spiral-front', 'graph-right', 'graph-top'],
+    ['graph-top', 'graph-front', 'graph-right'],
+  ];
+  const paths = sequences.map(views => ({ start: 'spiral-top', steps: [
+    { type: 'pause', seconds: DEFAULT_VIDEO_PAUSE_SECONDS },
+    ...views.flatMap(view => [{ type: 'view', view }, { type: 'pause', seconds: DEFAULT_VIDEO_PAUSE_SECONDS }]),
+  ] }));
+  const first = pick(paths.length);
+  return { top: paths[first], bottom: paths[1 - first] };
+}
+
+export function readmeVideoBitrate(duration) {
+  if (!Number.isFinite(duration) || duration <= 0) throw new Error('Invalid video duration.');
+  // Leave room below the attachment limit for encoder variation and container overhead.
+  return Math.min(4_800_000, Math.floor(7.5 * 1024 * 1024 * 8 / duration));
+}
 
 export const SECONDARY_DATASETS = [
   { key: 'ocean', title: 'Ocean Temperature' },

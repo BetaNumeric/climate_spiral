@@ -150,6 +150,9 @@ async function checkSeeking(page) {
     assert.equal(await page.locator('#videoAdvanced').getAttribute('open'), null);
     await page.click('#videoAdvanced > summary');
     assert.equal(await page.locator('#videoCamera').inputValue(), 'spiral-top');
+    assert.equal(await page.locator('#videoTransition').inputValue(), '2');
+    assert.deepEqual(await page.locator('#videoViewList .video-step-view').evaluateAll(elements => elements.map(element => element.value)),
+      ['pause', 'spiral-front', 'pause']);
     await page.check('#videoLegendToggle');
     assert.equal(await page.locator('#videoTransitionRow').isVisible(), true);
     assert.deepEqual(await page.locator('#videoResolution option').evaluateAll(options => options.map(option => option.value)),
@@ -258,7 +261,9 @@ async function checkSeeking(page) {
     assert.equal(afterPreviewExport.playing, before.playing);
 
     await page.selectOption('#videoCamera', 'current');
-    await page.click('#videoViewList [data-action="remove"]');
+    while (await page.locator('#videoViewList [data-action="remove"]').count()) {
+      await page.locator('#videoViewList [data-action="remove"]').first().click();
+    }
     await page.fill('#videoWidth', '360');
     await page.fill('#videoHeight', '640');
     await page.click('#videoExportBtn');

@@ -60,6 +60,8 @@ Open **Export** to download a `.glb` model or record a video. Video is rendered 
 
 Advanced video settings offer Full HD landscape, portrait, square, current-window, and custom resolutions, plus an optional legend. You can build a camera path from top, front, and right views of either layout, insert timed pauses, and preview the path before recording. The browser pauses an export while its tab is hidden and resumes when you return. High resolutions need more GPU and encoding resources; keep the window size unchanged during recording.
 
+The default path draws in Spiral Top, pauses for one second, moves to Spiral Front over two seconds, and pauses again. All camera steps remain editable.
+
 ## Running Locally
 
 The app uses HTML, CSS, JavaScript modules, and Three.js, with no build step. Serve the repository over HTTP, for example with `python -m http.server 8000`, then open `http://127.0.0.1:8000/`. The first load needs network access for CDN assets.

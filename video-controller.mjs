@@ -1,4 +1,5 @@
-import { VIDEO_EXPORT_FPS, MAX_VIDEO_PATH_STEPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming,
+import { VIDEO_EXPORT_FPS, MAX_VIDEO_PATH_STEPS, DEFAULT_VIDEO_CAMERA_PATH, DEFAULT_VIDEO_MOVE_SECONDS,
+    DEFAULT_VIDEO_PAUSE_SECONDS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming,
     getVideoLayout, getVideoOrbitFrame, getVideoRecorderOptions } from './video-export.mjs';
 
 const VIDEO_VIEW_PRESETS = {
@@ -83,7 +84,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         updateVideoDurationEstimate();
     }
 
-    function addVideoStep(type = 'view') {
+    function addVideoStep(type = 'view', { view, seconds = DEFAULT_VIDEO_PAUSE_SECONDS, focus = true } = {}) {
         const list = document.getElementById('videoViewList');
         if (list.children.length >= MAX_VIDEO_PATH_STEPS || videoExport || videoPreview) return;
         const row = document.createElement('div');
@@ -97,7 +98,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
             || document.getElementById('videoCamera').value;
         const keys = Object.keys(VIDEO_VIEW_PRESETS);
         select.value = type === 'pause' ? 'pause'
-            : previous === 'current' ? 'spiral-front' : keys[(keys.indexOf(previous) + 1) % keys.length];
+            : view ?? (previous === 'current' ? 'spiral-front' : keys[(keys.indexOf(previous) + 1) % keys.length]);
         row.append(select);
         for (const [action, symbol] of [['up', '↑'], ['down', '↓'], ['remove', '×']]) {
             const button = document.createElement('button');
@@ -113,13 +114,13 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         const input = document.createElement('input');
         input.className = 'video-pause-seconds video-number';
         input.type = 'number';
-        input.min = '0.5'; input.max = '30'; input.step = '0.5'; input.value = '2';
+        input.min = '0.5'; input.max = '30'; input.step = '0.5'; input.value = String(seconds);
         input.inputMode = 'decimal';
         duration.append(input);
         row.append(duration);
         list.append(row);
         updateVideoPathControls();
-        (type === 'pause' ? input : select).focus();
+        if (focus) (type === 'pause' ? input : select).focus();
     }
 
     function updateVideoDurationEstimate() {
@@ -623,6 +624,9 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
     }
 
     function setupUI() {
+        document.getElementById('videoCamera').value = DEFAULT_VIDEO_CAMERA_PATH.start;
+        document.getElementById('videoTransition').value = String(DEFAULT_VIDEO_MOVE_SECONDS);
+        for (const step of DEFAULT_VIDEO_CAMERA_PATH.steps) addVideoStep(step.type, { ...step, focus: false });
         document.getElementById('videoExportBtn').addEventListener('click', startVideoExport);
         document.getElementById('videoResolution').addEventListener('change', event => {
             document.getElementById('videoCustomSize').hidden = event.target.value !== 'custom';
@@ -648,7 +652,10 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         document.getElementById('videoAddView').addEventListener('click', () => addVideoStep('view'));
         document.getElementById('videoAddPause').addEventListener('click', () => addVideoStep('pause'));
         document.getElementById('videoPreviewBtn').addEventListener('click', startVideoPreview);
-        document.getElementById('videoPreviewStop').addEventListener('click', stopVideoPreview);
+        document.getElementById('videoPreviewStop').addEventListener('click', (event) => {
+            event.stopPropagation();
+            stopVideoPreview();
+        });
         document.addEventListener('keydown', event => {
             if (event.defaultPrevented || event.repeat || event.isComposing
                 || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey
