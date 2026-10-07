@@ -299,7 +299,10 @@ export function createSpiralGeometry(THREE) {
     }
 
     function createSpiralBuffers(rawPoints, rawColors, rawMetaData, { smooth, preserveMonthlyGaps, pointAt,
-        layout, originYear, heightPerYear, radiusAtValue, tubeRadius, radialSegments }) {
+        layout, originYear, heightPerYear, radiusAtValue, tubeRadius, radialSegments, samplesPerMonth = 6 }) {
+        if (!Number.isInteger(samplesPerMonth) || samplesPerMonth < 1 || samplesPerMonth > 24) {
+            throw new RangeError('Curve segments must be an integer from 1 to 24.');
+        }
         let finalPoints = [];
         let finalColors = [];
         let finalMetaData = [];
@@ -319,7 +322,7 @@ export function createSpiralGeometry(THREE) {
             });
             let curveIndex = 0;
 
-            pointsPerObservation = 6;
+            pointsPerObservation = samplesPerMonth;
             const finalPointCount = (rawPoints.length - 1) * pointsPerObservation + 1;
 
             for (let i = 0; i < finalPointCount; i++) {
@@ -396,7 +399,7 @@ export function createSpiralGeometry(THREE) {
             preserveMonthlyGaps ? finalMetaData : null, graphData.metadata, radialSegments) : null;
         const totalIndices = (finalPoints.length - 1) * radialSegments * 6;
         const timelineStops = graphData.observationIndices.map(index => index * radialSegments * 6);
-        return { geometry, lineGeometry, data, totalIndices, timelineStops };
+        return { geometry, lineGeometry, data, totalIndices, timelineStops, pointsPerObservation };
     }
 
     return { createDataTubeGeometry, createSpiralBuffers, prepareLayoutMorph, morphGeometry, morphPoint };

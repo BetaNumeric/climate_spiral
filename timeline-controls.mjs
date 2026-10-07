@@ -1,6 +1,17 @@
 const HOLD_DELAY_MS = 450;
 const HOLD_REPEAT_MS = 120;
 
+export function remapTimelinePosition(position, previousStops, nextStops) {
+    if (!previousStops.length || !nextStops.length) return 0;
+    let ordinal = 0;
+    while (ordinal + 1 < previousStops.length && previousStops[ordinal + 1] <= position) ordinal++;
+    if (ordinal >= nextStops.length - 1) return nextStops.at(-1);
+    const start = previousStops[ordinal];
+    const end = previousStops[ordinal + 1] ?? start;
+    const fraction = end > start ? Math.max(0, Math.min(1, (position - start) / (end - start))) : 0;
+    return nextStops[ordinal] + fraction * (nextStops[ordinal + 1] - nextStops[ordinal]);
+}
+
 export function getCalendarStepIndex(stops, currentMonth, direction, months = 12) {
     if (!stops.length) return 0;
     const target = currentMonth + direction * months;

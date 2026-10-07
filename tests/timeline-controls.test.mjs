@@ -1,6 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getCalendarStepIndex, setupStepButtons } from '../timeline-controls.mjs';
+import { getCalendarStepIndex, remapTimelinePosition, setupStepButtons } from '../timeline-controls.mjs';
+
+test('detail changes preserve observation stops and fractional progress through the same monthly interval', () => {
+    const previous = [0, 288, 624, 912];
+    const next = [0, 576, 1200, 1776];
+    previous.forEach((position, ordinal) => assert.equal(remapTimelinePosition(position, previous, next), next[ordinal]));
+    assert.equal(remapTimelinePosition(456, previous, next), 888);
+    assert.equal(remapTimelinePosition(888, next, previous), 456);
+    assert.equal(remapTimelinePosition(-10, previous, next), 0);
+    assert.equal(remapTimelinePosition(10000, previous, next), next.at(-1));
+    assert.equal(remapTimelinePosition(0, [], next), 0);
+    assert.equal(remapTimelinePosition(0, previous, []), 0);
+    assert.equal(remapTimelinePosition(0, [0], [0]), 0);
+});
 
 function harness(t) {
     t.mock.timers.enable({ apis: ['setTimeout'] });

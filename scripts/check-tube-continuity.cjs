@@ -79,7 +79,9 @@ const hooks = `
     morph(mix) { layoutTransition = null; layoutMix = mix; applyLayout(); },
     shape(smooth, thickness) {
       document.getElementById('smoothSpiralToggle').checked = smooth;
-      const input = document.getElementById('thicknessSlider'); input.value = thickness;
+      const toggle = document.getElementById('tubeToggle'); toggle.checked = thickness !== 0;
+      toggle.dispatchEvent(new Event('change'));
+      const input = document.getElementById('thicknessSlider'); input.value = thickness || 1;
       input.dispatchEvent(new Event('input'));
       setPlaybackPosition(totalIndices);
     },

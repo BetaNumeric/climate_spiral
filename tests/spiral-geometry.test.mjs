@@ -8,7 +8,8 @@ const geometryTools = createSpiralGeometry(THREE);
 const radialSegments = 8;
 const heightPerYear = 0.24;
 
-function build(dates, { smooth = false, tubeRadius = 0.12, preserveMonthlyGaps = true } = {}) {
+function build(dates, { smooth = false, tubeRadius = 0.12, preserveMonthlyGaps = true,
+  radialSegments: sides = radialSegments, samplesPerMonth = 6 } = {}) {
   const originYear = Math.floor(dates[0]);
   const metadata = dates.map((decimalYear, index) => ({
     decimalYear, anomaly: Math.sin(index * 0.6) * 0.8, displayValue: 100 + index,
@@ -25,7 +26,7 @@ function build(dates, { smooth = false, tubeRadius = 0.12, preserveMonthlyGaps =
   const layout = graphLayout(5, 15);
   const ghostDates = [];
   const result = geometryTools.createSpiralBuffers(points, colors, metadata, {
-    smooth, tubeRadius, preserveMonthlyGaps, layout, originYear, heightPerYear, radiusAtValue, radialSegments,
+    smooth, tubeRadius, preserveMonthlyGaps, layout, originYear, heightPerYear, radiusAtValue, radialSegments: sides, samplesPerMonth,
     pointAt: (date, value) => { ghostDates.push(date); return pointAt(date, value); },
   });
   return { ...result, metadata, points, colors, layout, originYear, ghostDates };
@@ -36,6 +37,70 @@ function assertFinite(geometry) {
     assert.ok(geometry.attributes[name].array.every(Number.isFinite), name);
   }
 }
+
+test('tube side counts change cross-section detail without changing observations or playback positions', () => {
+  const dates = Array.from({ length: 25 }, (_, i) => 2000 + i / 12);
+  const baseline = build(dates, { smooth: true });
+  for (const sides of [4, 6, 8, 12, 16, 24]) {
+    const { geometry, data, totalIndices, timelineStops, layout } = build(dates, { smooth: true, radialSegments: sides });
+    assertFinite(geometry);
+    assert.equal(geometry.attributes.position.count, data.length * sides + 2);
+    assert.equal(geometry.index.count, totalIndices + sides * 6);
+    assert.deepEqual(timelineStops.map(index => index / totalIndices), baseline.timelineStops.map(index => index / baseline.totalIndices));
+    assert.deepEqual(data.map(point => [point.decimalYear, point.anomaly, point.displayValue]),
+      baseline.data.map(point => [point.decimalYear, point.anomaly, point.displayValue]));
+    for (const bend of [0.4, 1, 0]) {
+      geometryTools.morphGeometry(geometry, bend, { layout, frame: unrollFrame(bend, layout), height: 1 });
+      assertFinite(geometry);
+    }
+    geometry.dispose();
+  }
+  baseline.geometry.dispose();
+});
+
+test('curve detail adds rendering samples without changing monthly values or bridging gaps', () => {
+  const dates = [2000 + 10 / 12, 2000 + 11 / 12, 2001, 2001 + 2 / 12, 2001 + 3 / 12];
+  for (const tubeRadius of [0, 0.12]) {
+    for (const samplesPerMonth of [3, 6, 12, 24]) {
+      const result = build(dates, { smooth: true, tubeRadius, samplesPerMonth });
+      const { geometry, data, timelineStops, totalIndices, pointsPerObservation } = result;
+      assert.equal(pointsPerObservation, samplesPerMonth);
+      assert.equal(data.length, (dates.length - 1) * samplesPerMonth + 2, 'Include only one duplicate January');
+      assert.equal(timelineStops.length, dates.length);
+      assert.equal(timelineStops.at(-1), totalIndices);
+      timelineStops.forEach((stop, ordinal) => {
+        const point = data[stop / (radialSegments * 6)];
+        assert.equal(point.decimalYear, dates[ordinal]);
+        assert.equal(point.displayValue, 100 + ordinal);
+        assert.equal(point.anomaly, result.metadata[ordinal].anomaly);
+        assert.ok(point.spiralPoint.distanceTo(result.points[ordinal]) < 1e-8);
+      });
+      assertConnectedTriangles(geometry.layoutMorph.sourceIndex,
+        data.map(point => ({ ...point, missing: point.spiralMissing })), false);
+      assertConnectedTriangles(geometry.layoutMorph.targetIndex,
+        data.map(point => ({ ...point, missing: point.graphMissing })), true);
+      for (const bend of [0.4, 1, 0]) {
+        geometryTools.morphGeometry(geometry, bend, { layout: result.layout, frame: unrollFrame(bend, result.layout), height: 1 });
+        assertFinite(geometry);
+      }
+      result.lineGeometry?.dispose();
+      geometry.dispose();
+    }
+  }
+});
+
+test('straight lines ignore curve detail, while invalid detail settings are rejected', () => {
+  const dates = [2000, 2000 + 1 / 12, 2000 + 2 / 12];
+  for (const samplesPerMonth of [3, 6, 12, 24]) {
+    const result = build(dates, { samplesPerMonth });
+    assert.equal(result.pointsPerObservation, 1);
+    assert.equal(result.data.length, dates.length);
+    result.geometry.dispose();
+  }
+  for (const samplesPerMonth of [0, -1, 25, 1.5, NaN, Infinity]) {
+    assert.throws(() => build(dates, { samplesPerMonth }), RangeError);
+  }
+});
 
 function assertConnectedTriangles(indices, metadata, splitYears) {
   for (let i = 0; i < indices.length; i += 3) {

@@ -194,12 +194,39 @@
                         </div>
                         <input type="range" id="spacingSlider" min="0.0" max="1.0" step="0.01" value="0.24">
                     </div>
+                    <div class="setting-row">
+                        <label for="tubeToggle">3D Tube</label>
+                        <span class="switch">
+                            <input type="checkbox" id="tubeToggle" checked>
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
                     <div class="setting-row setting-column">
                         <div class="slider-label">
-                            <label for="thicknessSlider">Line Thickness</label>
+                            <label for="thicknessSlider">Line Width</label>
                             <output id="thicknessValue" class="slider-val" for="thicknessSlider">100%</output>
                         </div>
-                        <input type="range" id="thicknessSlider" min="0" max="1.5" step="0.05" value="1" aria-valuetext="100%">
+                        <input type="range" id="thicknessSlider" min="0.05" max="1.5" step="0.05" value="1" aria-valuetext="100%">
+                    </div>
+                    <div class="setting-row">
+                        <label for="tubeSides">Tube Sides</label>
+                        <select id="tubeSides">
+                            <option value="4">4</option>
+                            <option value="6">6</option>
+                            <option value="8" selected>8</option>
+                            <option value="12">12</option>
+                            <option value="16">16</option>
+                            <option value="24">24</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <label for="curveSegments">Segments per Month</label>
+                        <select id="curveSegments">
+                            <option value="3">3</option>
+                            <option value="6" selected>6</option>
+                            <option value="12">12</option>
+                            <option value="24">24</option>
+                        </select>
                     </div>
                 </div>
             </details>
@@ -372,9 +399,10 @@
         import * as THREE from 'three';
         import { createCameraController } from './camera-controller.mjs';
         import { setupKeyboardShortcuts } from './keyboard-shortcuts.mjs';
-        import { getCalendarStepIndex, setupStepButtons } from './timeline-controls.mjs';
+        import { getCalendarStepIndex, remapTimelinePosition, setupStepButtons } from './timeline-controls.mjs';
         import { createVideoController } from './video-controller.mjs';
         import { createSpiralGeometry } from './spiral-geometry.mjs';
+        import { createSpiralLine } from './spiral-line.mjs';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
         import { calendarYear, layoutEase, graphLayout, unrollPolar, unrollFrame,
@@ -399,6 +427,7 @@
             heightPerYear: 0.24,
             tubeRadius: DEFAULT_TUBE_RADIUS,
             radialSegments: 8,
+            curveSegments: 6,
             frustumSize: 45,
             sceneScale: 1.28, // Increase to enlarge the spiral in both the viewer and video exports.
             outerRadius: 20,
@@ -450,6 +479,7 @@
         let currentDatasetKey = "temperature";
         let currentDataText = '';
         let generatedGeometryData = null; // Store data for animation mapping
+        let pointsPerObservation = 1;
         const datasetPlaybackState = Object.fromEntries(
             Object.keys(DATASET_CONFIG).map(key => [
                 key, { initialized: false, progress: 0, completed: false, wasAnimating: false }
@@ -616,6 +646,7 @@
             if (!obj) return;
             obj.traverse((child) => {
                 if (child.geometry) child.geometry.dispose();
+                if (child.centerGeometry) child.centerGeometry.dispose();
                 if (child.material) {
                     if (Array.isArray(child.material)) {
                         child.material.forEach(m => {
@@ -841,15 +872,19 @@
             const exporter = new GLTFExporter();
             
             // Clone Spiral with full draw range
-            const exportObject = spiralLine ?? spiralMesh;
-            const spiralClone = exportObject.clone();
-            spiralClone.geometry = exportObject.geometry.clone();
+            // glTF stores a true centerline, not the wide-line renderer's instanced quads.
+            const spiralClone = spiralLine
+                ? new THREE.LineSegments(spiralLine.centerGeometry.clone(), new THREE.LineBasicMaterial({ vertexColors: true }))
+                : spiralMesh.clone();
+            if (!spiralLine) spiralClone.geometry = spiralMesh.geometry.clone();
             spiralClone.geometry.setDrawRange(0, Infinity);
             
             // Execute Export
             exporter.parse(
                 spiralClone,
                 function ( gltf ) {
+                    spiralClone.geometry.dispose();
+                    if (spiralClone.isLineSegments) spiralClone.material.dispose();
                     const blob = new Blob( [ gltf ], { type: 'application/octet-stream' } );
                     const url = URL.createObjectURL( blob );
                     const link = document.createElement( 'a' );
@@ -862,6 +897,8 @@
                     URL.revokeObjectURL( url );
                 },
                 function ( error ) {
+                    spiralClone.geometry.dispose();
+                    if (spiralClone.isLineSegments) spiralClone.material.dispose();
                     console.error( 'An error happened during export:', error );
                 },
                 { binary: true }
@@ -1206,7 +1243,7 @@
             });
             
             interpSwitch.addEventListener('change', updateDataVisualization);
-            smoothSpiralSwitch.addEventListener('change', updateDataVisualization);
+            smoothSpiralSwitch.addEventListener('change', () => updateLineSettings());
             datasetSelect.addEventListener('change', (e) => {
                 const nextDatasetKey = e.target.value;
                 if (videoController.isRecording || !Object.hasOwn(DATASET_CONFIG, nextDatasetKey) || nextDatasetKey === currentDatasetKey) {
@@ -1305,16 +1342,33 @@
                 setPlaybackPosition(previousIndex, false);
             });
 
-            document.getElementById('thicknessSlider').addEventListener('input', (event) => {
+            function updateLineSettings(rebuild = true) {
+                if (videoController.isBusy) return;
                 const previousIndex = animationIndex;
-                const scale = event.target.valueAsNumber;
-                CONFIG.tubeRadius = DEFAULT_TUBE_RADIUS * scale;
-                const label = scale === 0 ? 'Line' : `${Math.round(scale * 100)}%`;
+                const previousStops = timelineStops;
+                const slider = document.getElementById('thicknessSlider');
+                const scale = slider.valueAsNumber;
+                const tube = document.getElementById('tubeToggle').checked;
+                CONFIG.tubeRadius = tube ? DEFAULT_TUBE_RADIUS * scale : 0;
+                CONFIG.radialSegments = Number(document.getElementById('tubeSides').value);
+                CONFIG.curveSegments = Number(document.getElementById('curveSegments').value);
+                document.getElementById('tubeSides').disabled = !tube;
+                document.getElementById('curveSegments').disabled = !smoothSpiralSwitch.checked;
+                const label = `${Math.round(scale * 100)}%`;
                 document.getElementById('thicknessValue').textContent = label;
-                event.target.setAttribute('aria-valuetext', label);
-                updateDataVisualization();
-                setPlaybackPosition(previousIndex, false);
+                slider.setAttribute('aria-valuetext', label);
+                if (!rebuild && spiralLine) spiralLine.material.linewidth = DEFAULT_TUBE_RADIUS * 2 * scale;
+                else {
+                    updateDataVisualization();
+                    setPlaybackPosition(remapTimelinePosition(previousIndex, previousStops, timelineStops), false);
+                }
+            }
+            document.getElementById('thicknessSlider').addEventListener('input', () => {
+                updateLineSettings(document.getElementById('tubeToggle').checked);
             });
+            document.getElementById('tubeToggle').addEventListener('change', () => updateLineSettings());
+            document.getElementById('tubeSides').addEventListener('change', () => updateLineSettings());
+            document.getElementById('curveSegments').addEventListener('change', () => updateLineSettings());
 
             applyDatasetUI();
         }
@@ -1749,13 +1803,13 @@
                 morph.graphTopology = graphTopology;
             }
             if (spiralLine) {
-                const lineGeometry = spiralLine.geometry;
+                const lineGeometry = spiralLine.centerGeometry;
                 lineGeometry.index.array.set(graphTopology ? lineGeometry.layoutIndices.target : lineGeometry.layoutIndices.source);
                 lineGeometry.index.needsUpdate = true;
             }
             const morphContext = { layout: monthlyLayout, frame: layoutFrame, height: spiralHeight };
             spiralGeometry.morphGeometry(geometry, bend, morphContext);
-            if (spiralLine) spiralLine.geometry.boundingSphere = geometry.boundingSphere.clone();
+            if (spiralLine) spiralLine.centerGeometry.boundingSphere = geometry.boundingSphere.clone();
             generatedGeometryData.forEach((data, index) => {
                 if (bend === 0 || bend === 1) data.point.copy(bend === 0 ? data.spiralPoint : data.graphPoint);
                 else data.point.fromArray(morph.groups[index].position);
@@ -1913,10 +1967,12 @@
                 preserveMonthlyGaps: getActiveDataset().preserveMonthlyGaps,
                 pointAt: (decimalYear, anomaly) => createSpiralPoint(decimalYear, anomaly, startYearData),
                 layout: monthlyLayout, originYear: startYearData, heightPerYear: CONFIG.heightPerYear,
-                radiusAtValue: getSpiralRadius, tubeRadius: CONFIG.tubeRadius, radialSegments: CONFIG.radialSegments
+                radiusAtValue: getSpiralRadius, tubeRadius: CONFIG.tubeRadius, radialSegments: CONFIG.radialSegments,
+                samplesPerMonth: CONFIG.curveSegments
             });
             const { geometry, lineGeometry } = buffers;
             generatedGeometryData = buffers.data;
+            pointsPerObservation = buffers.pointsPerObservation;
 
             // Store original colors for highlight effect.
             geometry.userData.originalColorArray = new Float32Array(geometry.attributes.color.array);
@@ -1932,7 +1988,8 @@
             spiralMesh.visible = CONFIG.tubeRadius > 0;
             scene.add(spiralMesh);
             if (CONFIG.tubeRadius === 0) {
-                spiralLine = new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({ vertexColors: true }));
+                spiralLine = createSpiralLine(lineGeometry, DEFAULT_TUBE_RADIUS * 2
+                    * document.getElementById('thicknessSlider').valueAsNumber);
                 scene.add(spiralLine);
             }
 
@@ -1943,8 +2000,7 @@
             });
             
             // Moving End Cap (Lid) - Separate Mesh for Animation
-            // CircleGeometry(radius, 8) creates an octagon
-            const endCapGeo = new THREE.CircleGeometry(CONFIG.tubeRadius, 8);
+            const endCapGeo = new THREE.CircleGeometry(CONFIG.tubeRadius, CONFIG.radialSegments);
             const endCapMat = new THREE.MeshStandardMaterial({
                 roughness: 0.3,
                 metalness: 0.0,
@@ -2038,7 +2094,7 @@
             // Each segment (ring to ring) uses 6 * radial indices
             const stride = CONFIG.radialSegments * 6;
             const snappedIndex = Math.floor(animationIndex / stride) * stride;
-            if (spiralLine) spiralLine.geometry.setDrawRange(0, snappedIndex / stride * 2);
+            if (spiralLine) spiralLine.centerGeometry.setDrawRange(0, snappedIndex / stride * 2);
             const startCapIndices = CONFIG.radialSegments * 3;
             
             // Draw Start Cap + Current Body
@@ -2074,8 +2130,7 @@
             }
 
             // 2. Apply new tail gradient
-            // Tail length in rings (1 month approx 6 rings)
-            const tailLen = 24; // ~4 months trail
+            const tailLen = 4 * pointsPerObservation;
             const startRing = Math.max(0, currentRingIndex - tailLen);
             const endRing = currentRingIndex; // Highlight up to the current tip
             

@@ -42,6 +42,8 @@ Temperature values are anomalies relative to 1951-1980; the NOAA land and ocean 
 
 The animation starts automatically. Use the controls and timeline at the bottom to pause, step through months, or jump to either end. Choose a dataset and switch between **Spiral** and **Unwrapped** at the top of Settings.
 
+In **View**, **3D Tube** switches between a shaded tube and an unlit line. **Line Width** works in both modes; **Tube Sides** controls the tube's cross-section detail (8 by default). With **Smooth Lines** enabled, **Segments per Month** sets curve detail in either mode: 3, 6 (default), 12, or 24. Higher detail makes close-ups smoother at a higher rendering cost, without adding observations.
+
 Press **Enter** to wrap/unwrap, **Space** to play/pause, **comma / period** to step backward/forward one month (pausing playback), or **Home / End** to jump to either end. **S / I** toggle Settings / Info, and **Escape** closes an open panel or stops a camera preview. Typing and focused controls keep their normal keys; playback/layout shortcuts are disabled during preview or recording.
 
 Hold a month button or comma/period to keep stepping. Add **Shift** to step by 12 calendar months, including Shift-clicking or holding either button. If the target month is missing, year steps use the next available observation in the chosen direction; they never invent data.

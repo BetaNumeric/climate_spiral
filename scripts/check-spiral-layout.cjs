@@ -15,7 +15,9 @@ const hooks = `
       count: timelineStops.length, dataset: currentDatasetKey, mesh: spiralMesh?.uuid, bend: getLayoutBend() }),
     pause() { if (isAnimating) toggleAnimation(); },
     thickness(value) {
-      const input = document.getElementById('thicknessSlider'); input.value = value;
+      const toggle = document.getElementById('tubeToggle'); toggle.checked = value !== 0;
+      toggle.dispatchEvent(new Event('change'));
+      const input = document.getElementById('thicknessSlider'); input.value = value || 1;
       input.dispatchEvent(new Event('input'));
     },
     spacing(value) {
@@ -23,7 +25,7 @@ const hooks = `
       input.dispatchEvent(new Event('input'));
     },
     lineState() {
-      const geometry = spiralLine?.geometry;
+      const geometry = spiralLine?.centerGeometry;
       let broken = 0, bridges = 0, connected = 0, boundaryHeightError = 0, radiusError = 0;
       const data = generatedGeometryData;
       const vertices = spiralMesh.geometry.attributes.position;
@@ -240,8 +242,12 @@ const hooks = `
       assert.equal(after.playing, before.playing);
       await page.locator('#thicknessSlider').focus();
       await page.keyboard.press('Home');
-      assert.equal(await page.locator('#thicknessValue').textContent(), 'Line');
+      assert.equal(await page.locator('#thicknessValue').textContent(), '5%');
+      assert.equal((await page.evaluate(() => layoutTest.lineState())).thin, false);
+      await page.uncheck('#tubeToggle');
       assert.equal((await page.evaluate(() => layoutTest.lineState())).thin, true);
+      await page.check('#tubeToggle');
+      await page.locator('#thicknessSlider').focus();
       await page.keyboard.press('End');
       assert.equal(await page.locator('#thicknessSlider').getAttribute('aria-valuetext'), '150%');
       assert.equal((await page.evaluate(() => layoutTest.lineState())).radius, 0.18);

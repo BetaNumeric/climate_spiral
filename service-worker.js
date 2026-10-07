@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v54`;
+const CACHE_NAME = `${CACHE_PREFIX}v56`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -35,6 +35,7 @@ const CORE_ASSETS = [
   "./data/country-temperature/catalog.json",
   "./spiral-layout.mjs",
   "./spiral-geometry.mjs",
+  "./spiral-line.mjs",
   "./video-export.mjs",
   "./video-mux.mjs",
   "./vendor/mediabunny/mediabunny.min.mjs",
@@ -53,6 +54,9 @@ const CORE_ASSETS = [
   "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js",
   "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/exporters/GLTFExporter.js",
+  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/LineSegments2.js",
+  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/LineSegmentsGeometry.js",
+  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/LineMaterial.js",
 ];
 
 const toAbsoluteUrl = (path) => new URL(path, self.location).toString();

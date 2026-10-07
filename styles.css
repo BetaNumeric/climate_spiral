@@ -432,7 +432,7 @@ a:hover { text-decoration: underline; }
 .settings-layout label { flex: 1; text-align: center; }
 .settings-layout span { padding-block: 8px; }
 #settingsPanel input[type=range] { box-sizing: border-box; margin-inline: 0; }
-#datasetSelect, #cameraViewSelect, #videoAdvanced select, #localTemperatureControls select {
+#datasetSelect, #cameraViewSelect, #tubeSides, #curveSegments, #videoAdvanced select, #localTemperatureControls select {
     width: 100%;
     min-width: 0;
     height: 38px;
@@ -446,6 +446,7 @@ a:hover { text-decoration: underline; }
     font-size: 16px;
 }
 #cameraViewSelect { width: 140px; max-width: 55%; }
+#tubeSides, #curveSegments { width: 90px; max-width: 55%; }
 #settingsSourceLink { justify-self: start; color: #aaa; font-size: 0.75rem; }
 #localTemperatureControls { display: grid; gap: 8px; min-width: 0; }
 #localTemperatureControls[hidden] { display: none; }
