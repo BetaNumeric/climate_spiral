@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "USW00093997",
     "name": "RUSSELL_MUNI_AP",
@@ -88,6 +88,6 @@
     "USW000939972023TAVG  -62  W  197  W  514  W 1261  W 1946  W 2358  W 2662  W 2623  W 2292  W 1418  W  823  W  356  W",
     "USW000939972024TAVG -387  W  604  W  797  W 1351  W 1807  W 2569  W 2661  W 2572  W 2251  W 1698  W  777  W  315  W",
     "USW000939972025TAVG -469  W -230  W  997  W 1326  W 1707  W 2407  W 2710  W 2492  W 2148  Z 1596  Z  773  Z  332  Z",
-    "USW000939972026TAVG -135  Z  682  Z 1067  Z 1469  Z 1825  Z 2378  Z 2768  Z 2806  Z 2587  Z-9999   -9999   -9999   "
+    "USW000939972026TAVG -135  Z  682  Z 1067  Z 1469  Z 1825  Z 2378  Z 2768  Z 2806  Z 2559  Z-9999   -9999   -9999   "
   ]
 }

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "USW00027502",
     "name": "BARROW_POST_ROGERS_AP",
@@ -128,6 +128,6 @@
     "USW000275022023TAVG-2113  W-2453  W-1930  W-1903  W -322  W  260  W  912  W  695  W  285  W -324  W -983  W-1669  W",
     "USW000275022024TAVG-1982  W-2171  W-2230  W-1471  W -453  W  326  W  508  W  650  W  370  W -251  W-1135  W-2035  W",
     "USW000275022025TAVG-2016  W-2054  W-1923  W-1465  W -640  W  348  W  640  W  485  3  127  D -508  D-1111  D-2084  D",
-    "USW000275022026TAVG-2491  D-2560  3-2210  3-1649  D -696  D  105  D  428  D  700  D   71  D-9999   -9999   -9999   "
+    "USW000275022026TAVG-2491  D-2560  3-2210  3-1649  D -696  D  105  D  428  D  700  D   59  D-9999   -9999   -9999   "
   ]
 }

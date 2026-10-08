@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "USW00014837",
     "name": "MADISON_DANE_RGNL_AP",
@@ -168,6 +168,6 @@
     "USW000148372023TAVG -274  W -252  W   92  W  883  W 1544  W 2045  W 2243  W 2161  W 1915  W 1086  W  329  W  156  W",
     "USW000148372024TAVG -499  W  105  W  419  W  945  W 1659  W 2135  W 2230  W 2158  W 1881  W 1281  W  545  W -267  W",
     "USW000148372025TAVG -682  W -536  W  432  W  821  W 1345  W 2166  W 2305  W 2036  W 1834  Z 1219  Z  309  Z -593  Z",
-    "USW000148372026TAVG -877  Z -230  Z  408  Z 1043  Z 1440  Z 1994  Z 2358  Z 2134  Z 1820  Z-9999   -9999   -9999   "
+    "USW000148372026TAVG -877  Z -230  Z  408  Z 1043  Z 1440  Z 1994  Z 2358  Z 2134  Z 1818  Z-9999   -9999   -9999   "
   ]
 }

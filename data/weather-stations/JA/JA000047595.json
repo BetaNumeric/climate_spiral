@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "JA000047595",
     "name": "FUKUSHIMA_ARPT",
@@ -54,6 +54,6 @@
     "JA0000475951994TAVG  144  S  209  S  436  S 1443  S 1767  S 2116  S 2647  S 2805  S 2249  S 1665  S 1039  S  464  S",
     "JA0000475951995TAVG  116  S  242  S  528  S 1229  S 1725  S 1824  S 2504  S 2721  S-9999   -9999   -9999   -9999   ",
     "JA0000475952025TAVG  308  Z  202  Z  803  Z 1366  Z 1795  Z 2464  Z 2863  Z 2821  Z 2393  Z 1644  Z 1023  Z  541  Z",
-    "JA0000475952026TAVG  210  Z  544  Z  655  Z 1466  Z 1943  Z 2105  Z 2592  Z 2589  Z 2191  Z-9999   -9999   -9999   "
+    "JA0000475952026TAVG  210  Z  544  Z  655  Z 1466  Z 1943  Z 2105  Z 2592  Z 2589  Z 2167  Z-9999   -9999   -9999   "
   ]
 }

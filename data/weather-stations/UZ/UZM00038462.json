@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "UZM00038462",
     "name": "PSKEM",
@@ -104,6 +104,6 @@
     "UZM000384622023TAVG -480  S    0  S  784  S 1211  S 1532  S 2097  S 2448  S 2054  S 1602  S 1145  S  816  S  164  S",
     "UZM000384622024TAVG  100  S  -76  S  282  S 1073  S 1471  S 2051  S 2291  S 2266  S 1694  S 1075  S  528  S -192  S",
     "UZM000384622025TAVG  -52  Z  171  Z  557  Z 1443  Z 1884  Z 2205  Z 2518  Z 2350  Z 1867  Z 1352  Z  765  Z  138  Z",
-    "UZM000384622026TAVG  -50  Z  383  Z-9999    1263  Z 1548  Z 1912  Z 2298  Z 2218  Z 1810  Z-9999   -9999   -9999   "
+    "UZM000384622026TAVG  -50  Z  383  Z-9999    1263  Z 1548  Z 1912  Z 2298  Z 2218  Z 1756  Z-9999   -9999   -9999   "
   ]
 }

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "RSM00022602",
     "name": "REBOLY",
@@ -108,6 +108,6 @@
     "RSM000226022023TAVG -560  S -843  S -685  S -105  S  954  S 1321  S 1441  S 1616  S 1229  S   34  S -628  S -974  S",
     "RSM000226022024TAVG-1536  S-1002  S -280  S  -68  S  979  S 1636  S 1718  S 1541  S 1306  S  409  S  -93  S -659  S",
     "RSM000226022025TAVG -862  Z -668  Z -417  Z   95  Z  748  Z 1269  Z 1835  Z 1381  Z 1099  Z  446  Z -103  Z -418  Z",
-    "RSM000226022026TAVG-1527  Z-1451  Z-9999     223  Z  911  Z 1465  Z 1592  Z 1363  Z 1034  Z-9999   -9999   -9999   "
+    "RSM000226022026TAVG-1527  Z-1451  Z-9999     223  Z  911  Z 1465  Z 1592  Z 1363  Z 1004  Z-9999   -9999   -9999   "
   ]
 }

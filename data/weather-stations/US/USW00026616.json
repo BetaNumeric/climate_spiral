@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "USW00026616",
     "name": "KOTZEBUE_RALPH_WEIN_AP",
@@ -117,6 +117,6 @@
     "USW000266162023TAVG-1561  W-2026  W-1552  W-1603  W -132  W  697  W 1407  W 1195  W  516  W -237  W -830  W-1815  W",
     "USW000266162024TAVG-1802  W-1457  W-1544  W -783  W -128  W  740  W 1056  W  855  W  517  W -238  W-1177  W-1345  W",
     "USW000266162025TAVG-1392  W-1563  W-1796  W-1044  W  -52  W  931  W 1368  W 1121  W  501  D -220  D -968  D-1836  D",
-    "USW000266162026TAVG-1839  D-2022  D-2092  D -833  D  233  D  645  D 1240  D 1204  D  634  D-9999   -9999   -9999   "
+    "USW000266162026TAVG-1839  D-2022  D-2092  D -833  D  233  D  645  D 1240  D 1204  D  609  D-9999   -9999   -9999   "
   ]
 }

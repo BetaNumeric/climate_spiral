@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261002.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
   "station": {
     "id": "USW00093989",
     "name": "QUINCY_RGNL_AP",
@@ -89,6 +89,6 @@
     "USW000939892023TAVG   68  W  304  W  523  W 1260  W 1872  W 2288  W 2496  W 2391  W 2118  W 1402  W  707  W  463  W",
     "USW000939892024TAVG -374  W  571  W  890  W 1337  W 1979  W 2498  W 2419  W 2407  W 2100  W 1585  W  783  W  186  W",
     "USW000939892025TAVG -434  W -100  W  949  W 1346  W 1747  W 2330  W 2556  W 2300  W 2109  Z 1612  Z  659  Z  -63  Z",
-    "USW000939892026TAVG -407  Z  303  Z  993  Z 1510  Z 1769  Z 2257  Z 2557  Z 2396  Z 2328  Z-9999   -9999   -9999   "
+    "USW000939892026TAVG -407  Z  303  Z  993  Z 1510  Z 1769  Z 2257  Z 2557  Z 2396  Z 2326  Z-9999   -9999   -9999   "
   ]
 }
