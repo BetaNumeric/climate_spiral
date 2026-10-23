@@ -15,11 +15,11 @@ export const DATASET_CONFIG = {
         id: 'local', title: 'Local Temperature', metricLabel: 'Local Anomaly',
         sourceLabel: 'Open-Meteo / ERA5-Land', sourceHref: LOCAL_TEMPERATURE_SOURCE,
         supportsInterpolation: false, preserveMonthlyGaps: true, fileExtension: '.json',
-        parse: text => {
+        parse: (text, display = 'anomaly') => {
             try {
                 const snapshot = JSON.parse(text);
-                return snapshot.source === 'CRU-CY' ? parseCountryTemperatureData(snapshot)
-                    : snapshot.adjustment === 'QCF' ? parseStationTemperatureData(snapshot) : parseLocalTemperatureData(snapshot);
+                return snapshot.source === 'CRU-CY' ? parseCountryTemperatureData(snapshot, display)
+                    : snapshot.adjustment === 'QCF' ? parseStationTemperatureData(snapshot, display) : parseLocalTemperatureData(snapshot, display);
             } catch { return []; }
         },
         description: 'Monthly temperature anomalies relative to the local 1951-1980 average for each calendar month. ERA5-Land reanalysis estimates at approximately 11 km resolution, provided by Open-Meteo. Location search: GeoNames. Data: CC BY 4.0.'
@@ -152,20 +152,30 @@ export function getDatasetByKey(datasetKey) {
     return Object.hasOwn(DATASET_CONFIG, datasetKey) ? DATASET_CONFIG[datasetKey] : undefined;
 }
 
-export function getDatasetPresentation(datasetKey, { mode = 'era5', snapshot = null } = {}) {
+export function getDatasetPresentation(datasetKey, { mode = 'era5', snapshot = null, temperatureDisplay = 'anomaly' } = {}) {
     let dataset = getDatasetByKey(datasetKey);
+    const absolute = temperatureDisplay === 'temperature';
+    if (datasetKey === 'local' && absolute) {
+        dataset = { ...dataset, metricLabel: 'Local Temperature',
+            description: 'Monthly mean air temperatures in \u00b0C. ERA5-Land reanalysis estimates at approximately 11 km resolution, provided by Open-Meteo. Location search: GeoNames. Data: CC BY 4.0.' };
+    }
     if (datasetKey === 'local' && (snapshot?.station || (!snapshot && mode === 'station'))) {
-        dataset = { ...dataset, metricLabel: 'Station Anomaly', sourceLabel: 'NOAA GHCN-Monthly v4', sourceHref: STATION_SOURCE,
-            description: 'Monthly weather station observations, adjusted by NOAA for discontinuities such as station moves and instrument changes. Anomalies are relative to this station\'s 1951-1980 average for each calendar month. Missing months remain gaps. Location search: Open-Meteo / GeoNames.' };
+        dataset = { ...dataset, metricLabel: absolute ? 'Station Temperature' : 'Station Anomaly', sourceLabel: 'NOAA GHCN-Monthly v4', sourceHref: STATION_SOURCE,
+            description: 'Monthly weather station observations, adjusted by NOAA for discontinuities such as station moves and instrument changes. '
+                + (absolute ? 'Monthly mean air temperatures in \u00b0C. ' : 'Anomalies are relative to this station\'s 1951-1980 average for each calendar month. ')
+                + 'Missing months remain gaps. Location search: Open-Meteo / GeoNames.' };
     } else if (datasetKey === 'local' && (snapshot?.country || (!snapshot && mode === 'country'))) {
-        dataset = { ...dataset, metricLabel: 'Country Anomaly', sourceLabel: 'CRU-CY / University of East Anglia', sourceHref: COUNTRY_SOURCE,
-            description: 'Area-weighted monthly country temperatures from CRU-CY, relative to the country\'s 1951-1980 average for each calendar month. Provider-defined land regions; some islands and overseas territories are separate. Updated annually. Where observations are sparse, CRU can substitute climatological values; a complete series does not imply complete observational coverage.' };
+        dataset = { ...dataset, metricLabel: absolute ? 'Country Temperature' : 'Country Anomaly', sourceLabel: 'CRU-CY / University of East Anglia', sourceHref: COUNTRY_SOURCE,
+            description: 'Area-weighted monthly country temperatures from CRU-CY, '
+                + (absolute ? 'shown as monthly means in \u00b0C. ' : 'relative to the country\'s 1951-1980 average for each calendar month. ')
+                + 'Provider-defined land regions; some islands and overseas territories are separate. Updated annually. Where observations are sparse, CRU can substitute climatological values; a complete series does not imply complete observational coverage.' };
     }
     return dataset;
 }
 
-export function parseDatasetData(text, datasetKey) {
-    return getDatasetByKey(datasetKey)?.parse(text) ?? [];
+export function parseDatasetData(text, datasetKey, temperatureDisplay = 'anomaly') {
+    const dataset = getDatasetByKey(datasetKey);
+    return (datasetKey === 'local' ? dataset?.parse(text, temperatureDisplay) : dataset?.parse(text)) ?? [];
 }
 
 export function hasUsableData(data) {

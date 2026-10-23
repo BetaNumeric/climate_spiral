@@ -122,7 +122,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
             const display = snapshot => {
                 onData(snapshot, `CRU-CY ${snapshot.release} / University of East Anglia`);
                 selected.textContent = snapshot.location.name;
-                countryDetails.textContent = `1901 to ${snapshot.through}; CRU-CY ${snapshot.release}. Area-weighted land average; baseline 1951-1980. Annual releases.`;
+                countryDetails.textContent = `1901 to ${snapshot.through}; CRU-CY ${snapshot.release}. Area-weighted land average; anomaly baseline 1951-1980. Annual releases.`;
                 updateSourceControls();
             };
             if (saved) display(readCountrySnapshot(saved.data));
@@ -215,7 +215,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
             onData(snapshot, label);
             const elevation = snapshot.station.elevation === null ? '' : `; ${snapshot.station.elevation} m elevation`;
             stationDetails.textContent = `${snapshot.station.id} - ${Math.round(station.distance)} km${elevation}\n`
-                + `${coverage.first} to ${coverage.last}; ${coverage.coverage}% complete\nAdjusted observations; baseline 1951-1980.`;
+                + `${coverage.first} to ${coverage.last}; ${coverage.coverage}% complete\nAdjusted observations; anomaly baseline 1951-1980.`;
         };
         await cache.set(choiceKey(location), { id: station.id, radius: Number(radius.value) });
         if (!isCurrent(token)) return;
@@ -427,7 +427,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
                     countryCode = snapshot.country.code;
                     onData(snapshot, 'Imported CRU-CY country average');
                     selected.textContent = snapshot.location.name;
-                    countryDetails.textContent = `CRU-CY ${snapshot.release}; through ${snapshot.through}. Area-weighted land average; baseline 1951-1980.`;
+                    countryDetails.textContent = `CRU-CY ${snapshot.release}; through ${snapshot.through}. Area-weighted land average; anomaly baseline 1951-1980.`;
                     updateSourceControls();
                     const token = generation;
                     await cache.set('country:v1:' + countryCode, { data: snapshot, hash: null });
@@ -446,7 +446,7 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
                     stationSelect.disabled = true;
                     stationSelect.title = '';
                     stationLabel.textContent = 'Station';
-                    stationDetails.textContent = 'Imported station record; baseline 1951-1980.';
+                    stationDetails.textContent = 'Imported station record; anomaly baseline 1951-1980.';
                     message('Imported station record.');
                     return;
                 }

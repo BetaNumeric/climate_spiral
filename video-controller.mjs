@@ -237,7 +237,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
     }
 
     function drawVideoLegend(session) {
-        const { currentDatasetKey, localSnapshot } = getSceneState();
+        const { currentDatasetKey, localSnapshot, localTemperatureMode } = getSceneState();
         const rect = session.layout.legend;
         if (!rect) return;
 
@@ -320,7 +320,8 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
             context.textAlign = 'left';
             const attribution = localSnapshot?.country ? `CRU-CY ${localSnapshot.release} / UEA (country average)`
                 : localSnapshot?.station ? 'NOAA GHCN-Monthly v4 (adjusted)' : 'ERA5-Land / Open-Meteo (CC BY 4.0)';
-            context.fillText(attribution + ' | Baseline 1951-1980', rect.x, rect.y + rect.height * 0.94, rect.width);
+            const measurement = localTemperatureMode === 'temperature' ? 'Monthly mean temperature' : 'Baseline 1951-1980';
+            context.fillText(attribution + ' | ' + measurement, rect.x, rect.y + rect.height * 0.94, rect.width);
         }
         context.restore();
     }

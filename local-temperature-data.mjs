@@ -109,14 +109,15 @@ export function readLocalSnapshot(text) {
     return { ...data, location };
 }
 
-export function parseLocalTemperatureData(text) {
+export function parseLocalTemperatureData(text, display = 'anomaly') {
     try {
         const data = readLocalSnapshot(text);
-        return monthlyTemperatureAnomalies(data.records);
+        return monthlyTemperatureAnomalies(data.records, display);
     } catch { return []; }
 }
 
-export function monthlyTemperatureAnomalies(records) {
+export function monthlyTemperatureAnomalies(records, display = 'anomaly') {
+    if (!['anomaly', 'temperature'].includes(display)) throw new Error('Invalid local temperature display.');
     const sums = Array(12).fill(0), counts = Array(12).fill(0);
     for (const row of records) {
         const ordinal = monthNumber(row.month), year = Math.floor(ordinal / 12);
@@ -127,13 +128,30 @@ export function monthlyTemperatureAnomalies(records) {
     for (const row of records) {
         const ordinal = monthNumber(row.month), year = Math.floor(ordinal / 12), month = ordinal % 12;
         if (!years.has(year)) years.set(year, { year, anomalies: [], fractions: [] });
-        years.get(year).anomalies.push(row.mean - sums[month] / 30);
+        years.get(year).anomalies.push(display === 'temperature' ? row.mean : row.mean - sums[month] / 30);
         years.get(year).fractions.push(month / 12);
     }
     return [...years.values()];
 }
 
-export function localTemperatureRange(data) {
+export function localTemperatureRange(data, display = 'anomaly') {
+    if (display === 'temperature') {
+        let low = 0, high = 0;
+        for (const row of data) for (const value of row.anomalies) {
+            if (!Number.isFinite(value)) continue;
+            low = Math.min(low, value);
+            high = Math.max(high, value);
+        }
+        if (low < 0) low -= 0.25;
+        if (high > 0) high += 0.25;
+        if (low === high) { low = -1; high = 1; }
+        const interval = (high - low) / 4;
+        const power = 10 ** Math.floor(Math.log10(interval));
+        const step = [1, 2, 5, 10].find(value => value * power >= interval) * power;
+        const first = Math.floor(low / step), last = Math.ceil(high / step);
+        const ticks = Array.from({ length: last - first + 1 }, (_, index) => Number(((first + index) * step).toPrecision(12)));
+        return { min: ticks[0], max: ticks.at(-1), ticks };
+    }
     let magnitude = 2;
     for (const row of data) for (const value of row.anomalies) magnitude = Math.max(magnitude, Math.abs(value));
     // Leave room around the coldest month and keep five evenly spaced, whole-degree ticks.

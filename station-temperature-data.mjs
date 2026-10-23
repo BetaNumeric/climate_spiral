@@ -90,8 +90,8 @@ export function readStationSnapshot(text, now = new Date()) {
     return { ...data, records, location: { name: station.name, latitude: station.latitude, longitude: station.longitude, timezone: 'UTC' } };
 }
 
-export function parseStationTemperatureData(text) {
-    try { return monthlyTemperatureAnomalies(readStationSnapshot(text).records); }
+export function parseStationTemperatureData(text, display = 'anomaly') {
+    try { return monthlyTemperatureAnomalies(readStationSnapshot(text).records, display); }
     catch { return []; }
 }
 

@@ -57,8 +57,8 @@ export function readCountrySnapshot(text) {
     return { ...data, ...parsed, location: { name: `${country.name} (country average)` } };
 }
 
-export function parseCountryTemperatureData(text) {
-    try { return monthlyTemperatureAnomalies(readCountrySnapshot(text).records); }
+export function parseCountryTemperatureData(text, display = 'anomaly') {
+    try { return monthlyTemperatureAnomalies(readCountrySnapshot(text).records, display); }
     catch { return []; }
 }
 

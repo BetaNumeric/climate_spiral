@@ -67,8 +67,19 @@ const displays = {
     },
 };
 
-export function getDatasetDisplay(datasetKey, localRange) {
+export function getDatasetDisplay(datasetKey, localRange, temperatureDisplay = 'anomaly') {
     if (datasetKey === 'local') {
+        if (temperatureDisplay === 'temperature') {
+            const { min, max, ticks } = localRange;
+            const cold = '#0000ff', neutral = '#ffffff', hot = '#ff0000';
+            return {
+                ...temperature, signed: false, caption: 'Monthly mean temperature',
+                legendLabels: ticks.map(value => value + '\u00b0C'), legendRange: [min, max],
+                legendStops: min < 0 && max > 0 ? [[0, cold], [-min / (max - min), neutral], [1, hot]]
+                    : [[0, min < 0 ? cold : neutral], [1, max > 0 ? hot : neutral]],
+                referenceValues: ticks,
+            };
+        }
         return {
             ...temperature,
             legendLabels: localRange.ticks.map(value => (value > 0 ? '+' : '') + value + '\u00b0C'),
@@ -88,7 +99,7 @@ export function formatDatasetValue(value, display) {
 export function formatReferenceValue(spiralValue, display) {
     const value = display.fromSpiralValue(spiralValue);
     return display.unit === '\u00b0C'
-        ? (value > 0 ? '+' : '') + value + display.unit
+        ? (display.signed && value > 0 ? '+' : '') + value + display.unit
         : Math.round(value) + ' ' + display.unit;
 }
 

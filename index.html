@@ -102,6 +102,10 @@
                     </form>
                     <ul id="localResults" aria-label="Matching locations"></ul>
                     <span id="localSelected"></span>
+                    <div class="local-display layout-modes" role="radiogroup" aria-label="Local temperature display">
+                        <label><input type="radio" name="localTemperatureDisplay" value="anomaly" checked><span>Anomaly</span></label>
+                        <label><input type="radio" name="localTemperatureDisplay" value="temperature"><span>Temperature</span></label>
+                    </div>
                     <div class="local-source">
                         <label for="localSource">Source</label>
                         <select id="localSource">
@@ -605,7 +609,7 @@
                 THREE, renderer, cameraController, fontFamily: FONT_FAMILY,
                 getSceneState: () => ({ activeCamera, controls, spiralMesh, timelineStops, monthsPerFrame,
                     layoutMix, animationIndex, isAnimating, totalIndices, currentDatasetKey, startYear, endYear,
-                    localSnapshot, spiralHeight }),
+                    localSnapshot, localTemperatureMode: getLocalTemperatureMode(), spiralHeight }),
                 getActiveColorDisplay, getFraming: getVideoFraming, finishLayoutTransition,
                 cancelLocalLoad: () => localControls.cancel(),
                 setPlaybackPosition, toggleAnimation,
@@ -712,7 +716,11 @@
         }
 
         function getActiveDisplay() {
-            return getDatasetDisplay(currentDatasetKey, localRange);
+            return getDatasetDisplay(currentDatasetKey, localRange, getLocalTemperatureMode());
+        }
+
+        function getLocalTemperatureMode() {
+            return document.querySelector('input[name="localTemperatureDisplay"]:checked').value;
         }
 
         function getActiveColorDisplay() {
@@ -758,8 +766,10 @@
 
         function getUnscaledSpiralRadius(value) {
             // Reserve the inner quarter for the year; local anomalies can be much wider than global ones.
-            if (currentDatasetKey === 'local') return CONFIG.outerRadius *
-                (0.25 + 0.75 * (value + localRange.extent) / (2 * localRange.extent));
+            if (currentDatasetKey === 'local') {
+                const min = localRange.min ?? -localRange.extent, max = localRange.max ?? localRange.extent;
+                return CONFIG.outerRadius * (0.25 + 0.75 * (value - min) / (max - min));
+            }
             return getDatasetRadiusBase() + (value * CONFIG.radiusScale);
         }
 
@@ -782,7 +792,7 @@
         }
 
         function getOuterRingValue(maxValue) {
-            if (currentDatasetKey === 'local') return localRange.extent;
+            if (currentDatasetKey === 'local') return localRange.max ?? localRange.extent;
             if (currentDatasetKey === 'sealevel') return Math.max(maxValue, seaLevelMmToSpiralValue(SEA_LEVEL_TICKS.at(-1)));
             if (currentDatasetKey === 'methane') return Math.max(maxValue, methanePpbToSpiralValue(METHANE_TICKS.at(-1)));
             if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, getSeaIceScale().toSpiralValue(getSeaIceScale().max));
@@ -829,7 +839,7 @@
         function applyDatasetUI() {
             const dataset = getDatasetPresentation(currentDatasetKey, {
                 mode: localControls?.mode ?? document.getElementById('localSource').value,
-                snapshot: localSnapshot
+                snapshot: localSnapshot, temperatureDisplay: getLocalTemperatureMode()
             });
             const metricLabel = document.getElementById('infoMetricLabel');
             const infoDescription = document.getElementById('infoDescription');
@@ -1427,6 +1437,18 @@
             document.getElementById('singleColor').addEventListener('input', () => {
                 if (!videoController.isBusy) updateSpiralColors();
             });
+            document.querySelectorAll('input[name="localTemperatureDisplay"]').forEach(input => {
+                input.addEventListener('change', () => {
+                    if (currentDatasetKey !== 'local' || videoController.isBusy) return;
+                    const previousIndex = animationIndex;
+                    const previousStops = timelineStops;
+                    localRange = localTemperatureRange([], getLocalTemperatureMode());
+                    applyDatasetUI();
+                    if (updateDataVisualization()) {
+                        setPlaybackPosition(remapTimelinePosition(previousIndex, previousStops, timelineStops), false);
+                    }
+                });
+            });
 
             applyDatasetUI();
         }
@@ -1649,7 +1671,9 @@
 
         function updateDataVisualization(rawDataOverride) {
             const dataset = getActiveDataset();
-            const rawData = Array.isArray(rawDataOverride)
+            const rawData = currentDatasetKey === 'local'
+                ? parseDatasetData(currentDataText, 'local', getLocalTemperatureMode())
+                : Array.isArray(rawDataOverride)
                 ? rawDataOverride
                 : parseDatasetData(currentDataText, currentDatasetKey);
             if (!hasUsableData(rawData)) return false;
@@ -1664,7 +1688,7 @@
                 : rawData;
 
             if (!hasUsableData(processedData)) return false;
-            if (currentDatasetKey === 'local') localRange = localTemperatureRange(processedData);
+            if (currentDatasetKey === 'local') localRange = localTemperatureRange(processedData, getLocalTemperatureMode());
             yearIndicatorMesh.visible = document.getElementById('helpersToggle').checked;
             
             startYear = processedData[0].year;
@@ -1952,6 +1976,8 @@
             const rawPoints = [];
             const rawColors = [];
             const rawMetaData = []; // To store year info per point
+            const localDisplay = currentDatasetKey === 'local' ? getActiveDisplay() : null;
+            const localColors = localDisplay?.legendStops.map(([, color]) => new THREE.Color(color));
             const yearLabels = new THREE.Group();
             
             const visible = document.getElementById('helpersToggle').checked;
@@ -1994,8 +2020,13 @@
 
                     let c = new THREE.Color();
                     if (currentDatasetKey === 'local') {
-                        c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
-                            Math.min(1, Math.abs(colorValue) / localRange.extent));
+                        if (getLocalTemperatureMode() === 'temperature') {
+                            const fraction = getLegendPercent(displayValue, localDisplay) / 100;
+                            sampleColorStops(localDisplay.legendStops, localColors, fraction, c);
+                        } else {
+                            c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
+                                Math.min(1, Math.abs(colorValue) / localRange.extent));
+                        }
                     } else if (currentDatasetKey === 'sealevel') {
                         c.lerpColors(CONFIG.colors.seaLevelLow, CONFIG.colors.seaLevelHigh,
                             THREE.MathUtils.clamp(displayValue / SEA_LEVEL_TICKS.at(-1), 0, 1));
