@@ -109,8 +109,8 @@
                     <div class="local-source">
                         <label for="localSource">Source</label>
                         <select id="localSource">
+                            <option value="station" selected>Weather station (NOAA)</option>
                             <option value="era5">Local estimate (ERA5-Land)</option>
-                            <option value="station">Weather station (NOAA)</option>
                         </select>
                     </div>
                     <p id="localCountryDetails" hidden></p>
@@ -523,6 +523,8 @@
         let videoController;
         
         // UI State
+        let localColorMode = 'annual';
+        let nonLocalColorMode = 'value';
         let timelineTimeout;
         let dataStatusTimeout;
 
@@ -1315,6 +1317,15 @@
                 saveCurrentDatasetPlaybackState();
                 localControls.cancel();
                 datasetLoader.cancel();
+                const colorMode = document.getElementById('colorMode');
+                if (nextDatasetKey === 'local') {
+                    nonLocalColorMode = colorMode.value;
+                    colorMode.value = localColorMode;
+                } else if (currentDatasetKey === 'local') {
+                    localColorMode = colorMode.value;
+                    colorMode.value = nonLocalColorMode;
+                }
+                document.getElementById('singleColorRow').hidden = colorMode.value !== 'single';
                 currentDatasetKey = nextDatasetKey;
                 if (nextDatasetKey === 'local') clearDataVisualization();
                 applyDatasetUI();

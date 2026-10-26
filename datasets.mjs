@@ -152,7 +152,7 @@ export function getDatasetByKey(datasetKey) {
     return Object.hasOwn(DATASET_CONFIG, datasetKey) ? DATASET_CONFIG[datasetKey] : undefined;
 }
 
-export function getDatasetPresentation(datasetKey, { mode = 'era5', snapshot = null, temperatureDisplay = 'anomaly' } = {}) {
+export function getDatasetPresentation(datasetKey, { mode = 'station', snapshot = null, temperatureDisplay = 'anomaly' } = {}) {
     let dataset = getDatasetByKey(datasetKey);
     const absolute = temperatureDisplay === 'temperature';
     if (datasetKey === 'local' && absolute) {

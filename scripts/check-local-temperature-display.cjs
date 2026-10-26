@@ -78,6 +78,9 @@ const fixtures = { era5: JSON.stringify(reanalysis),
       await page.click('#settingsBtn'); await page.click('#viewSettings > summary');
       await page.uncheck('#smoothSpiralToggle'); await page.selectOption('#datasetSelect', 'local');
       await page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Choose a location.');
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.equal(await page.locator('#colorMode').inputValue(), 'annual');
+      await page.selectOption('#colorMode', 'value');
       assert.equal(await page.locator('[name="localTemperatureDisplay"]:checked').inputValue(), 'anomaly');
       for (const [source, fixture] of Object.entries(fixtures)) {
         await page.locator('#fileUpload').setInputFiles({ name: source + '.json', mimeType: 'application/json', buffer: Buffer.from(fixture) });
@@ -122,6 +125,10 @@ const fixtures = { era5: JSON.stringify(reanalysis),
         assert.deepEqual(restored.colors, original.colors);
         assert.equal(restored.value, original.value);
         assert.equal(requests.length, count, 'Display changes must not download data');
+        await page.click('#settingsBtn');
+        if (!await page.locator('#infoPanel').isVisible()) await page.click('#infoBtn');
+        await page.screenshot({ path: join(output, name + '-' + source + '-anomaly.png') });
+        await page.click('#settingsBtn');
         await context.setOffline(false);
       }
       await page.locator('.local-display label').filter({ hasText: 'Temperature' }).click();

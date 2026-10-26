@@ -140,6 +140,12 @@ function weather(url) {
       await openLocal();
       assert.equal(await page.locator('#playBtn').isDisabled(), true);
       await page.waitForFunction(() => document.getElementById('localStatus').textContent === 'Choose a location.');
+      assert.equal(await page.locator('#localSource').inputValue(), 'station');
+      assert.equal(await page.locator('#colorMode').inputValue(), 'annual');
+      await page.click('#viewSettings > summary');
+      await page.selectOption('#colorMode', 'value');
+      await page.click('#viewSettings > summary');
+      await page.selectOption('#localSource', 'era5');
       assert.equal(await page.evaluate(() => deviceLocationTest.calls), 0, 'Opening Local Temperature must not request device location');
       await chooseBerlin();
       assert.ok(requests.length >= 15);

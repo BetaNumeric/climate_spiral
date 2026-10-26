@@ -82,8 +82,23 @@ test('absolute temperature formatting, references and color zero agree with the 
         assert.equal(getLegendPercent(range.max, display), 100);
         const zero = getLegendPercent(0, display) / 100;
         assert.ok(display.legendStops.some(([position, color]) => Math.abs(position - zero) < 1e-10 && color === '#ffffff'));
+        assert.equal(display.legendStops[0][0], 0);
+        assert.equal(display.legendStops.at(-1)[0], 1);
+        assert.ok(display.legendStops.every(([position], index, stops) => index === 0 || position > stops[index - 1][0]));
         assert.equal(display.caption, 'Monthly mean temperature');
     }
+});
+
+test('local Value colors retain the original blue/white/red palette and full linear measurement range', () => {
+    const range = localTemperatureRange([{ anomalies: [-12.1, 6.2] }]);
+    const display = getDatasetDisplay('local', range);
+    assert.deepEqual(display.legendRange, [-14, 14]);
+    assert.deepEqual(display.referenceValues, [-14, -7, 0, 7, 14]);
+    assert.deepEqual(display.legendStops, [[0, '#0000ff'], [0.5, '#ffffff'], [1, '#ff0000']]);
+    assert.equal(getLegendPercent(-7, display), 25);
+    assert.equal(getLegendPercent(7, display), 75);
+    assert.deepEqual(getDatasetDisplay('temperature').legendStops,
+        [[0, '#0000ff'], [1 / 3, '#ffffff'], [2 / 3, '#ff0000'], [1, '#800080']]);
 });
 
 test('local provenance distinguishes temperatures from anomalies for every source without changing global series', () => {

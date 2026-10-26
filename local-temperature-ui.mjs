@@ -397,8 +397,9 @@ export function setupLocalTemperature({ isActive, onData, onClear }) {
                 if (!isCurrent(token)) return;
                 const savedPointSource = await cache.get('local-point-source');
                 if (!isCurrent(token)) return;
-                source.value = savedPointSource === 'station' || (!savedPointSource && savedSource === 'station') ? 'station' : 'era5';
-                mode = ['station', 'country'].includes(savedSource) ? savedSource : 'era5';
+                source.value = ['station', 'era5'].includes(savedPointSource) ? savedPointSource
+                    : ['station', 'era5'].includes(savedSource) ? savedSource : source.value;
+                mode = ['station', 'era5', 'country'].includes(savedSource) ? savedSource : source.value;
                 if (mode !== 'country') source.value = mode;
                 sourceRestored = true;
                 updateSourceControls();

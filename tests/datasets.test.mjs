@@ -86,7 +86,8 @@ test('local snapshots select the correct parser for reanalysis, stations and cou
 
 test('local source presentation follows the displayed snapshot before the selected mode', () => {
     assert.equal(getDatasetPresentation('temperature'), DATASET_CONFIG.temperature);
-    assert.equal(getDatasetPresentation('local').sourceLabel, 'Open-Meteo / ERA5-Land');
+    assert.equal(getDatasetPresentation('local').sourceHref, STATION_SOURCE);
+    assert.equal(getDatasetPresentation('local', { mode: 'era5' }).sourceLabel, 'Open-Meteo / ERA5-Land');
     assert.equal(getDatasetPresentation('local', { mode: 'station' }).sourceHref, STATION_SOURCE);
     assert.equal(getDatasetPresentation('local', { mode: 'country' }).sourceHref, COUNTRY_SOURCE);
     assert.equal(getDatasetPresentation('local', { mode: 'country', snapshot: { station: {} } }).sourceHref, STATION_SOURCE);
