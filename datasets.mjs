@@ -9,6 +9,7 @@ import { SEA_LEVEL_SOURCE_URL, fetchSeaLevelData, parseSeaLevelData } from './se
 import { METHANE_DATA_URL, parseMethaneData } from './methane-data.mjs';
 import { fetchSeaIceData, parseSeaIceData } from './sea-ice-data.mjs';
 import { SEA_ICE_VOLUME_DATA_URL, parseSeaIceVolumeData } from './sea-ice-volume-data.mjs';
+import { OCEAN_PH_SOURCE_URL, parseOceanPhData } from './ocean-ph-data.mjs';
 
 export const DATASET_CONFIG = {
     local: {
@@ -120,6 +121,14 @@ export const DATASET_CONFIG = {
         fileExtension: ".json",
         parse: parseSeaLevelData,
         description: "Global mean sea-level change relative to the 1993 average, in mm. Monthly averages of CU satellite estimates, with seasonal signals retained and the source's GIA correction. The final source month is omitted as potentially incomplete. Recent values may be revised."
+    },
+    oceanph: {
+        id: 'oceanph', title: 'Ocean Surface pH', metricLabel: 'Surface pH (total scale)',
+        localPath: 'data/ocean-ph.json', snapshotOnly: true,
+        sourceLabel: 'Copernicus Marine / LSCE', sourceHref: OCEAN_PH_SOURCE_URL,
+        supportsInterpolation: false, preserveMonthlyGaps: true, fileExtension: '.json',
+        parse: parseOceanPhData,
+        description: 'Area-weighted monthly surface-ocean pH since 1985, on the total scale. Observation-based carbonate-system reconstructions, not direct pH measurements everywhere. Lower pH means greater acidity. Recent near-real-time estimates are provisional; reprocessed history replaces them when available. The radius uses a 7.95 display offset, not a climate baseline. Source: Copernicus Marine / LSCE.'
     },
     co2: {
         id: "co2",

@@ -29,6 +29,7 @@ export const SECONDARY_DATASETS = [
   { key: 'co2', title: 'Global CO2' },
   { key: 'methane', title: 'Global Methane' },
   { key: 'sealevel', title: 'Global Sea Level' },
+  { key: 'oceanph', title: 'Ocean Surface pH' },
 ];
 
 const TOP_START = '<!-- README_VIDEO_TOP_START -->';

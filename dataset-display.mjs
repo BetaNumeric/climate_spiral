@@ -3,6 +3,7 @@ import { METHANE_AXIS_MIN, METHANE_TICKS, methanePpbToSpiralValue, spiralValueTo
 import { SEA_LEVEL_TICKS, seaLevelMmToSpiralValue, spiralValueToSeaLevelMm } from './sea-level-data.mjs';
 import { SEA_ICE_MAX_EXTENT, SEA_ICE_TICKS, seaIceExtentToSpiralValue, spiralValueToSeaIceExtent } from './sea-ice-data.mjs';
 import { seaIceVolumeToSpiralValue, spiralValueToSeaIceVolume } from './sea-ice-volume-data.mjs';
+import { OCEAN_PH_AXIS_MIN, OCEAN_PH_TICKS, oceanPhToSpiralValue, spiralValueToOceanPh } from './ocean-ph-data.mjs';
 
 export const SEA_ICE_EXTENT_SCALE = {
     max: SEA_ICE_MAX_EXTENT, ticks: SEA_ICE_TICKS,
@@ -57,6 +58,15 @@ const displays = {
         referenceValues: METHANE_TICKS.map(methanePpbToSpiralValue), referenceFontSize: 56,
         fromSpiralValue: spiralValueToMethanePpb,
     },
+    oceanph: {
+        unit: 'pH', precision: 3, signed: false, referencePrecision: 2,
+        caption: 'Reconstructed surface pH (total scale)',
+        legendLabels: [OCEAN_PH_AXIS_MIN, ...OCEAN_PH_TICKS].map(value => value.toFixed(2)),
+        legendRange: [OCEAN_PH_AXIS_MIN, OCEAN_PH_TICKS.at(-1)],
+        legendStops: [[0, '#d54b45'], [0.5, '#eee8e3'], [1, '#2479b2']],
+        referenceValues: OCEAN_PH_TICKS.map(oceanPhToSpiralValue), referenceFontSize: 56,
+        fromSpiralValue: spiralValueToOceanPh,
+    },
     sealevel: {
         ...temperature, unit: 'mm', precision: 1,
         legendLabels: SEA_LEVEL_TICKS.map(value => value + ' mm'),
@@ -100,7 +110,7 @@ export function formatReferenceValue(spiralValue, display) {
     const value = display.fromSpiralValue(spiralValue);
     return display.unit === '\u00b0C'
         ? (display.signed && value > 0 ? '+' : '') + value + display.unit
-        : Math.round(value) + ' ' + display.unit;
+        : (display.referencePrecision === undefined ? Math.round(value) : value.toFixed(display.referencePrecision)) + ' ' + display.unit;
 }
 
 export function getLegendPercent(value, display) {

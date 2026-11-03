@@ -64,8 +64,17 @@ To run an updater locally:
 | Arctic sea ice volume | `node scripts/update-sea-ice-volume-data.mjs` |
 | Global methane | `node scripts/update-methane-data.mjs` |
 | Global sea level | `node scripts/update-sea-level-data.mjs` |
+| Ocean surface pH | `python scripts/update_ocean_ph_data.py` (install `scripts/requirements-ocean-ph.txt` first) |
 
 NASA GISTEMP and Mauna Loa CO2 are downloaded directly by the workflow. The other updaters validate their source downloads before saving local snapshots. These nine datasets do not require credentials.
+
+### Ocean pH Updates
+
+The separate [Update ocean surface pH](../.github/workflows/update-ocean-ph.yml) workflow runs monthly on the 23rd at 08:41 UTC and supports **Run workflow**. No new secrets or account are required: the updater discovers Copernicus's published full-resolution Zarr stores through its public STAC catalogue. This is separate from the weekly nine-dataset updater. Push the workflow, parser, and initial snapshot together; with Actions enabled and contents-write permission allowed, scheduled updates can commit `data/ocean-ph.json` normally.
+
+For local processing, use Python 3.12 or later, preferably in a virtual environment, then run `python -m pip install -r scripts/requirements-ocean-ph.txt`. The first reduction downloads one global pH field per available month; later runs check monthly HTTP ETags and reuse matching means. No raw grid cache needs to be committed. Unchanged runs leave the file untouched. Revisions, new source versions/grids, and months promoted from provisional to reprocessed trigger fresh reduction. A failure leaves the existing JSON intact. Public service URLs are discovered, not tied to a particular storage bucket/version; changes to the expected native grid/chunk layout require explicit review.
+
+Run `python -m unittest discover -s tests -p 'test_ocean_ph_data.py'` for area weighting, missing-cell handling, monthly joins, incremental reuse/revisions, and failed-update protection. `npm test` covers browser parsing, decimal reference labels, and same-origin snapshot refreshes. `node scripts/check-ocean-ph.cjs` checks real desktop/mobile rendering, both layouts and line modes, legend attribution, and video export. The JSON records source provenance and per-month valid area; see [Data Sources and Methods](data-methods.md#ocean-surface-ph) for interpretation and coverage limitations.
 
 Run `node scripts/check-dataset-framing.cjs` against the local server to check the bundled datasets, reference positions, and both layouts on desktop and mobile. `node scripts/check-local-temperature.cjs` separately tests location search, opt-in device location, caching, cancellation, and rendering with deterministic reanalysis fixtures and real bundled station records, including station alternatives and source switching. It saves screenshots under `climate-local-temperature` in the system temporary directory.
 

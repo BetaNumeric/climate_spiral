@@ -1,0 +1,3536 @@
+{
+  "version": 1,
+  "source": "Copernicus Marine / LSCE",
+  "product": "MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008",
+  "sourceUrl": "https://data.marine.copernicus.eu/product/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/description",
+  "doi": "10.48670/moi-00047",
+  "units": "pH",
+  "scale": "total",
+  "method": "cell-area-weighted-arithmetic-mean-ph-v1",
+  "sources": {
+    "my": {
+      "dataset": "cmems_obs-mob_glo_bgc-car_my_irr-i",
+      "version": "202603",
+      "store": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-037/arco/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/cmems_obs-mob_glo_bgc-car_my_irr-i_202603/timeChunked.zarr",
+      "catalogue": "https://stac.marine.copernicus.eu/metadata/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/cmems_obs-mob_glo_bgc-car_my_irr-i_202603/dataset.stac.json",
+      "gridSha256": "02b8653ff8a32919f396511d6d5e859b1101c4f977a494e0b151635adedb96fb"
+    },
+    "nrt": {
+      "dataset": "cmems_obs-mob_glo_bgc-car_nrt_irr-i",
+      "version": "202603",
+      "store": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-037/arco/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/cmems_obs-mob_glo_bgc-car_nrt_irr-i_202603/timeChunked.zarr",
+      "catalogue": "https://stac.marine.copernicus.eu/metadata/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/cmems_obs-mob_glo_bgc-car_nrt_irr-i_202603/dataset.stac.json",
+      "gridSha256": "02b8653ff8a32919f396511d6d5e859b1101c4f977a494e0b151635adedb96fb"
+    }
+  },
+  "through": "2026-09",
+  "records": [
+    {
+      "month": "1985-01",
+      "ph": 8.109885,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"4e0c0f7e8edd9994fa03bc379d485374\""
+    },
+    {
+      "month": "1985-02",
+      "ph": 8.10768,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"cbd8a0c3bdfb19c4660640ed786e1034\""
+    },
+    {
+      "month": "1985-03",
+      "ph": 8.105079,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"3abf78f2190b47e61675b40711a2e481\""
+    },
+    {
+      "month": "1985-04",
+      "ph": 8.10301,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"cdc7e647e00f0841cbfc69a17437f7e2\""
+    },
+    {
+      "month": "1985-05",
+      "ph": 8.107007,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"ec4d2a21a2b2ade6d8bcea940fa2f3c8\""
+    },
+    {
+      "month": "1985-06",
+      "ph": 8.109441,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"21bf44193dd884b038bbe45bf5e31dae\""
+    },
+    {
+      "month": "1985-07",
+      "ph": 8.108134,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"bcd9ae87f444b48ba9bb94cfa8e0af2b\""
+    },
+    {
+      "month": "1985-08",
+      "ph": 8.105422,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"8538dd449c05635ca7a60ad5bd56779b\""
+    },
+    {
+      "month": "1985-09",
+      "ph": 8.10523,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"b1db6574a4ea6a0803f50d41fb834a6b\""
+    },
+    {
+      "month": "1985-10",
+      "ph": 8.10943,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"1f15dd775b183f04fba649587547c8b7\""
+    },
+    {
+      "month": "1985-11",
+      "ph": 8.111788,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"c0043fcc0f00d5363a7487b2d00488f0\""
+    },
+    {
+      "month": "1985-12",
+      "ph": 8.111425,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"3e7e06bd643a0ade1bd7c3f735df3c04\""
+    },
+    {
+      "month": "1986-01",
+      "ph": 8.108788,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"349e90ef24bfe902d9481840f665f12e\""
+    },
+    {
+      "month": "1986-02",
+      "ph": 8.1063,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"ea4ca5fc9d7fe56d3af23af2a01d40b9\""
+    },
+    {
+      "month": "1986-03",
+      "ph": 8.103726,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"94963ae12c82c2b4fc69aff4cb66bd3e\""
+    },
+    {
+      "month": "1986-04",
+      "ph": 8.102587,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"cb83cc654921bcdaede947685f382659\""
+    },
+    {
+      "month": "1986-05",
+      "ph": 8.10573,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"06935b8eeff91ee5532b7a7cb91e8717\""
+    },
+    {
+      "month": "1986-06",
+      "ph": 8.108616,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"401cc4462064d34c8989b3d0322976d3\""
+    },
+    {
+      "month": "1986-07",
+      "ph": 8.107455,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"faadd43013b71a62a848afc47f9453a7\""
+    },
+    {
+      "month": "1986-08",
+      "ph": 8.10535,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"ed0bd61080bee9ee95a635f62210eeca\""
+    },
+    {
+      "month": "1986-09",
+      "ph": 8.104598,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"0bb3adcc4c14338953c3bbfb3e9bbc0a\""
+    },
+    {
+      "month": "1986-10",
+      "ph": 8.10806,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"5acbc9572cdcf2d8695f8e70fe12bf70\""
+    },
+    {
+      "month": "1986-11",
+      "ph": 8.110767,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"cec2da49b383fa36b8234bfeb17e85c2\""
+    },
+    {
+      "month": "1986-12",
+      "ph": 8.110708,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"7e8fe4f00a445fc2a104426560f6c492\""
+    },
+    {
+      "month": "1987-01",
+      "ph": 8.107928,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"885a34517ce6cb0e1212a2f4421258e2\""
+    },
+    {
+      "month": "1987-02",
+      "ph": 8.105444,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"787ba57ec9ef05cfa57fdb5a763c8b00\""
+    },
+    {
+      "month": "1987-03",
+      "ph": 8.102689,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"6a39cfdf5332ff2bcc856d49493d8b0d\""
+    },
+    {
+      "month": "1987-04",
+      "ph": 8.101714,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"69c77d508f85db34b4552a2e6c1bee56\""
+    },
+    {
+      "month": "1987-05",
+      "ph": 8.104797,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"27ae792e2aac4ded287bba13042cebd5\""
+    },
+    {
+      "month": "1987-06",
+      "ph": 8.107079,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"a0b5ec7308631bcae9acb24c4ec48efa\""
+    },
+    {
+      "month": "1987-07",
+      "ph": 8.106148,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"c1f061d629ed98a69babfb2afb7fdcc8\""
+    },
+    {
+      "month": "1987-08",
+      "ph": 8.10392,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"370aaf3076fc467d750f2e5ac5d7a963\""
+    },
+    {
+      "month": "1987-09",
+      "ph": 8.103091,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"585bbd63a93153d1276e948b3a1c4eed\""
+    },
+    {
+      "month": "1987-10",
+      "ph": 8.106079,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"eee556889c2a51eb0a92d4b18ee62e69\""
+    },
+    {
+      "month": "1987-11",
+      "ph": 8.108267,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"443deb2e60c3c2700a102c22c88e935c\""
+    },
+    {
+      "month": "1987-12",
+      "ph": 8.107467,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"fa7fbbbe42eef798defc25a15f0fc267\""
+    },
+    {
+      "month": "1988-01",
+      "ph": 8.104699,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"35f5871e080407b9ca20e5d0e1b2bb5b\""
+    },
+    {
+      "month": "1988-02",
+      "ph": 8.102758,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"d19fa0f7bba4f5e565b46d559f54eeab\""
+    },
+    {
+      "month": "1988-03",
+      "ph": 8.10008,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"85b5ca875dcd6f076b34c0c94fca4474\""
+    },
+    {
+      "month": "1988-04",
+      "ph": 8.099073,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"361163aa5f85351f42a5053ccd351a6a\""
+    },
+    {
+      "month": "1988-05",
+      "ph": 8.10271,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"da38e6500173dcad8c8b2a975974042e\""
+    },
+    {
+      "month": "1988-06",
+      "ph": 8.105233,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"0c481bd2e72c99ddfa13cbdae753cef5\""
+    },
+    {
+      "month": "1988-07",
+      "ph": 8.103833,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"e1395fafc7a4ec1c5c5618d1c042534f\""
+    },
+    {
+      "month": "1988-08",
+      "ph": 8.101492,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"bbf7952abf7161dad6a63e7e7da02a4a\""
+    },
+    {
+      "month": "1988-09",
+      "ph": 8.101166,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"92f02888ceaa415f895b6ce6c140514d\""
+    },
+    {
+      "month": "1988-10",
+      "ph": 8.103759,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"9141fe9243fad13e63be08efca1dea3b\""
+    },
+    {
+      "month": "1988-11",
+      "ph": 8.106866,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"e13797e01cb61dfef62ecc1a3a64d92a\""
+    },
+    {
+      "month": "1988-12",
+      "ph": 8.105505,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"15fa481f0213fb048fa9d4dbf0dd546d\""
+    },
+    {
+      "month": "1989-01",
+      "ph": 8.102947,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"5476a49c4bf2ccd3a369083bb66fe564\""
+    },
+    {
+      "month": "1989-02",
+      "ph": 8.101113,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"f461ba8e23ae1b986e47124e5178b858\""
+    },
+    {
+      "month": "1989-03",
+      "ph": 8.098274,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"5157263ce0501ad1898daadab6bbef45\""
+    },
+    {
+      "month": "1989-04",
+      "ph": 8.098237,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"b15413bb0ad6602d516001c3fb8d2426\""
+    },
+    {
+      "month": "1989-05",
+      "ph": 8.101925,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"00a38b03f2b29f6ed1e30bc3e63878a8\""
+    },
+    {
+      "month": "1989-06",
+      "ph": 8.104681,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"8b69bf8c341160506d090bee724af365\""
+    },
+    {
+      "month": "1989-07",
+      "ph": 8.103417,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"2c2653530f02ba6976386f750bddbc07\""
+    },
+    {
+      "month": "1989-08",
+      "ph": 8.100723,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"097a3c9e0e2d7f78ad12413f7b6614fa\""
+    },
+    {
+      "month": "1989-09",
+      "ph": 8.100774,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"f50f09c2ac9d8ef85bf826d71f12c211\""
+    },
+    {
+      "month": "1989-10",
+      "ph": 8.102996,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"778ab46f9d9017b420b5677862311119\""
+    },
+    {
+      "month": "1989-11",
+      "ph": 8.105671,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"d2fadb6c5bb8a61b2b4707f619d6a2ab\""
+    },
+    {
+      "month": "1989-12",
+      "ph": 8.104606,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"e12c41127cf15bfd8fe1c7adec1b858b\""
+    },
+    {
+      "month": "1990-01",
+      "ph": 8.102156,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"dbadb4ffc775e70696f68268a0f30093\""
+    },
+    {
+      "month": "1990-02",
+      "ph": 8.100095,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"a46dac3edf6c9369b163c3aba33d2340\""
+    },
+    {
+      "month": "1990-03",
+      "ph": 8.098226,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"1750814b1013d0f4c48cbd8f47272767\""
+    },
+    {
+      "month": "1990-04",
+      "ph": 8.097851,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"eb70babdb04fe02403a2035231546771\""
+    },
+    {
+      "month": "1990-05",
+      "ph": 8.101097,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"5c0b32c9f6c464f5ff936315599c4db7\""
+    },
+    {
+      "month": "1990-06",
+      "ph": 8.103789,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"cdad441d4aba7f5242556b7915e83c75\""
+    },
+    {
+      "month": "1990-07",
+      "ph": 8.10189,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"9d48119b9249db4090bc8b3652a22c68\""
+    },
+    {
+      "month": "1990-08",
+      "ph": 8.099625,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"53fd4bd9f4433b7ae6d1c6b8f9562286\""
+    },
+    {
+      "month": "1990-09",
+      "ph": 8.099431,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"6b1854c4820bd7db5a669912af96fed4\""
+    },
+    {
+      "month": "1990-10",
+      "ph": 8.101877,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"309bdb4e5858877e10c0bdedc5f72ff9\""
+    },
+    {
+      "month": "1990-11",
+      "ph": 8.103973,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"3ddfd2bfbb96d2d4c286b11b14ea1e5b\""
+    },
+    {
+      "month": "1990-12",
+      "ph": 8.103318,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"df8a3c7e10af52eb2e726a2eab146a3b\""
+    },
+    {
+      "month": "1991-01",
+      "ph": 8.10121,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"11227325904155cb1feb7f0ad4e48b68\""
+    },
+    {
+      "month": "1991-02",
+      "ph": 8.099308,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"dde02ac871b482160d13879c5bb00e58\""
+    },
+    {
+      "month": "1991-03",
+      "ph": 8.097096,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"16f71ae1420d38a2a7c862356011926e\""
+    },
+    {
+      "month": "1991-04",
+      "ph": 8.096555,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"04edac2d039b428abe90b3538a6affc0\""
+    },
+    {
+      "month": "1991-05",
+      "ph": 8.100375,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"e8a6ce7f431bcb754917bdf024f72bf2\""
+    },
+    {
+      "month": "1991-06",
+      "ph": 8.102429,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"74ff229951160ba96b1ee6dfd585d2ee\""
+    },
+    {
+      "month": "1991-07",
+      "ph": 8.101141,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"7decbbdfee6682f0a8ca2aafb76b1d66\""
+    },
+    {
+      "month": "1991-08",
+      "ph": 8.098622,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"a8915a27c777132092e42d758d4c28f8\""
+    },
+    {
+      "month": "1991-09",
+      "ph": 8.09887,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"f142a826e3689e5b74be21231b019ed9\""
+    },
+    {
+      "month": "1991-10",
+      "ph": 8.101358,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"f862ceb1958b7a04e6780ee6e94f0114\""
+    },
+    {
+      "month": "1991-11",
+      "ph": 8.103865,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"c5a9a9684b25d8ff583ed2242d37dde0\""
+    },
+    {
+      "month": "1991-12",
+      "ph": 8.102654,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"57850a7bef3a7914ae4b513bc3519986\""
+    },
+    {
+      "month": "1992-01",
+      "ph": 8.101035,
+      "validAreaKm2": 344388564.4,
+      "product": "my",
+      "etag": "\"27396318e6170d4a423e93d6b1ff3dc5\""
+    },
+    {
+      "month": "1992-02",
+      "ph": 8.099085,
+      "validAreaKm2": 344396367.0,
+      "product": "my",
+      "etag": "\"82e95d716ae4350379292a99cc26b886\""
+    },
+    {
+      "month": "1992-03",
+      "ph": 8.096935,
+      "validAreaKm2": 344404833.3,
+      "product": "my",
+      "etag": "\"e2534f23281526b55fecf7f7411bcbd4\""
+    },
+    {
+      "month": "1992-04",
+      "ph": 8.096393,
+      "validAreaKm2": 344404132.2,
+      "product": "my",
+      "etag": "\"b006df3e4a752bc7769079546f2e854a\""
+    },
+    {
+      "month": "1992-05",
+      "ph": 8.100322,
+      "validAreaKm2": 344402489.1,
+      "product": "my",
+      "etag": "\"bffacac120c8906a2c3ab11202824286\""
+    },
+    {
+      "month": "1992-06",
+      "ph": 8.101543,
+      "validAreaKm2": 344387166.4,
+      "product": "my",
+      "etag": "\"de1747f4abd266289bf39be2314293e0\""
+    },
+    {
+      "month": "1992-07",
+      "ph": 8.099998,
+      "validAreaKm2": 344393687.8,
+      "product": "my",
+      "etag": "\"545dc2a7688b21f7ad2f392ed135ead6\""
+    },
+    {
+      "month": "1992-08",
+      "ph": 8.097469,
+      "validAreaKm2": 344392618.7,
+      "product": "my",
+      "etag": "\"438fce7c7f4e55df49b03bb1859a44cc\""
+    },
+    {
+      "month": "1992-09",
+      "ph": 8.097595,
+      "validAreaKm2": 344398597.9,
+      "product": "my",
+      "etag": "\"75d520cfeb2d9f84522286a4a306c70b\""
+    },
+    {
+      "month": "1992-10",
+      "ph": 8.099965,
+      "validAreaKm2": 344391649.5,
+      "product": "my",
+      "etag": "\"730a49e2de39d2e8b288c07e5ef8a742\""
+    },
+    {
+      "month": "1992-11",
+      "ph": 8.101899,
+      "validAreaKm2": 344388489.5,
+      "product": "my",
+      "etag": "\"c1051acb32bf02250eee7ab9488122eb\""
+    },
+    {
+      "month": "1992-12",
+      "ph": 8.100779,
+      "validAreaKm2": 344377951.2,
+      "product": "my",
+      "etag": "\"6b1bca790e4bae7afc910d4fa978df95\""
+    },
+    {
+      "month": "1993-01",
+      "ph": 8.099168,
+      "validAreaKm2": 344379925.5,
+      "product": "my",
+      "etag": "\"c59689d8ab0c257300c17efaf4e9ef2d\""
+    },
+    {
+      "month": "1993-02",
+      "ph": 8.097529,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"39607dd2983550864e3ea6f755e5a256\""
+    },
+    {
+      "month": "1993-03",
+      "ph": 8.096412,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"cafb336870bf0df26d41fb954b9c4134\""
+    },
+    {
+      "month": "1993-04",
+      "ph": 8.0957,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"31ba1410fa3ed1f7d3168c4cd82e1d74\""
+    },
+    {
+      "month": "1993-05",
+      "ph": 8.099844,
+      "validAreaKm2": 344393850.2,
+      "product": "my",
+      "etag": "\"782d139e1c124b227165a7d218b3e846\""
+    },
+    {
+      "month": "1993-06",
+      "ph": 8.101712,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"5ec66fda0849b31149afebd6b1cf5bd0\""
+    },
+    {
+      "month": "1993-07",
+      "ph": 8.100191,
+      "validAreaKm2": 344385049.0,
+      "product": "my",
+      "etag": "\"8d75a7e1c34426e873e12301f414314b\""
+    },
+    {
+      "month": "1993-08",
+      "ph": 8.09754,
+      "validAreaKm2": 344389637.1,
+      "product": "my",
+      "etag": "\"4c8d58a35272e569559fe7f6a1dc1646\""
+    },
+    {
+      "month": "1993-09",
+      "ph": 8.097567,
+      "validAreaKm2": 344389959.1,
+      "product": "my",
+      "etag": "\"23870a1cdde3054122a0a13cbf0c97f4\""
+    },
+    {
+      "month": "1993-10",
+      "ph": 8.099578,
+      "validAreaKm2": 344388667.9,
+      "product": "my",
+      "etag": "\"dc0f1b13d10a324cc41b15b60c75edef\""
+    },
+    {
+      "month": "1993-11",
+      "ph": 8.101751,
+      "validAreaKm2": 344385507.9,
+      "product": "my",
+      "etag": "\"e30481b07fc37b954f91c267e9829dc0\""
+    },
+    {
+      "month": "1993-12",
+      "ph": 8.09991,
+      "validAreaKm2": 344374969.6,
+      "product": "my",
+      "etag": "\"afbacc52e40f1d43a3d1564d39eb36cb\""
+    },
+    {
+      "month": "1994-01",
+      "ph": 8.097941,
+      "validAreaKm2": 344379925.5,
+      "product": "my",
+      "etag": "\"2ae98e37bb703f87392056977039b65a\""
+    },
+    {
+      "month": "1994-02",
+      "ph": 8.096077,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"2128abb8d9b0b45caf59e59310526d28\""
+    },
+    {
+      "month": "1994-03",
+      "ph": 8.094378,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"f9bcb6fb4a822dd57cf2e130f6754bc7\""
+    },
+    {
+      "month": "1994-04",
+      "ph": 8.093731,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"309b08fcfae514f06fa36a033530dfdc\""
+    },
+    {
+      "month": "1994-05",
+      "ph": 8.098664,
+      "validAreaKm2": 344393850.2,
+      "product": "my",
+      "etag": "\"db2ffba9a35da90792302fe349fdf5ed\""
+    },
+    {
+      "month": "1994-06",
+      "ph": 8.100026,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"9b26e38d014e045ae3fa5ee413efb1cf\""
+    },
+    {
+      "month": "1994-07",
+      "ph": 8.097856,
+      "validAreaKm2": 344385049.0,
+      "product": "my",
+      "etag": "\"b71b173656ccee6289d73db25f6329a9\""
+    },
+    {
+      "month": "1994-08",
+      "ph": 8.095573,
+      "validAreaKm2": 344389637.1,
+      "product": "my",
+      "etag": "\"9882238bf31b5ef0420f53ae6b3336ce\""
+    },
+    {
+      "month": "1994-09",
+      "ph": 8.095617,
+      "validAreaKm2": 344389959.1,
+      "product": "my",
+      "etag": "\"7498cc6d5641744da8a30bc6e4c33b87\""
+    },
+    {
+      "month": "1994-10",
+      "ph": 8.097838,
+      "validAreaKm2": 344388667.9,
+      "product": "my",
+      "etag": "\"5df98df52ab63c5ac9ec8488b5eabfd4\""
+    },
+    {
+      "month": "1994-11",
+      "ph": 8.100098,
+      "validAreaKm2": 344385507.9,
+      "product": "my",
+      "etag": "\"b4a81f29105841e38a12806d14dc001a\""
+    },
+    {
+      "month": "1994-12",
+      "ph": 8.098102,
+      "validAreaKm2": 344374969.6,
+      "product": "my",
+      "etag": "\"a4643b8a21aa174b2320c70a380d1d6a\""
+    },
+    {
+      "month": "1995-01",
+      "ph": 8.096815,
+      "validAreaKm2": 344379925.5,
+      "product": "my",
+      "etag": "\"c15fa73e991c6143863c108dc3aa5b37\""
+    },
+    {
+      "month": "1995-02",
+      "ph": 8.094523,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"b8e13175ab47151587a9918ee6d4a5f6\""
+    },
+    {
+      "month": "1995-03",
+      "ph": 8.093323,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"c4c492bb79350c9185e75123fa80b0cb\""
+    },
+    {
+      "month": "1995-04",
+      "ph": 8.091924,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"084abfca144b03bf84c9608ea5dee3a9\""
+    },
+    {
+      "month": "1995-05",
+      "ph": 8.096319,
+      "validAreaKm2": 344393850.2,
+      "product": "my",
+      "etag": "\"bb4832f18d1c0604fe59f467f442852f\""
+    },
+    {
+      "month": "1995-06",
+      "ph": 8.097797,
+      "validAreaKm2": 344363421.5,
+      "product": "my",
+      "etag": "\"6cb1d6758a0d09d9d9b59f082abe33d9\""
+    },
+    {
+      "month": "1995-07",
+      "ph": 8.095998,
+      "validAreaKm2": 344364285.7,
+      "product": "my",
+      "etag": "\"16bdaac1f7648f4a7dcaebce2154ee78\""
+    },
+    {
+      "month": "1995-08",
+      "ph": 8.094245,
+      "validAreaKm2": 344368873.8,
+      "product": "my",
+      "etag": "\"9f37bfc0c846701167525ace479d608a\""
+    },
+    {
+      "month": "1995-09",
+      "ph": 8.094184,
+      "validAreaKm2": 344369195.8,
+      "product": "my",
+      "etag": "\"addf903ffa76a602f299b5de8754b200\""
+    },
+    {
+      "month": "1995-10",
+      "ph": 8.095428,
+      "validAreaKm2": 344367904.6,
+      "product": "my",
+      "etag": "\"4d772d27236d5631c92f6add852e2169\""
+    },
+    {
+      "month": "1995-11",
+      "ph": 8.097134,
+      "validAreaKm2": 344364744.6,
+      "product": "my",
+      "etag": "\"d2c8fd30fa1677ed08fc9e69b9ac130a\""
+    },
+    {
+      "month": "1995-12",
+      "ph": 8.09539,
+      "validAreaKm2": 344354206.3,
+      "product": "my",
+      "etag": "\"0dcbccbd24f62dc7d51b09cf5c7d1314\""
+    },
+    {
+      "month": "1996-01",
+      "ph": 8.09382,
+      "validAreaKm2": 344379925.5,
+      "product": "my",
+      "etag": "\"05539a6d0266f26163d9013d18d2686c\""
+    },
+    {
+      "month": "1996-02",
+      "ph": 8.09226,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"a24e2465b78af22d19aabd48691aeda1\""
+    },
+    {
+      "month": "1996-03",
+      "ph": 8.091375,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"0d606cb2bb38fe97721704d34632b33c\""
+    },
+    {
+      "month": "1996-04",
+      "ph": 8.091226,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"18aee89737427957818e4948cc934d69\""
+    },
+    {
+      "month": "1996-05",
+      "ph": 8.095648,
+      "validAreaKm2": 344393850.2,
+      "product": "my",
+      "etag": "\"41c27d6c18a252f7271b05794108b66b\""
+    },
+    {
+      "month": "1996-06",
+      "ph": 8.097095,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"ca8b6ee1c71c5e7311450ba278cd0562\""
+    },
+    {
+      "month": "1996-07",
+      "ph": 8.094705,
+      "validAreaKm2": 344385049.0,
+      "product": "my",
+      "etag": "\"1e46cdb8de2e08cd6a594c7fdab84c51\""
+    },
+    {
+      "month": "1996-08",
+      "ph": 8.092942,
+      "validAreaKm2": 344368873.8,
+      "product": "my",
+      "etag": "\"719c6cb437989c34a952529f5a4bed46\""
+    },
+    {
+      "month": "1996-09",
+      "ph": 8.093252,
+      "validAreaKm2": 344369195.8,
+      "product": "my",
+      "etag": "\"f1f691922ac8ed9deec9b48ac3fa562f\""
+    },
+    {
+      "month": "1996-10",
+      "ph": 8.09542,
+      "validAreaKm2": 344367904.6,
+      "product": "my",
+      "etag": "\"0399bbc7be12685d9dce94e48049f06b\""
+    },
+    {
+      "month": "1996-11",
+      "ph": 8.096293,
+      "validAreaKm2": 344364744.6,
+      "product": "my",
+      "etag": "\"30f0cca1b41abd2c942697a10255e6b5\""
+    },
+    {
+      "month": "1996-12",
+      "ph": 8.094523,
+      "validAreaKm2": 344354206.3,
+      "product": "my",
+      "etag": "\"cb0365c40912e9e85dbb2caa124d0a00\""
+    },
+    {
+      "month": "1997-01",
+      "ph": 8.093467,
+      "validAreaKm2": 344359162.3,
+      "product": "my",
+      "etag": "\"c7f7943b4ad77718016a348032e1c823\""
+    },
+    {
+      "month": "1997-02",
+      "ph": 8.092116,
+      "validAreaKm2": 344372622.1,
+      "product": "my",
+      "etag": "\"055a1a7bf710898f3692cdd55ca76c4c\""
+    },
+    {
+      "month": "1997-03",
+      "ph": 8.090972,
+      "validAreaKm2": 344381088.4,
+      "product": "my",
+      "etag": "\"070e58d9845b8ed5b5b940543e6d3948\""
+    },
+    {
+      "month": "1997-04",
+      "ph": 8.091013,
+      "validAreaKm2": 344380387.3,
+      "product": "my",
+      "etag": "\"6f93e9173274d391b44b941fb60b8d1d\""
+    },
+    {
+      "month": "1997-05",
+      "ph": 8.094992,
+      "validAreaKm2": 344373087.0,
+      "product": "my",
+      "etag": "\"7e011c2f7f8765d19da50889fbbf5aba\""
+    },
+    {
+      "month": "1997-06",
+      "ph": 8.096764,
+      "validAreaKm2": 344363421.5,
+      "product": "my",
+      "etag": "\"7549e5024c14ea9ba3e9221ac0742620\""
+    },
+    {
+      "month": "1997-07",
+      "ph": 8.095288,
+      "validAreaKm2": 344364285.7,
+      "product": "my",
+      "etag": "\"8da6632c919671251dc78a71163efbdb\""
+    },
+    {
+      "month": "1997-08",
+      "ph": 8.093312,
+      "validAreaKm2": 344368873.8,
+      "product": "my",
+      "etag": "\"b4062a7b6da4ae0d135ed5ddfe22f5d9\""
+    },
+    {
+      "month": "1997-09",
+      "ph": 8.093005,
+      "validAreaKm2": 344369195.8,
+      "product": "my",
+      "etag": "\"9681f5b7318f3b6810c50dda877753b2\""
+    },
+    {
+      "month": "1997-10",
+      "ph": 8.095185,
+      "validAreaKm2": 344367904.6,
+      "product": "my",
+      "etag": "\"4f22fd41c5f49aede9177fa03b61b6a6\""
+    },
+    {
+      "month": "1997-11",
+      "ph": 8.096462,
+      "validAreaKm2": 344364744.6,
+      "product": "my",
+      "etag": "\"539a8340dc4a95d233ddaf8af485280e\""
+    },
+    {
+      "month": "1997-12",
+      "ph": 8.094353,
+      "validAreaKm2": 344354206.3,
+      "product": "my",
+      "etag": "\"384eb7fc5da2f5abacb90732d4ff910e\""
+    },
+    {
+      "month": "1998-01",
+      "ph": 8.093057,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"eb7264d061a378a9c1d587d57bdcc36d\""
+    },
+    {
+      "month": "1998-02",
+      "ph": 8.090181,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"97f66917e62cdaa204c4e4f3bc54a8ca\""
+    },
+    {
+      "month": "1998-03",
+      "ph": 8.089494,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"30f9b23820f65bd65829832b60f31240\""
+    },
+    {
+      "month": "1998-04",
+      "ph": 8.088755,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"0b1cfdd636d45a88496ea6ec4bbbe7d1\""
+    },
+    {
+      "month": "1998-05",
+      "ph": 8.092452,
+      "validAreaKm2": 344366680.4,
+      "product": "my",
+      "etag": "\"8a11df5d5c42c68a0fdb98e414d85320\""
+    },
+    {
+      "month": "1998-06",
+      "ph": 8.093429,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"b34d1b63cb5bf1156b646f55dbbba513\""
+    },
+    {
+      "month": "1998-07",
+      "ph": 8.091431,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"edcaa084683286ddabdc4fd4ca5f3215\""
+    },
+    {
+      "month": "1998-08",
+      "ph": 8.089244,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"ce6e5360f6a49792009ef5d0b48fe1a1\""
+    },
+    {
+      "month": "1998-09",
+      "ph": 8.089315,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"f09fa82e73bd6fd5629f0ec5a4ce1dba\""
+    },
+    {
+      "month": "1998-10",
+      "ph": 8.090808,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"a0defbb9c03c6290ca9e3316a0e5a1c2\""
+    },
+    {
+      "month": "1998-11",
+      "ph": 8.091618,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"a8d69e68547cbca8e4ffa9dc381c99f6\""
+    },
+    {
+      "month": "1998-12",
+      "ph": 8.089076,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"f6489140299f95d5530ce2b0fca3b92a\""
+    },
+    {
+      "month": "1999-01",
+      "ph": 8.087947,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"4cf54589f4061731c0dbc9300a9db9fa\""
+    },
+    {
+      "month": "1999-02",
+      "ph": 8.086216,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"b3c35c7b0c354b04b28eae0c1de9d541\""
+    },
+    {
+      "month": "1999-03",
+      "ph": 8.085734,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"79b54987a7c9a44c000ff410bfbfbc22\""
+    },
+    {
+      "month": "1999-04",
+      "ph": 8.085765,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"580806ab14e6ee5bc861de5da1e556f5\""
+    },
+    {
+      "month": "1999-05",
+      "ph": 8.090282,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"aa18631376c98bfe5d2bd0f4db08c6fb\""
+    },
+    {
+      "month": "1999-06",
+      "ph": 8.091973,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"4d7ac39e2eeb8b3bc96456d29f94cba9\""
+    },
+    {
+      "month": "1999-07",
+      "ph": 8.089634,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"dee75b88af0f55b1751ab505172237be\""
+    },
+    {
+      "month": "1999-08",
+      "ph": 8.087789,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"5b08c318789864945028252f709cec4e\""
+    },
+    {
+      "month": "1999-09",
+      "ph": 8.088078,
+      "validAreaKm2": 344361491.5,
+      "product": "my",
+      "etag": "\"5ebb6cad56df230fbc0604cb814d43ab\""
+    },
+    {
+      "month": "1999-10",
+      "ph": 8.088766,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"422fca8ce3d63893aabb2c60362b852f\""
+    },
+    {
+      "month": "1999-11",
+      "ph": 8.090244,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"aec4f36ba78621f8b9f05c56c0205c34\""
+    },
+    {
+      "month": "1999-12",
+      "ph": 8.087974,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"8e83099021b0fb361cc8517ece6ed158\""
+    },
+    {
+      "month": "2000-01",
+      "ph": 8.086651,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"0ef160c7bc7893ac9201926237dad7b1\""
+    },
+    {
+      "month": "2000-02",
+      "ph": 8.085061,
+      "validAreaKm2": 344362319.5,
+      "product": "my",
+      "etag": "\"43343c80ad6b550f45521fc33ba92fb1\""
+    },
+    {
+      "month": "2000-03",
+      "ph": 8.084513,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"a0c940602a99561d4fc952233378a4dc\""
+    },
+    {
+      "month": "2000-04",
+      "ph": 8.08483,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"d4ca4fda661f840126f43d3441c32db7\""
+    },
+    {
+      "month": "2000-05",
+      "ph": 8.089379,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"ab3e4a344d4c2cf4256463f6cc228bef\""
+    },
+    {
+      "month": "2000-06",
+      "ph": 8.090596,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"85556428da6ad6d16caab2c9f169a9e1\""
+    },
+    {
+      "month": "2000-07",
+      "ph": 8.088837,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"aa1054aec535417eb7746a2d93ef38b1\""
+    },
+    {
+      "month": "2000-08",
+      "ph": 8.087035,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"0fceae4e02fc517b40af83e0c461ff4c\""
+    },
+    {
+      "month": "2000-09",
+      "ph": 8.086468,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"57496c31f8fd59b2ec1b46b8295fc5eb\""
+    },
+    {
+      "month": "2000-10",
+      "ph": 8.088124,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"8fbec55e6c7677fe05fca35969942d23\""
+    },
+    {
+      "month": "2000-11",
+      "ph": 8.089455,
+      "validAreaKm2": 344353320.3,
+      "product": "my",
+      "etag": "\"6b36945b3b7622dc8c8e37e7f44bd45a\""
+    },
+    {
+      "month": "2000-12",
+      "ph": 8.086569,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"4f7c1535d48e49fa806cd7cefdb7d1c7\""
+    },
+    {
+      "month": "2001-01",
+      "ph": 8.085677,
+      "validAreaKm2": 344353477.0,
+      "product": "my",
+      "etag": "\"b694451ea43ca7df27f1ac34b13811c5\""
+    },
+    {
+      "month": "2001-02",
+      "ph": 8.08389,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"5dda219677b781b6a6c80ddb5e925537\""
+    },
+    {
+      "month": "2001-03",
+      "ph": 8.083368,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"8629bebf1d98a8502402fb62b0828a85\""
+    },
+    {
+      "month": "2001-04",
+      "ph": 8.083989,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"88c60ced4254284e8bec3651c52b6d74\""
+    },
+    {
+      "month": "2001-05",
+      "ph": 8.088681,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"e45c38c3fdf6b45df5531c335a39aee3\""
+    },
+    {
+      "month": "2001-06",
+      "ph": 8.088981,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"05b7712927340430d7d7c3403f8ede19\""
+    },
+    {
+      "month": "2001-07",
+      "ph": 8.087678,
+      "validAreaKm2": 344359368.8,
+      "product": "my",
+      "etag": "\"63e255fa322d4917f7941e673a483e7a\""
+    },
+    {
+      "month": "2001-08",
+      "ph": 8.085327,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"910efac6b47189a99f77ead4177eae79\""
+    },
+    {
+      "month": "2001-09",
+      "ph": 8.085405,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"4be5a14edf91a7ec53f9a5fdb12702a0\""
+    },
+    {
+      "month": "2001-10",
+      "ph": 8.08646,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"be73c91587a393da75277eeb85e7b849\""
+    },
+    {
+      "month": "2001-11",
+      "ph": 8.087952,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"0e1888b2cab9a8bd7a3e0d742114fbf6\""
+    },
+    {
+      "month": "2001-12",
+      "ph": 8.08489,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"f5a671a13c797d6793f329c53cc8613e\""
+    },
+    {
+      "month": "2002-01",
+      "ph": 8.08415,
+      "validAreaKm2": 344350022.8,
+      "product": "my",
+      "etag": "\"35616b13a663701f61589df2918810b1\""
+    },
+    {
+      "month": "2002-02",
+      "ph": 8.082953,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"9b51a4b0590da31f060662b1f69c3019\""
+    },
+    {
+      "month": "2002-03",
+      "ph": 8.082503,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"5d90b50633703d97ef18cfdfcb2412d7\""
+    },
+    {
+      "month": "2002-04",
+      "ph": 8.082765,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"dee283b79c8061884a73d684bf7d42e8\""
+    },
+    {
+      "month": "2002-05",
+      "ph": 8.086954,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"1a55ffee44ca1e1f4088f51a77dab9fc\""
+    },
+    {
+      "month": "2002-06",
+      "ph": 8.087821,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"7f4b5ce2f34cc4495d361c7f977c36a7\""
+    },
+    {
+      "month": "2002-07",
+      "ph": 8.085881,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"374befb51000042965c9fcef9f687a0e\""
+    },
+    {
+      "month": "2002-08",
+      "ph": 8.08374,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"7c4fced72fde9ad25d1ecdff0eda6f2b\""
+    },
+    {
+      "month": "2002-09",
+      "ph": 8.083972,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"8d1049cd493576a01adf1a4798e6adf8\""
+    },
+    {
+      "month": "2002-10",
+      "ph": 8.084955,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"ae82a06d45aea539397e429488e8bf93\""
+    },
+    {
+      "month": "2002-11",
+      "ph": 8.086628,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"89ea01649014b7924cc41108f2e8459f\""
+    },
+    {
+      "month": "2002-12",
+      "ph": 8.08482,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"ed53197c2170ed28554fe86aa95c9d07\""
+    },
+    {
+      "month": "2003-01",
+      "ph": 8.083448,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"c718c2a9bc2c1e4dc03d29f919b4e44e\""
+    },
+    {
+      "month": "2003-02",
+      "ph": 8.082096,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"41c59acbd347fc21d8d466e0aeab633b\""
+    },
+    {
+      "month": "2003-03",
+      "ph": 8.08091,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"124e64726e2db5d037c2769d1264717f\""
+    },
+    {
+      "month": "2003-04",
+      "ph": 8.080205,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"5698a1a4e106042fdf45c11153c69d13\""
+    },
+    {
+      "month": "2003-05",
+      "ph": 8.084372,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"68a24bab47e244ecff060891ba0a0741\""
+    },
+    {
+      "month": "2003-06",
+      "ph": 8.085509,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"9a281aa46d2e715cdc6e6e01f4964f67\""
+    },
+    {
+      "month": "2003-07",
+      "ph": 8.083314,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"72410c5101c7768b6c4f9160f2012004\""
+    },
+    {
+      "month": "2003-08",
+      "ph": 8.081556,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"7662565d2c33014661684c4772cb00bf\""
+    },
+    {
+      "month": "2003-09",
+      "ph": 8.081097,
+      "validAreaKm2": 344361488.6,
+      "product": "my",
+      "etag": "\"a7cd4886ef2249a3400965d576f2a3e2\""
+    },
+    {
+      "month": "2003-10",
+      "ph": 8.082934,
+      "validAreaKm2": 344359438.7,
+      "product": "my",
+      "etag": "\"38eb2ed27b87c67e971e41e96d979e47\""
+    },
+    {
+      "month": "2003-11",
+      "ph": 8.08389,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"89f665c1c16b9641a624b84ad3af025d\""
+    },
+    {
+      "month": "2003-12",
+      "ph": 8.082138,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"83fd54f564f684801e7a3f3cf3eb2ea2\""
+    },
+    {
+      "month": "2004-01",
+      "ph": 8.081249,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"06891c9ec22488d2840128b86257cceb\""
+    },
+    {
+      "month": "2004-02",
+      "ph": 8.080068,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"57c94c52c9e35a5cfd2c32ef88c3c651\""
+    },
+    {
+      "month": "2004-03",
+      "ph": 8.078531,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"88a10836bbefcfecda7c860d967bd73a\""
+    },
+    {
+      "month": "2004-04",
+      "ph": 8.078271,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"a40cde7327fdfbc57d360e271e706753\""
+    },
+    {
+      "month": "2004-05",
+      "ph": 8.0832,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"2babc5397cde36fe1fe990e7d803a33d\""
+    },
+    {
+      "month": "2004-06",
+      "ph": 8.084105,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"04a81c3bbee6856a54b4511e2bb25175\""
+    },
+    {
+      "month": "2004-07",
+      "ph": 8.081543,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"6c1966dab7b3e736f6a4bed382154e6b\""
+    },
+    {
+      "month": "2004-08",
+      "ph": 8.080302,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"0aa00acc3ed486d0f93ca4d3ae1c43db\""
+    },
+    {
+      "month": "2004-09",
+      "ph": 8.080779,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"7db9c3b9f9d498cfbccb695b7568cbfd\""
+    },
+    {
+      "month": "2004-10",
+      "ph": 8.081426,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"63434fe04d9814cc889a003bdd6cd7ab\""
+    },
+    {
+      "month": "2004-11",
+      "ph": 8.082502,
+      "validAreaKm2": 344353669.6,
+      "product": "my",
+      "etag": "\"9d04ff95c0b86ea30b7147fc69f83e68\""
+    },
+    {
+      "month": "2004-12",
+      "ph": 8.081276,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"c9522739e0833a86efb62e8c349478ce\""
+    },
+    {
+      "month": "2005-01",
+      "ph": 8.080316,
+      "validAreaKm2": 344354245.4,
+      "product": "my",
+      "etag": "\"d87f0a723878fe5acbf4b13d3fb1e41d\""
+    },
+    {
+      "month": "2005-02",
+      "ph": 8.078251,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"293ed359f7ba67fc3dd350eb9d932a5e\""
+    },
+    {
+      "month": "2005-03",
+      "ph": 8.077776,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"d8216d24b19026c2b36b92df5f22a8e5\""
+    },
+    {
+      "month": "2005-04",
+      "ph": 8.077313,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"a1a1cc1a9e59ad758302562d7b00861f\""
+    },
+    {
+      "month": "2005-05",
+      "ph": 8.081063,
+      "validAreaKm2": 344367041.8,
+      "product": "my",
+      "etag": "\"6f9d41a633b672402421eb29de88c1b4\""
+    },
+    {
+      "month": "2005-06",
+      "ph": 8.082011,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"7bca8177b572bced257d114082ece2be\""
+    },
+    {
+      "month": "2005-07",
+      "ph": 8.08005,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"eb9c28905362d735592df2da0943fc51\""
+    },
+    {
+      "month": "2005-08",
+      "ph": 8.077758,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"375e937f0bc85dea563cea71dd32ddf4\""
+    },
+    {
+      "month": "2005-09",
+      "ph": 8.077864,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"c18895d0515a6034780d37292c5ff321\""
+    },
+    {
+      "month": "2005-10",
+      "ph": 8.078833,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"6d2be5b82aec68ace7291c97fe78bfdb\""
+    },
+    {
+      "month": "2005-11",
+      "ph": 8.080271,
+      "validAreaKm2": 344353320.3,
+      "product": "my",
+      "etag": "\"b66a979dbf456d4d57ace2f836f133fb\""
+    },
+    {
+      "month": "2005-12",
+      "ph": 8.078428,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"852a8be14db4a4d3f2168d8d93713347\""
+    },
+    {
+      "month": "2006-01",
+      "ph": 8.077456,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"efea9e994f20783294899fbcd0f064d2\""
+    },
+    {
+      "month": "2006-02",
+      "ph": 8.075094,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"3f8031c0fc8b9bd84b30ccb0e35438d6\""
+    },
+    {
+      "month": "2006-03",
+      "ph": 8.074559,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"e699d7997b0fdf7be5bf71f15fb74cdf\""
+    },
+    {
+      "month": "2006-04",
+      "ph": 8.075225,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"d53d8d46da4bb7f071a7f3614b517050\""
+    },
+    {
+      "month": "2006-05",
+      "ph": 8.079704,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"7ba3b34ef66f3823f46139b445b7a115\""
+    },
+    {
+      "month": "2006-06",
+      "ph": 8.080793,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"e98d96d357b9be97afb64239e9e0adc5\""
+    },
+    {
+      "month": "2006-07",
+      "ph": 8.078588,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"6ecde973772162fb254b8f6a1ec52dca\""
+    },
+    {
+      "month": "2006-08",
+      "ph": 8.076602,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"3700bf015f23aa0c505861b29a38a512\""
+    },
+    {
+      "month": "2006-09",
+      "ph": 8.077709,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"a7831a85a4f306ff9f95a3fba4a7bfa2\""
+    },
+    {
+      "month": "2006-10",
+      "ph": 8.078097,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"f471f5fb4564546c603d01e23fa11988\""
+    },
+    {
+      "month": "2006-11",
+      "ph": 8.079425,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"8303d88fe470d98d614f168dcfea1ddf\""
+    },
+    {
+      "month": "2006-12",
+      "ph": 8.077824,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"391f69474d779b753980e94438f07c7c\""
+    },
+    {
+      "month": "2007-01",
+      "ph": 8.076812,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"5f9180080584e037b85ac31d1ac7502a\""
+    },
+    {
+      "month": "2007-02",
+      "ph": 8.074338,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"60f767f8ea8590e72dc47d7bd8b7c59d\""
+    },
+    {
+      "month": "2007-03",
+      "ph": 8.073532,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"190d56798eb8a8d3384cc7e90620f640\""
+    },
+    {
+      "month": "2007-04",
+      "ph": 8.073481,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"dbbf0a19f34fbddaafc887b686dfde63\""
+    },
+    {
+      "month": "2007-05",
+      "ph": 8.077546,
+      "validAreaKm2": 344367417.9,
+      "product": "my",
+      "etag": "\"b2824f25ab690a28a7a0691039fa8e4a\""
+    },
+    {
+      "month": "2007-06",
+      "ph": 8.079055,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"f9a638e00077ad6c55156b171afe2421\""
+    },
+    {
+      "month": "2007-07",
+      "ph": 8.07656,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"e5fd4a334939720c07a30bb3831220e2\""
+    },
+    {
+      "month": "2007-08",
+      "ph": 8.074481,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"ec9de61da0ebe042ba9b27e22396f0f3\""
+    },
+    {
+      "month": "2007-09",
+      "ph": 8.074607,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"eddd1ff361d8763e2d80185f44e35c00\""
+    },
+    {
+      "month": "2007-10",
+      "ph": 8.074955,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"53bc3c51f0f06f3ac82473605e7a2798\""
+    },
+    {
+      "month": "2007-11",
+      "ph": 8.076379,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"4cc4e60c11ff3eb5fefb74f0b62af616\""
+    },
+    {
+      "month": "2007-12",
+      "ph": 8.073874,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"d6c3f5bcc9e3eeaa9fdafae4e48b8475\""
+    },
+    {
+      "month": "2008-01",
+      "ph": 8.072892,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"92fc8717cfbebe7debe4441bb6982975\""
+    },
+    {
+      "month": "2008-02",
+      "ph": 8.071174,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"0ba03733b0e825ac144dfad3e89d505c\""
+    },
+    {
+      "month": "2008-03",
+      "ph": 8.071303,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"20499059d9cacaf1a9db845b06243a47\""
+    },
+    {
+      "month": "2008-04",
+      "ph": 8.071632,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"df1fd7a9c62590c0d68463a5abf9d3ee\""
+    },
+    {
+      "month": "2008-05",
+      "ph": 8.076309,
+      "validAreaKm2": 344366665.7,
+      "product": "my",
+      "etag": "\"f49ae0417d053bd2749c05cc59223b0a\""
+    },
+    {
+      "month": "2008-06",
+      "ph": 8.077399,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"2fb6365003b3cf015d6cb2d6086856e4\""
+    },
+    {
+      "month": "2008-07",
+      "ph": 8.074533,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"f7001fb35fee74cd4046e1ca64333c2c\""
+    },
+    {
+      "month": "2008-08",
+      "ph": 8.072939,
+      "validAreaKm2": 344362741.3,
+      "product": "my",
+      "etag": "\"10abd2345837ed86fee42e924fe029f1\""
+    },
+    {
+      "month": "2008-09",
+      "ph": 8.073875,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"188c56e5ffd78aa615b0d53c5ed83918\""
+    },
+    {
+      "month": "2008-10",
+      "ph": 8.074144,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"1dab548df0e4d722aed88f75de076b3b\""
+    },
+    {
+      "month": "2008-11",
+      "ph": 8.075016,
+      "validAreaKm2": 344353320.3,
+      "product": "my",
+      "etag": "\"da06f8ff2279c30725085c16a51e3f73\""
+    },
+    {
+      "month": "2008-12",
+      "ph": 8.072739,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"64ebe610c75bb9f5bb3c71ff8beed1b6\""
+    },
+    {
+      "month": "2009-01",
+      "ph": 8.072296,
+      "validAreaKm2": 344354245.4,
+      "product": "my",
+      "etag": "\"a0427b3cd610ef5ad5c03b99c2a6120b\""
+    },
+    {
+      "month": "2009-02",
+      "ph": 8.070668,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"8e25e5484d1e97b032d3cbcbf972f972\""
+    },
+    {
+      "month": "2009-03",
+      "ph": 8.070085,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"6a2553684337a93db5bb8815e93f7cfb\""
+    },
+    {
+      "month": "2009-04",
+      "ph": 8.069931,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"ec6e302c6bf35eab806dc97c1f98b515\""
+    },
+    {
+      "month": "2009-05",
+      "ph": 8.074808,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"69c1db80952c6ae9b815efa4673ee945\""
+    },
+    {
+      "month": "2009-06",
+      "ph": 8.075767,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"c889ef473f234f949f86960364f25ce0\""
+    },
+    {
+      "month": "2009-07",
+      "ph": 8.073675,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"bfa02dec1845dced73961d06629987d5\""
+    },
+    {
+      "month": "2009-08",
+      "ph": 8.071769,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"d6fc785f47a9e386b29b505a5fd1b0b0\""
+    },
+    {
+      "month": "2009-09",
+      "ph": 8.072501,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"bfb998c12fa31e4958ec03d1d1fdbcc2\""
+    },
+    {
+      "month": "2009-10",
+      "ph": 8.072877,
+      "validAreaKm2": 344359257.1,
+      "product": "my",
+      "etag": "\"e761606c8baaae877f95a7d428ae5585\""
+    },
+    {
+      "month": "2009-11",
+      "ph": 8.074717,
+      "validAreaKm2": 344354093.1,
+      "product": "my",
+      "etag": "\"2f0a3314edda3fd3b0107dceecea22f8\""
+    },
+    {
+      "month": "2009-12",
+      "ph": 8.073526,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"0b3b42a24093f699501f933c33f9795e\""
+    },
+    {
+      "month": "2010-01",
+      "ph": 8.07379,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"b545fbc00a6320dea006b0880f176b67\""
+    },
+    {
+      "month": "2010-02",
+      "ph": 8.071432,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"a1f56ee4dbbb8afe6d8d7177f24ceb96\""
+    },
+    {
+      "month": "2010-03",
+      "ph": 8.070406,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"d8e4e960c771b1e5a465af186b9f0203\""
+    },
+    {
+      "month": "2010-04",
+      "ph": 8.069953,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"affed2e1365401f8fb89f3ef3d9191ac\""
+    },
+    {
+      "month": "2010-05",
+      "ph": 8.073886,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"71d35165c21cd46dfecd19c019a25063\""
+    },
+    {
+      "month": "2010-06",
+      "ph": 8.073924,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"ede6ef83120610015977137b6c192140\""
+    },
+    {
+      "month": "2010-07",
+      "ph": 8.07168,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"de40dc0cbf90dbb2b5916e5101a55581\""
+    },
+    {
+      "month": "2010-08",
+      "ph": 8.068887,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"255bf71d2abf17f16a019cb841c8d4f9\""
+    },
+    {
+      "month": "2010-09",
+      "ph": 8.069674,
+      "validAreaKm2": 344361500.0,
+      "product": "my",
+      "etag": "\"a6784591df18a0fd6a8a21263da6485c\""
+    },
+    {
+      "month": "2010-10",
+      "ph": 8.070088,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"e95eb9c5b962740a3c6e865edda4a9ab\""
+    },
+    {
+      "month": "2010-11",
+      "ph": 8.071475,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"5e2ded0d608cd06f9dcc6fc611a3cd3e\""
+    },
+    {
+      "month": "2010-12",
+      "ph": 8.069823,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"ca0b5f208ba4adb4d130a215c826583b\""
+    },
+    {
+      "month": "2011-01",
+      "ph": 8.069675,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"a6e1da390c81ad0a88ec61bc0da2fd46\""
+    },
+    {
+      "month": "2011-02",
+      "ph": 8.067921,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"b00eb2a44f329699070d08e6c2410266\""
+    },
+    {
+      "month": "2011-03",
+      "ph": 8.067053,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"e32cddf62e708973c5f76bb5faf88450\""
+    },
+    {
+      "month": "2011-04",
+      "ph": 8.067237,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"67392e76a693e22436d6860edaff0ef0\""
+    },
+    {
+      "month": "2011-05",
+      "ph": 8.071355,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"d9c7228d473d51b6000a83c51afd8e6b\""
+    },
+    {
+      "month": "2011-06",
+      "ph": 8.072109,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"15b875fbb88e625b2a67794737e2369d\""
+    },
+    {
+      "month": "2011-07",
+      "ph": 8.070108,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"e0ad4bd169cc0aa8c851c1a417754712\""
+    },
+    {
+      "month": "2011-08",
+      "ph": 8.067825,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"5b30305de0e60e1e25b7ff7548977fd4\""
+    },
+    {
+      "month": "2011-09",
+      "ph": 8.068374,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"02d321c1d403733928a0dca4adc344ea\""
+    },
+    {
+      "month": "2011-10",
+      "ph": 8.068986,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"a5fdbe3ef05f5e3ce269597d78d4710f\""
+    },
+    {
+      "month": "2011-11",
+      "ph": 8.06988,
+      "validAreaKm2": 344353666.6,
+      "product": "my",
+      "etag": "\"59de5b1fedff197045417f80580a57aa\""
+    },
+    {
+      "month": "2011-12",
+      "ph": 8.067481,
+      "validAreaKm2": 344349289.5,
+      "product": "my",
+      "etag": "\"c091ebe07182278c448b70a6c62cc444\""
+    },
+    {
+      "month": "2012-01",
+      "ph": 8.067484,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"cf6950c5b62d950d56eb9e34c852739b\""
+    },
+    {
+      "month": "2012-02",
+      "ph": 8.065951,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"e04f3f9065e7c7bc83bb8f0a87ba04ee\""
+    },
+    {
+      "month": "2012-03",
+      "ph": 8.064826,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"6749a762722f8a8d66758fd8bc0de1b9\""
+    },
+    {
+      "month": "2012-04",
+      "ph": 8.064997,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"7b2945bc794c9b5fc304722e64b1fd84\""
+    },
+    {
+      "month": "2012-05",
+      "ph": 8.069703,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"af3c940c59c0abb774d367ac45c112ff\""
+    },
+    {
+      "month": "2012-06",
+      "ph": 8.070461,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"a10f7b535f38afd791719a5d97c824ed\""
+    },
+    {
+      "month": "2012-07",
+      "ph": 8.068354,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"5b72b7218724d667e4083d820ea7f153\""
+    },
+    {
+      "month": "2012-08",
+      "ph": 8.065969,
+      "validAreaKm2": 344361497.1,
+      "product": "my",
+      "etag": "\"4fb38838bbb63ef69d9f2d9332b57a51\""
+    },
+    {
+      "month": "2012-09",
+      "ph": 8.066216,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"98a704a233617bf520e403638d6c8611\""
+    },
+    {
+      "month": "2012-10",
+      "ph": 8.067185,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"f3751cb197c6affd142de8581e0b9a3b\""
+    },
+    {
+      "month": "2012-11",
+      "ph": 8.068309,
+      "validAreaKm2": 344353320.3,
+      "product": "my",
+      "etag": "\"adc65fc7ef2114fcb8f976015c1e61a2\""
+    },
+    {
+      "month": "2012-12",
+      "ph": 8.06701,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"1a5a1ce7ce33fbedc44332d918561253\""
+    },
+    {
+      "month": "2013-01",
+      "ph": 8.066509,
+      "validAreaKm2": 344354245.4,
+      "product": "my",
+      "etag": "\"4cfe25c6140df66bc770ec529553c434\""
+    },
+    {
+      "month": "2013-02",
+      "ph": 8.063735,
+      "validAreaKm2": 344367705.2,
+      "product": "my",
+      "etag": "\"1dd72b5f919c6852f813628fa4fddbc6\""
+    },
+    {
+      "month": "2013-03",
+      "ph": 8.062742,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"0976aa6bc4c0986ff108cffec1c83126\""
+    },
+    {
+      "month": "2013-04",
+      "ph": 8.062935,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"229da9726cf730a926f5290fca1749b9\""
+    },
+    {
+      "month": "2013-05",
+      "ph": 8.06689,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"698e5888d48aeae39874d6c36fc616e0\""
+    },
+    {
+      "month": "2013-06",
+      "ph": 8.068459,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"cbab6812a77b99833ea4d3f7d4db87b7\""
+    },
+    {
+      "month": "2013-07",
+      "ph": 8.06572,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"fa1e2411c4509e5bdd888a98fb7f45c5\""
+    },
+    {
+      "month": "2013-08",
+      "ph": 8.062741,
+      "validAreaKm2": 344361916.6,
+      "product": "my",
+      "etag": "\"6800aa417e6049b0669dc4ad60d94f02\""
+    },
+    {
+      "month": "2013-09",
+      "ph": 8.064168,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"149e409b41d21a5b407a85a0f5b7e7c3\""
+    },
+    {
+      "month": "2013-10",
+      "ph": 8.064718,
+      "validAreaKm2": 344358854.8,
+      "product": "my",
+      "etag": "\"c1f9afc903f19cfc5c892cff99fad0b9\""
+    },
+    {
+      "month": "2013-11",
+      "ph": 8.06555,
+      "validAreaKm2": 344353705.2,
+      "product": "my",
+      "etag": "\"bcb55c55285258239dd4970dc9ba3285\""
+    },
+    {
+      "month": "2013-12",
+      "ph": 8.064806,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"fcdddca06ef8dd58144164673fdad3d2\""
+    },
+    {
+      "month": "2014-01",
+      "ph": 8.064461,
+      "validAreaKm2": 344353866.3,
+      "product": "my",
+      "etag": "\"2256d8a8de7a496248841b160965265c\""
+    },
+    {
+      "month": "2014-02",
+      "ph": 8.062423,
+      "validAreaKm2": 344367442.5,
+      "product": "my",
+      "etag": "\"e957cef99b63ced2c95731c8905cf74e\""
+    },
+    {
+      "month": "2014-03",
+      "ph": 8.061459,
+      "validAreaKm2": 344376171.5,
+      "product": "my",
+      "etag": "\"84c9d06f88e03ff81d30bfc8a079a6df\""
+    },
+    {
+      "month": "2014-04",
+      "ph": 8.062026,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"06d2fb79c3f84bf620843cc4727f4fa8\""
+    },
+    {
+      "month": "2014-05",
+      "ph": 8.067427,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"2672f92bacb5febcceb4d1e8fa1683e2\""
+    },
+    {
+      "month": "2014-06",
+      "ph": 8.067193,
+      "validAreaKm2": 344358504.6,
+      "product": "my",
+      "etag": "\"9f9cf16bc70082a4a8e12504810633e6\""
+    },
+    {
+      "month": "2014-07",
+      "ph": 8.065009,
+      "validAreaKm2": 344358940.9,
+      "product": "my",
+      "etag": "\"e927842e3750e5cd687a20710b92db78\""
+    },
+    {
+      "month": "2014-08",
+      "ph": 8.062228,
+      "validAreaKm2": 344361916.6,
+      "product": "my",
+      "etag": "\"151426476e9dabf4814abbad25d6727c\""
+    },
+    {
+      "month": "2014-09",
+      "ph": 8.062791,
+      "validAreaKm2": 344361074.9,
+      "product": "my",
+      "etag": "\"fa55e6611fecfd5a65046e4678434273\""
+    },
+    {
+      "month": "2014-10",
+      "ph": 8.06353,
+      "validAreaKm2": 344359059.7,
+      "product": "my",
+      "etag": "\"ae8616d07595123965e9459386e413bd\""
+    },
+    {
+      "month": "2014-11",
+      "ph": 8.064705,
+      "validAreaKm2": 344354042.7,
+      "product": "my",
+      "etag": "\"b502cca8b15b23f0f89a7be8ad862d76\""
+    },
+    {
+      "month": "2014-12",
+      "ph": 8.063655,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"d9a2af47672c0bf72470d1f19993b285\""
+    },
+    {
+      "month": "2015-01",
+      "ph": 8.063419,
+      "validAreaKm2": 344379546.5,
+      "product": "my",
+      "etag": "\"bf0349909686a5bd6bb38a5686dd7c77\""
+    },
+    {
+      "month": "2015-02",
+      "ph": 8.061241,
+      "validAreaKm2": 344393122.7,
+      "product": "my",
+      "etag": "\"dd76e730d17049af6cd5e994a8b6cfd8\""
+    },
+    {
+      "month": "2015-03",
+      "ph": 8.060308,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"98b57341ec1d7e65ad96f4d2293f9200\""
+    },
+    {
+      "month": "2015-04",
+      "ph": 8.060634,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"2adfb13353d031c1f82b52acea21161a\""
+    },
+    {
+      "month": "2015-05",
+      "ph": 8.064575,
+      "validAreaKm2": 344391975.6,
+      "product": "my",
+      "etag": "\"1373f2adde6247e5ae1c24778bf19ab3\""
+    },
+    {
+      "month": "2015-06",
+      "ph": 8.064783,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"a055592323a113185c66d1fae7da66e6\""
+    },
+    {
+      "month": "2015-07",
+      "ph": 8.062947,
+      "validAreaKm2": 344384621.1,
+      "product": "my",
+      "etag": "\"4369b1376d0f49fd7dc02723a2e77aa6\""
+    },
+    {
+      "month": "2015-08",
+      "ph": 8.060468,
+      "validAreaKm2": 344387177.3,
+      "product": "my",
+      "etag": "\"0d003585210d03ba5f107282dc3f5782\""
+    },
+    {
+      "month": "2015-09",
+      "ph": 8.061377,
+      "validAreaKm2": 344365991.7,
+      "product": "my",
+      "etag": "\"4e9592d68cabaf0a85dbd7ed4356c9bb\""
+    },
+    {
+      "month": "2015-10",
+      "ph": 8.062628,
+      "validAreaKm2": 344363976.5,
+      "product": "my",
+      "etag": "\"7e149ab303bd065f3f2d1926eb374619\""
+    },
+    {
+      "month": "2015-11",
+      "ph": 8.063452,
+      "validAreaKm2": 344358583.5,
+      "product": "my",
+      "etag": "\"48fe370961b54245278355f487e21a5d\""
+    },
+    {
+      "month": "2015-12",
+      "ph": 8.062586,
+      "validAreaKm2": 344354206.3,
+      "product": "my",
+      "etag": "\"0ebe5adc72845fd89fa2b74259948380\""
+    },
+    {
+      "month": "2016-01",
+      "ph": 8.062802,
+      "validAreaKm2": 344379546.5,
+      "product": "my",
+      "etag": "\"ceab77da9de8ac9d2d0734a9f0904ea4\""
+    },
+    {
+      "month": "2016-02",
+      "ph": 8.060463,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"9172087b268a6bda910c6169f6926cfb\""
+    },
+    {
+      "month": "2016-03",
+      "ph": 8.058161,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"82ca29225b873e1f5caf6f62f5ec2dff\""
+    },
+    {
+      "month": "2016-04",
+      "ph": 8.057439,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"5c72aedfff10ceb5e1e4f9a302abc078\""
+    },
+    {
+      "month": "2016-05",
+      "ph": 8.061582,
+      "validAreaKm2": 344391975.6,
+      "product": "my",
+      "etag": "\"a0aac38c63e4ec0e28c028b313ff8798\""
+    },
+    {
+      "month": "2016-06",
+      "ph": 8.061596,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"89e6adfe4e2d748dcf347ca45708cfe7\""
+    },
+    {
+      "month": "2016-07",
+      "ph": 8.059115,
+      "validAreaKm2": 344384621.1,
+      "product": "my",
+      "etag": "\"fc4b2de3823ef1ba2c4717f62eb5297c\""
+    },
+    {
+      "month": "2016-08",
+      "ph": 8.056568,
+      "validAreaKm2": 344387177.3,
+      "product": "my",
+      "etag": "\"b56492cfaf1b1bac9391e2cb73dba564\""
+    },
+    {
+      "month": "2016-09",
+      "ph": 8.057411,
+      "validAreaKm2": 344366399.8,
+      "product": "my",
+      "etag": "\"ad33ace883ab7c5046770913461ee556\""
+    },
+    {
+      "month": "2016-10",
+      "ph": 8.058245,
+      "validAreaKm2": 344364584.9,
+      "product": "my",
+      "etag": "\"00d6aed7b9dd6c5f97760ca01db461be\""
+    },
+    {
+      "month": "2016-11",
+      "ph": 8.05971,
+      "validAreaKm2": 344358926.8,
+      "product": "my",
+      "etag": "\"5dcec59e8e6511a8179559fe22484732\""
+    },
+    {
+      "month": "2016-12",
+      "ph": 8.058414,
+      "validAreaKm2": 344353775.6,
+      "product": "my",
+      "etag": "\"a04662be4403af3cec1e1533523ac8fd\""
+    },
+    {
+      "month": "2017-01",
+      "ph": 8.057588,
+      "validAreaKm2": 344379925.5,
+      "product": "my",
+      "etag": "\"25c00b327dd4159481354bbb42262525\""
+    },
+    {
+      "month": "2017-02",
+      "ph": 8.055593,
+      "validAreaKm2": 344393385.4,
+      "product": "my",
+      "etag": "\"fc944a375c1fbc086b978383fa73d083\""
+    },
+    {
+      "month": "2017-03",
+      "ph": 8.053964,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"2909ac2c50ce4a4e69951009ee9bbc83\""
+    },
+    {
+      "month": "2017-04",
+      "ph": 8.054811,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"29f3226061dd1ec3996747297a20257e\""
+    },
+    {
+      "month": "2017-05",
+      "ph": 8.059149,
+      "validAreaKm2": 344391975.6,
+      "product": "my",
+      "etag": "\"c0d4eafc6e358ed6209e7025431bf0ee\""
+    },
+    {
+      "month": "2017-06",
+      "ph": 8.059453,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"f8e38db0453dcb948ed15ba138c1b8e0\""
+    },
+    {
+      "month": "2017-07",
+      "ph": 8.057939,
+      "validAreaKm2": 344384621.1,
+      "product": "my",
+      "etag": "\"6cd56f98707a9505dde492551d2e7362\""
+    },
+    {
+      "month": "2017-08",
+      "ph": 8.054644,
+      "validAreaKm2": 344387177.3,
+      "product": "my",
+      "etag": "\"32e3a7d19d88e69de710cb7d08878a52\""
+    },
+    {
+      "month": "2017-09",
+      "ph": 8.05587,
+      "validAreaKm2": 344369195.8,
+      "product": "my",
+      "etag": "\"fbeb9c600f1ec93cff5fa6acf03d3818\""
+    },
+    {
+      "month": "2017-10",
+      "ph": 8.056551,
+      "validAreaKm2": 344365550.5,
+      "product": "my",
+      "etag": "\"8a74f6c3eb92ee2939c69f38b5eb5bf4\""
+    },
+    {
+      "month": "2017-11",
+      "ph": 8.057176,
+      "validAreaKm2": 344361248.8,
+      "product": "my",
+      "etag": "\"6d5771ae6aec663255ecbe8838aa9f28\""
+    },
+    {
+      "month": "2017-12",
+      "ph": 8.056511,
+      "validAreaKm2": 344353775.6,
+      "product": "my",
+      "etag": "\"f722ba9b2a0f74ab61d63ed28d814d71\""
+    },
+    {
+      "month": "2018-01",
+      "ph": 8.055966,
+      "validAreaKm2": 344385203.7,
+      "product": "my",
+      "etag": "\"ff642750760a51523bd135725e3f7e21\""
+    },
+    {
+      "month": "2018-02",
+      "ph": 8.053722,
+      "validAreaKm2": 344393122.7,
+      "product": "my",
+      "etag": "\"7379e8d19fe4a6fdc915d09f4d26cdb6\""
+    },
+    {
+      "month": "2018-03",
+      "ph": 8.051787,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"08a8887f4b618855ab29029cbd0f47b3\""
+    },
+    {
+      "month": "2018-04",
+      "ph": 8.052695,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"ee3a3a7aa83436ceb03b09cc446820e7\""
+    },
+    {
+      "month": "2018-05",
+      "ph": 8.057116,
+      "validAreaKm2": 344391975.6,
+      "product": "my",
+      "etag": "\"86cd1c093fbf7e94941c9e4eaaab35a8\""
+    },
+    {
+      "month": "2018-06",
+      "ph": 8.058173,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"71774c7314ca9989362b7eddb328d060\""
+    },
+    {
+      "month": "2018-07",
+      "ph": 8.055831,
+      "validAreaKm2": 344390278.3,
+      "product": "my",
+      "etag": "\"c7682da5140304d0318134d1d8299c34\""
+    },
+    {
+      "month": "2018-08",
+      "ph": 8.052748,
+      "validAreaKm2": 344387177.3,
+      "product": "my",
+      "etag": "\"d51d90a80f7f1d9af37c714b4f3a653f\""
+    },
+    {
+      "month": "2018-09",
+      "ph": 8.053702,
+      "validAreaKm2": 344387180.1,
+      "product": "my",
+      "etag": "\"1c1d31ca3a1db54b9e969d1f876ea7ec\""
+    },
+    {
+      "month": "2018-10",
+      "ph": 8.054948,
+      "validAreaKm2": 344388874.6,
+      "product": "my",
+      "etag": "\"3fc06f57b8a78cfa22a36477ae6c96e0\""
+    },
+    {
+      "month": "2018-11",
+      "ph": 8.055612,
+      "validAreaKm2": 344382328.4,
+      "product": "my",
+      "etag": "\"20e8e2e7d17525e91aae289fdc45113b\""
+    },
+    {
+      "month": "2018-12",
+      "ph": 8.055231,
+      "validAreaKm2": 344377520.5,
+      "product": "my",
+      "etag": "\"9447d7cf19d67006c678226bbf298f71\""
+    },
+    {
+      "month": "2019-01",
+      "ph": 8.054479,
+      "validAreaKm2": 344385203.7,
+      "product": "my",
+      "etag": "\"8d6784cda1e9b971fe498567ddc7bdb2\""
+    },
+    {
+      "month": "2019-02",
+      "ph": 8.0521,
+      "validAreaKm2": 344393122.7,
+      "product": "my",
+      "etag": "\"222aa5e746ecddcc2a9080fa0968f7f2\""
+    },
+    {
+      "month": "2019-03",
+      "ph": 8.050578,
+      "validAreaKm2": 344401851.6,
+      "product": "my",
+      "etag": "\"ac862b6b2e554d8ad26046fe6fafc2fe\""
+    },
+    {
+      "month": "2019-04",
+      "ph": 8.050585,
+      "validAreaKm2": 344401150.6,
+      "product": "my",
+      "etag": "\"66514932d3fb7eeb1ca38ce3d39a0f55\""
+    },
+    {
+      "month": "2019-05",
+      "ph": 8.055196,
+      "validAreaKm2": 344397632.8,
+      "product": "my",
+      "etag": "\"55734afa793ba459a61568ba3d588472\""
+    },
+    {
+      "month": "2019-06",
+      "ph": 8.05578,
+      "validAreaKm2": 344384184.7,
+      "product": "my",
+      "etag": "\"1123332b6ad7eb22370b7fae78d71502\""
+    },
+    {
+      "month": "2019-07",
+      "ph": 8.053052,
+      "validAreaKm2": 344384621.1,
+      "product": "my",
+      "etag": "\"d24bfacae404f9cc2d19d7a5201c5f8d\""
+    },
+    {
+      "month": "2019-08",
+      "ph": 8.050431,
+      "validAreaKm2": 344387177.3,
+      "product": "my",
+      "etag": "\"bd1d66d68e0ef82cde1aaf6bb9c8d100\""
+    },
+    {
+      "month": "2019-09",
+      "ph": 8.050981,
+      "validAreaKm2": 344396224.2,
+      "product": "my",
+      "etag": "\"8f6d967b9271190518e24449916e6ac4\""
+    },
+    {
+      "month": "2019-10",
+      "ph": 8.052566,
+      "validAreaKm2": 344366958.2,
+      "product": "my",
+      "etag": "\"5672e2f4287f0d1f6e6ce8e1757f1b08\""
+    },
+    {
+      "month": "2019-11",
+      "ph": 8.053955,
+      "validAreaKm2": 344363024.8,
+      "product": "my",
+      "etag": "\"6a4c4d52d81426dc52a18c5d600321bc\""
+    },
+    {
+      "month": "2019-12",
+      "ph": 8.054074,
+      "validAreaKm2": 344357187.9,
+      "product": "my",
+      "etag": "\"eda3f16ec95e3e05048afb6534bc0cd0\""
+    },
+    {
+      "month": "2020-01",
+      "ph": 8.053494,
+      "validAreaKm2": 344361764.8,
+      "product": "my",
+      "etag": "\"8bc666ae71c1afcf0080341772847a59\""
+    },
+    {
+      "month": "2020-02",
+      "ph": 8.051427,
+      "validAreaKm2": 344375603.7,
+      "product": "my",
+      "etag": "\"467b3a17331d6b5b53f4c0a3f85a015c\""
+    },
+    {
+      "month": "2020-03",
+      "ph": 8.0487,
+      "validAreaKm2": 344384070.0,
+      "product": "my",
+      "etag": "\"aca1f2de2cecc2afa80932bb2971e4d0\""
+    },
+    {
+      "month": "2020-04",
+      "ph": 8.049008,
+      "validAreaKm2": 344383368.9,
+      "product": "my",
+      "etag": "\"14a18c3561327c3d2c92f0fc45f8c8c8\""
+    },
+    {
+      "month": "2020-05",
+      "ph": 8.052378,
+      "validAreaKm2": 344374194.0,
+      "product": "my",
+      "etag": "\"104cf702f4d47d58727d207c485b0ed6\""
+    },
+    {
+      "month": "2020-06",
+      "ph": 8.052837,
+      "validAreaKm2": 344366403.1,
+      "product": "my",
+      "etag": "\"615f2de393772f82f2d1766e8b3e4871\""
+    },
+    {
+      "month": "2020-07",
+      "ph": 8.050836,
+      "validAreaKm2": 344366839.4,
+      "product": "my",
+      "etag": "\"dc751c5213eacf8f8e591e68a50ce6e6\""
+    },
+    {
+      "month": "2020-08",
+      "ph": 8.048106,
+      "validAreaKm2": 344369395.6,
+      "product": "my",
+      "etag": "\"1059717fd39b8637cfcd98e4690b6940\""
+    },
+    {
+      "month": "2020-09",
+      "ph": 8.048878,
+      "validAreaKm2": 344369398.5,
+      "product": "my",
+      "etag": "\"5183369ad065f8361f298b3cc8e083e8\""
+    },
+    {
+      "month": "2020-10",
+      "ph": 8.050331,
+      "validAreaKm2": 344366753.3,
+      "product": "my",
+      "etag": "\"07f92b68b64267720a8f9a11a98d8ee0\""
+    },
+    {
+      "month": "2020-11",
+      "ph": 8.050374,
+      "validAreaKm2": 344362654.8,
+      "product": "my",
+      "etag": "\"3212b468d3361eae45fdedf143a6dce3\""
+    },
+    {
+      "month": "2020-12",
+      "ph": 8.050652,
+      "validAreaKm2": 344348858.7,
+      "product": "my",
+      "etag": "\"4c6575e587f1f9d452e5f3414f07d7f7\""
+    },
+    {
+      "month": "2021-01",
+      "ph": 8.050071,
+      "validAreaKm2": 344362143.9,
+      "product": "my",
+      "etag": "\"24087643872a35d141b0b5b0f738c8ee\""
+    },
+    {
+      "month": "2021-02",
+      "ph": 8.047751,
+      "validAreaKm2": 344375603.7,
+      "product": "my",
+      "etag": "\"5262c7bfef1d72cef1e0ab841d301487\""
+    },
+    {
+      "month": "2021-03",
+      "ph": 8.045675,
+      "validAreaKm2": 344384070.0,
+      "product": "my",
+      "etag": "\"ceaa19e92b374cd75fefd114b0b75cec\""
+    },
+    {
+      "month": "2021-04",
+      "ph": 8.046216,
+      "validAreaKm2": 344383368.9,
+      "product": "my",
+      "etag": "\"67c21e01b6802d25dba5da63a5e061d3\""
+    },
+    {
+      "month": "2021-05",
+      "ph": 8.051086,
+      "validAreaKm2": 344374194.0,
+      "product": "my",
+      "etag": "\"2012ac0ed40949b783b7cb39b62c9e70\""
+    },
+    {
+      "month": "2021-06",
+      "ph": 8.052158,
+      "validAreaKm2": 344366403.1,
+      "product": "my",
+      "etag": "\"cb0f86b785a04c874ab03cc86c9ade28\""
+    },
+    {
+      "month": "2021-07",
+      "ph": 8.049732,
+      "validAreaKm2": 344366839.4,
+      "product": "my",
+      "etag": "\"8cc6afe66b520386cf7e763cc698665f\""
+    },
+    {
+      "month": "2021-08",
+      "ph": 8.047153,
+      "validAreaKm2": 344369395.6,
+      "product": "my",
+      "etag": "\"211eebf09730c2d847858a10c61f71b4\""
+    },
+    {
+      "month": "2021-09",
+      "ph": 8.047874,
+      "validAreaKm2": 344369803.8,
+      "product": "my",
+      "etag": "\"ceae18f2a2da6542d44273a603966a6d\""
+    },
+    {
+      "month": "2021-10",
+      "ph": 8.048575,
+      "validAreaKm2": 344368513.5,
+      "product": "my",
+      "etag": "\"0b5799f0c0f0fef7291e0b22e5abb457\""
+    },
+    {
+      "month": "2021-11",
+      "ph": 8.048622,
+      "validAreaKm2": 344364155.5,
+      "product": "my",
+      "etag": "\"d14da3c6339eb9ad42055ad96e63c5a3\""
+    },
+    {
+      "month": "2021-12",
+      "ph": 8.047634,
+      "validAreaKm2": 344356757.2,
+      "product": "my",
+      "etag": "\"6a425504311c5949109bbf26f294db57\""
+    },
+    {
+      "month": "2022-01",
+      "ph": 8.048281,
+      "validAreaKm2": 344362143.9,
+      "product": "my",
+      "etag": "\"c85f45709a3b6af958bdbf588ed93667\""
+    },
+    {
+      "month": "2022-02",
+      "ph": 8.045256,
+      "validAreaKm2": 344375341.0,
+      "product": "my",
+      "etag": "\"0f21b7c892805cd35209bdd1c1c6f631\""
+    },
+    {
+      "month": "2022-03",
+      "ph": 8.043351,
+      "validAreaKm2": 344384070.0,
+      "product": "my",
+      "etag": "\"ff410c2f72fdb25174008db92acb40c4\""
+    },
+    {
+      "month": "2022-04",
+      "ph": 8.04443,
+      "validAreaKm2": 344383368.9,
+      "product": "my",
+      "etag": "\"a51fc97728954af6c4cb7a976f5beead\""
+    },
+    {
+      "month": "2022-05",
+      "ph": 8.048707,
+      "validAreaKm2": 344374194.0,
+      "product": "my",
+      "etag": "\"22a55fb00b23686fa1378a815539c707\""
+    },
+    {
+      "month": "2022-06",
+      "ph": 8.049582,
+      "validAreaKm2": 344366403.1,
+      "product": "my",
+      "etag": "\"d3c6e264f52f5c8ff3eb1ea85b0b4721\""
+    },
+    {
+      "month": "2022-07",
+      "ph": 8.046994,
+      "validAreaKm2": 344366839.4,
+      "product": "my",
+      "etag": "\"668e9d294ca8d8b4970d4df437436645\""
+    },
+    {
+      "month": "2022-08",
+      "ph": 8.044875,
+      "validAreaKm2": 344369395.6,
+      "product": "my",
+      "etag": "\"da44765802d9f16e1cf77a5b9ee5b209\""
+    },
+    {
+      "month": "2022-09",
+      "ph": 8.045641,
+      "validAreaKm2": 344369398.5,
+      "product": "my",
+      "etag": "\"f11293fe4c171a9672139aceff2e8795\""
+    },
+    {
+      "month": "2022-10",
+      "ph": 8.047014,
+      "validAreaKm2": 344367369.1,
+      "product": "my",
+      "etag": "\"024312dc62fc33a7646d5235faf6da53\""
+    },
+    {
+      "month": "2022-11",
+      "ph": 8.047678,
+      "validAreaKm2": 344363305.0,
+      "product": "my",
+      "etag": "\"9e9386b7e450fa1f840cdd3cdd008a44\""
+    },
+    {
+      "month": "2022-12",
+      "ph": 8.046412,
+      "validAreaKm2": 344356757.2,
+      "product": "my",
+      "etag": "\"ab251e73812c1d727271f2e881bea7c2\""
+    },
+    {
+      "month": "2023-01",
+      "ph": 8.046517,
+      "validAreaKm2": 344361764.8,
+      "product": "my",
+      "etag": "\"4cb0b5ac7686370a40ff14baa5052139\""
+    },
+    {
+      "month": "2023-02",
+      "ph": 8.043419,
+      "validAreaKm2": 344375341.0,
+      "product": "my",
+      "etag": "\"fceaaecdc213d35b46f849f1c3f31ea8\""
+    },
+    {
+      "month": "2023-03",
+      "ph": 8.04306,
+      "validAreaKm2": 344384070.0,
+      "product": "my",
+      "etag": "\"a32aa51438a7b262d383fa256b9642b7\""
+    },
+    {
+      "month": "2023-04",
+      "ph": 8.04255,
+      "validAreaKm2": 344383368.9,
+      "product": "my",
+      "etag": "\"f22614a25e70b4536f6542218d8a0a7f\""
+    },
+    {
+      "month": "2023-05",
+      "ph": 8.047927,
+      "validAreaKm2": 344374194.0,
+      "product": "my",
+      "etag": "\"18125c27116ea25ad0219ce698be90c2\""
+    },
+    {
+      "month": "2023-06",
+      "ph": 8.048898,
+      "validAreaKm2": 344366403.1,
+      "product": "my",
+      "etag": "\"2c06e0322c3ed6f32fc8e37226980ebc\""
+    },
+    {
+      "month": "2023-07",
+      "ph": 8.045897,
+      "validAreaKm2": 344366839.4,
+      "product": "my",
+      "etag": "\"a13acd0f9761ad1e10a166319c8d0a8a\""
+    },
+    {
+      "month": "2023-08",
+      "ph": 8.04325,
+      "validAreaKm2": 344371855.4,
+      "product": "my",
+      "etag": "\"ff0187e959c8b6743d6e264d1fa2195b\""
+    },
+    {
+      "month": "2023-09",
+      "ph": 8.044559,
+      "validAreaKm2": 344371045.0,
+      "product": "my",
+      "etag": "\"61e06f733e0d21cbef755e088e54c037\""
+    },
+    {
+      "month": "2023-10",
+      "ph": 8.046335,
+      "validAreaKm2": 344368584.7,
+      "product": "my",
+      "etag": "\"d90c98ff678b14d714453817b2d9836b\""
+    },
+    {
+      "month": "2023-11",
+      "ph": 8.046479,
+      "validAreaKm2": 344356817.2,
+      "product": "my",
+      "etag": "\"e8c9866ad36b51ef82ce950d0f3c57d7\""
+    },
+    {
+      "month": "2023-12",
+      "ph": 8.045761,
+      "validAreaKm2": 344349434.3,
+      "product": "my",
+      "etag": "\"41e3f30af23b0a93195e2ff8150d3477\""
+    },
+    {
+      "month": "2024-01",
+      "ph": 8.045011,
+      "validAreaKm2": 344354011.2,
+      "product": "my",
+      "etag": "\"8f4c2b6959f99843c3e5a90219b4dbc0\""
+    },
+    {
+      "month": "2024-02",
+      "ph": 8.041713,
+      "validAreaKm2": 344367850.1,
+      "product": "my",
+      "etag": "\"e539391fbf0722baa59e8dac63f90e47\""
+    },
+    {
+      "month": "2024-03",
+      "ph": 8.039541,
+      "validAreaKm2": 344376978.6,
+      "product": "my",
+      "etag": "\"02deb1d3bb8e09be7c6b994a440515ae\""
+    },
+    {
+      "month": "2024-04",
+      "ph": 8.040131,
+      "validAreaKm2": 344375470.4,
+      "product": "my",
+      "etag": "\"ef2ef8ec491e75e0faab8960f8021932\""
+    },
+    {
+      "month": "2024-05",
+      "ph": 8.043905,
+      "validAreaKm2": 344366295.5,
+      "product": "my",
+      "etag": "\"7c64b505a7c4ed3a8386add43172c873\""
+    },
+    {
+      "month": "2024-06",
+      "ph": 8.044516,
+      "validAreaKm2": 341975858.0,
+      "product": "my",
+      "etag": "\"1b58706cfa49b8f5bf10c5834d3b6d07\""
+    },
+    {
+      "month": "2024-07",
+      "ph": 8.043699,
+      "validAreaKm2": 344365635.0,
+      "product": "my",
+      "etag": "\"0150f5d851dce9af2bcbeefe5a8340e3\""
+    },
+    {
+      "month": "2024-08",
+      "ph": 8.039391,
+      "validAreaKm2": 343100646.2,
+      "product": "my",
+      "etag": "\"926e8ef5fc5b97846c4fc3d9889eaca5\""
+    },
+    {
+      "month": "2024-09",
+      "ph": 8.041365,
+      "validAreaKm2": 342220733.6,
+      "product": "my",
+      "etag": "\"3881523272b75a8e4d404c37720c784e\""
+    },
+    {
+      "month": "2024-10",
+      "ph": 8.042942,
+      "validAreaKm2": 342347208.1,
+      "product": "my",
+      "etag": "\"45a9a3f7f98b1157f9bc23234cc3a112\""
+    },
+    {
+      "month": "2024-11",
+      "ph": 8.042573,
+      "validAreaKm2": 342026951.0,
+      "product": "my",
+      "etag": "\"2333c18bf2726cf497eedbea8035d9ff\""
+    },
+    {
+      "month": "2024-12",
+      "ph": 8.041232,
+      "validAreaKm2": 344355552.9,
+      "product": "my",
+      "etag": "\"c8ac086530b750b4451aab3a3ae9ce18\""
+    },
+    {
+      "month": "2025-01",
+      "ph": 8.04124,
+      "validAreaKm2": 349697601.5,
+      "product": "nrt",
+      "etag": "\"fd6dff36cdd4d997d4e86cf8bade280d\""
+    },
+    {
+      "month": "2025-02",
+      "ph": 8.038486,
+      "validAreaKm2": 349710491.8,
+      "product": "nrt",
+      "etag": "\"d1bff772f14f8babb79123169eae2395\""
+    },
+    {
+      "month": "2025-03",
+      "ph": 8.036708,
+      "validAreaKm2": 349718958.0,
+      "product": "nrt",
+      "etag": "\"111eb805df1632a8049fbdc2b8ef42a7\""
+    },
+    {
+      "month": "2025-04",
+      "ph": 8.037284,
+      "validAreaKm2": 349718257.0,
+      "product": "nrt",
+      "etag": "\"7600735c51305c1585d27ca91e9ccfe0\""
+    },
+    {
+      "month": "2025-05",
+      "ph": 8.041872,
+      "validAreaKm2": 349709082.0,
+      "product": "nrt",
+      "etag": "\"1319b0f437254518479e2789d73bb921\""
+    },
+    {
+      "month": "2025-06",
+      "ph": 8.043318,
+      "validAreaKm2": 349701291.1,
+      "product": "nrt",
+      "etag": "\"652b6078cf3afd655e61283327a1252e\""
+    },
+    {
+      "month": "2025-07",
+      "ph": 8.042751,
+      "validAreaKm2": 349701727.5,
+      "product": "nrt",
+      "etag": "\"b35a623a3645572187056b9ab527187a\""
+    },
+    {
+      "month": "2025-08",
+      "ph": 8.038676,
+      "validAreaKm2": 349704283.7,
+      "product": "nrt",
+      "etag": "\"870a0203bbc524684090bf5cc138a4ab\""
+    },
+    {
+      "month": "2025-09",
+      "ph": 8.040664,
+      "validAreaKm2": 349705187.1,
+      "product": "nrt",
+      "etag": "\"354d3dfc7cd9ae98a1398fef5d5ea874\""
+    },
+    {
+      "month": "2025-10",
+      "ph": 8.042718,
+      "validAreaKm2": 349701972.5,
+      "product": "nrt",
+      "etag": "\"2b68974e19a0c1ca732e9466d38e758a\""
+    },
+    {
+      "month": "2025-11",
+      "ph": 8.042854,
+      "validAreaKm2": 349696106.8,
+      "product": "nrt",
+      "etag": "\"6193086ba5be989013c2b5f6dcab157b\""
+    },
+    {
+      "month": "2025-12",
+      "ph": 8.042075,
+      "validAreaKm2": 349691645.3,
+      "product": "nrt",
+      "etag": "\"2ce5292ca80a5776aa1faa9058fe4104\""
+    },
+    {
+      "month": "2026-01",
+      "ph": 8.04311,
+      "validAreaKm2": 349698095.1,
+      "product": "nrt",
+      "etag": "\"b20e4989bff5efce0d06db39568bc240\""
+    },
+    {
+      "month": "2026-02",
+      "ph": 8.037348,
+      "validAreaKm2": 349710731.9,
+      "product": "nrt",
+      "etag": "\"a4706d0dc752dddf135ea90c1ba6124b\""
+    },
+    {
+      "month": "2026-03",
+      "ph": 8.03489,
+      "validAreaKm2": 349719508.8,
+      "product": "nrt",
+      "etag": "\"a7f3a053be6b1da593e94430cf56e041\""
+    },
+    {
+      "month": "2026-04",
+      "ph": 8.03564,
+      "validAreaKm2": 349718257.0,
+      "product": "nrt",
+      "etag": "\"1194156b6d3ea98162fa650d910e1081\""
+    },
+    {
+      "month": "2026-05",
+      "ph": 8.039365,
+      "validAreaKm2": 349709082.0,
+      "product": "nrt",
+      "etag": "\"10bac8b00c6f4d301819fd09898cefcc\""
+    },
+    {
+      "month": "2026-06",
+      "ph": 8.040818,
+      "validAreaKm2": 349701291.1,
+      "product": "nrt",
+      "etag": "\"2c437384718b2d2d5a592d4d1a213e2a\""
+    },
+    {
+      "month": "2026-07",
+      "ph": 8.040986,
+      "validAreaKm2": 349701727.5,
+      "product": "nrt",
+      "etag": "\"795541eaafb3a0114e87cf671f606f8b\""
+    },
+    {
+      "month": "2026-08",
+      "ph": 8.036689,
+      "validAreaKm2": 349704283.7,
+      "product": "nrt",
+      "etag": "\"3fbca401e80226e47dd30ab434fa301b\""
+    },
+    {
+      "month": "2026-09",
+      "ph": 8.038713,
+      "validAreaKm2": 349703861.4,
+      "product": "nrt",
+      "etag": "\"199990a0b08dd4d946409cd07fb0509b\""
+    }
+  ]
+}

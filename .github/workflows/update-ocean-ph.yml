@@ -1,0 +1,56 @@
+name: Update ocean surface pH
+
+on:
+  workflow_dispatch:
+  schedule:
+    # The recent-data product targets publication around the 20th.
+    - cron: '41 8 23 * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ocean-ph-update
+  cancel-in-progress: false
+
+jobs:
+  update-ocean-ph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements-ocean-ph.txt
+
+      - name: Install pH processing dependencies
+        run: python -m pip install -r scripts/requirements-ocean-ph.txt
+
+      - name: Test pH processing
+        run: python -m unittest discover -s tests -p 'test_ocean_ph_data.py'
+
+      - name: Reduce and validate monthly pH grids
+        run: python scripts/update_ocean_ph_data.py
+
+      - name: Verify app data handling
+        run: |
+          npm ci --ignore-scripts
+          npm test
+
+      - name: Commit changed pH snapshot
+        run: |
+          git add data/ocean-ph.json
+          if git diff --cached --quiet; then
+            echo "No ocean pH changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update ocean surface pH"
+          git pull --rebase
+          git push

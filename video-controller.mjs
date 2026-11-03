@@ -314,6 +314,12 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
             context.textAlign = 'left';
             context.fillText(caption, rect.x, rect.y + rect.height * 0.83, rect.width);
         }
+        if (currentDatasetKey === 'oceanph') {
+            context.font = `400 ${Math.min(16 * pixelScale, rect.height * 0.07)}px ${fontFamily}`;
+            context.fillStyle = '#aaaaaa';
+            context.textAlign = 'left';
+            context.fillText('Copernicus Marine / LSCE | Recent estimates provisional', rect.x, rect.y + rect.height * 0.94, rect.width);
+        }
         if (currentDatasetKey === 'local') {
             context.font = `400 ${Math.min(16 * pixelScale, rect.height * 0.07)}px ${fontFamily}`;
             context.fillStyle = '#aaaaaa';

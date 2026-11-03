@@ -438,6 +438,7 @@
         import { setupLocalTemperature } from './local-temperature-ui.mjs';
         import { SEA_LEVEL_TICKS, seaLevelMmToSpiralValue } from './sea-level-data.mjs';
         import { METHANE_AXIS_MIN, METHANE_TICKS, methanePpbToSpiralValue } from './methane-data.mjs';
+        import { OCEAN_PH_TICKS, oceanPhToSpiralValue } from './ocean-ph-data.mjs';
 
         // --- Configuration ---
         const spiralGeometry = createSpiralGeometry(THREE);
@@ -763,7 +764,7 @@
         }
 
         function getDatasetRadiusBase() {
-            return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
+            return currentDatasetKey === "co2" || currentDatasetKey === 'methane' || currentDatasetKey === 'sealevel' || currentDatasetKey === 'oceanph' || getActiveDataset().kind === 'sea-ice' ? 0 : CONFIG.radiusBase;
         }
 
         function getUnscaledSpiralRadius(value) {
@@ -796,6 +797,7 @@
         function getOuterRingValue(maxValue) {
             if (currentDatasetKey === 'local') return localRange.max ?? localRange.extent;
             if (currentDatasetKey === 'sealevel') return Math.max(maxValue, seaLevelMmToSpiralValue(SEA_LEVEL_TICKS.at(-1)));
+            if (currentDatasetKey === 'oceanph') return Math.max(maxValue, oceanPhToSpiralValue(OCEAN_PH_TICKS.at(-1)));
             if (currentDatasetKey === 'methane') return Math.max(maxValue, methanePpbToSpiralValue(METHANE_TICKS.at(-1)));
             if (getActiveDataset().kind === 'sea-ice') return Math.max(maxValue, getSeaIceScale().toSpiralValue(getSeaIceScale().max));
             if (currentDatasetKey === "co2") {
@@ -1987,8 +1989,8 @@
             const rawPoints = [];
             const rawColors = [];
             const rawMetaData = []; // To store year info per point
-            const localDisplay = currentDatasetKey === 'local' ? getActiveDisplay() : null;
-            const localColors = localDisplay?.legendStops.map(([, color]) => new THREE.Color(color));
+            const valueDisplay = currentDatasetKey === 'local' || currentDatasetKey === 'oceanph' ? getActiveDisplay() : null;
+            const valueColors = valueDisplay?.legendStops.map(([, color]) => new THREE.Color(color));
             const yearLabels = new THREE.Group();
             
             const visible = document.getElementById('helpersToggle').checked;
@@ -2032,12 +2034,14 @@
                     let c = new THREE.Color();
                     if (currentDatasetKey === 'local') {
                         if (getLocalTemperatureMode() === 'temperature') {
-                            const fraction = getLegendPercent(displayValue, localDisplay) / 100;
-                            sampleColorStops(localDisplay.legendStops, localColors, fraction, c);
+                            const fraction = getLegendPercent(displayValue, valueDisplay) / 100;
+                            sampleColorStops(valueDisplay.legendStops, valueColors, fraction, c);
                         } else {
                             c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
                                 Math.min(1, Math.abs(colorValue) / localRange.extent));
                         }
+                    } else if (currentDatasetKey === 'oceanph') {
+                        sampleColorStops(valueDisplay.legendStops, valueColors, getLegendPercent(displayValue, valueDisplay) / 100, c);
                     } else if (currentDatasetKey === 'sealevel') {
                         c.lerpColors(CONFIG.colors.seaLevelLow, CONFIG.colors.seaLevelHigh,
                             THREE.MathUtils.clamp(displayValue / SEA_LEVEL_TICKS.at(-1), 0, 1));

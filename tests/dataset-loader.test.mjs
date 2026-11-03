@@ -120,6 +120,35 @@ test('remote fetch succeeds directly without trying the proxy', async () => {
     assert.equal(h.status(), 'Success!');
 });
 
+test('pH refreshes the published snapshot without exposing credentials or using a proxy', async () => {
+    const text = await readFile(new URL('../data/ocean-ph.json', import.meta.url), 'utf8');
+    const h = harness({ fetchData: async () => response(text) });
+    h.select('oceanph');
+    await h.loader.fetchLatest();
+    assert.equal(h.requests.length, 1);
+    assert.equal(h.requests[0].url, 'data/ocean-ph.json');
+    assert.equal(h.requests[0].cache, 'no-store');
+    assert.equal(h.data[0][2], 'Published Snapshot');
+    assert.equal(h.status(), 'Success!');
+});
+
+test('failed pH refresh preserves data without sending the snapshot through an external proxy', async () => {
+    const text = await readFile(new URL('../data/ocean-ph.json', import.meta.url), 'utf8');
+    for (const fetchData of [async () => response('', 503), async () => response('invalid')]) {
+        let fail = false;
+        const h = harness({ fetchData: (...args) => fail ? fetchData(...args) : Promise.resolve(response(text)) });
+        h.select('oceanph');
+        await h.loader.loadBundled();
+        fail = true;
+        await h.loader.fetchLatest();
+        assert.equal(h.requests.length, 2);
+        assert.ok(h.requests.every(request => request.url === 'data/ocean-ph.json'));
+        assert.equal(h.data.length, 1);
+        assert.equal(h.data[0][1], text);
+        assert.equal(h.status(), 'Fetch Failed');
+    }
+});
+
 test('remote HTTP errors and unusable responses retry the encoded source URL through the proxy', async () => {
     for (const badResponse of [response('', 403), response('<html>Error</html>')]) {
         let first = true;

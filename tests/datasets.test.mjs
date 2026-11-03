@@ -12,17 +12,18 @@ import { parseSeaLevelData } from '../sea-level-data.mjs';
 import { parseStationTemperatureData, STATION_SOURCE } from '../station-temperature-data.mjs';
 import { parseCountryTemperatureData, COUNTRY_SOURCE } from '../country-temperature-data.mjs';
 import { parseLocalTemperatureData } from '../local-temperature-data.mjs';
+import { parseOceanPhData } from '../ocean-ph-data.mjs';
 
 const read = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 
 test('dataset order and capabilities stay consistent with the selector', () => {
     assert.deepEqual(Object.keys(DATASET_CONFIG), ['local', 'temperature', 'ocean', 'land', 'arctic',
-        'antarctic', 'arcticvolume', 'sealevel', 'co2', 'methane']);
+        'antarctic', 'arcticvolume', 'sealevel', 'oceanph', 'co2', 'methane']);
     for (const [key, dataset] of Object.entries(DATASET_CONFIG)) {
         assert.equal(dataset.id, key);
         assert.equal(dataset.supportsInterpolation, key === 'temperature');
         assert.equal(Boolean(dataset.preserveMonthlyGaps),
-            ['local', 'arctic', 'antarctic', 'arcticvolume', 'sealevel', 'methane'].includes(key));
+            ['local', 'arctic', 'antarctic', 'arcticvolume', 'sealevel', 'oceanph', 'methane'].includes(key));
         assert.equal(typeof dataset.parse, 'function');
         if (key !== 'local') assert.ok(dataset.localPath.startsWith('data/'));
     }
@@ -45,6 +46,7 @@ const parsers = {
     antarctic: text => parseSeaIceData(text, 'south'),
     arcticvolume: parseSeaIceVolumeData,
     sealevel: parseSeaLevelData,
+    oceanph: parseOceanPhData,
     co2: parseCO2MonthlyData,
     methane: parseMethaneData
 };

@@ -35,8 +35,9 @@ https://github.com/user-attachments/assets/2027cfb0-9b29-441b-9bac-b7b8c7af7d9d
 | Global CO2 | Atmospheric concentration at Mauna Loa, ppm | [NOAA GML](https://gml.noaa.gov/ccgg/trends/mlo.html) | 1958 |
 | Global Methane | Globally averaged marine surface concentration, ppb | [NOAA GML](https://gml.noaa.gov/ccgg/trends_ch4/) | 1983 |
 | Global Sea Level | Change in global mean sea level, mm | [CU Sea Level Research Group](https://sealevel.colorado.edu/) | 1993 |
+| Ocean Surface pH | Area-weighted reconstructed surface pH, total scale | [Copernicus Marine / LSCE](https://data.marine.copernicus.eu/product/MULTIOBS_GLO_BGC_CARBON_SURFACE_MYNRT_015_008/description) | 1985 |
 
-Temperature values default to anomalies relative to 1951-1980; Local Temperature can also show actual monthly means. The NOAA land and ocean series are rebased from their original reference period. Sea ice **extent** measures ice-covered ocean area, while PIOMAS **volume** includes thickness and is model-estimated. CO2 and methane show concentrations, not emissions. Sea level shows change relative to 1993. Units and display scales differ across dataset types, so equal radii or colors do not imply comparable climate effects. See [Data Sources and Methods](docs/data-methods.md) for sources, processing, missing-month handling, and scientific limitations.
+Temperature values default to anomalies relative to 1951-1980; Local Temperature can also show actual monthly means. The NOAA land and ocean series are rebased from their original reference period. Sea ice **extent** measures ice-covered ocean area, while PIOMAS **volume** includes thickness and is model-estimated. CO2 and methane show concentrations, not emissions. Sea level shows change relative to 1993. Ocean pH is a reconstruction; lower values mean greater acidity, and recent estimates are provisional. Units and display scales differ across dataset types, so equal radii or colors do not imply comparable climate effects. See [Data Sources and Methods](docs/data-methods.md) for sources, processing, missing-month handling, and scientific limitations.
 
 ## Using the App
 

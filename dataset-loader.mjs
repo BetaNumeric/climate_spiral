@@ -82,20 +82,22 @@ export function createDatasetLoader({
             if (request.key === 'local') return await localData.refresh();
             const dataset = getDatasetByKey(request.key);
             onStatus('Fetching ' + dataset.title + '...');
-            const directUrl = typeof dataset.remoteUrl === 'function' ? dataset.remoteUrl() : dataset.remoteUrl;
-            for (const proxy of [false, true]) {
+            const directUrl = dataset.snapshotOnly ? dataset.localPath
+                : typeof dataset.remoteUrl === 'function' ? dataset.remoteUrl() : dataset.remoteUrl;
+            for (const proxy of dataset.snapshotOnly ? [false] : [false, true]) {
                 try {
                     const fetchSource = url => fetchText(
                         proxy ? 'https://corsproxy.io/?' + encodeURIComponent(url) : url, request, true);
                     const text = await (dataset.fetchRemote ? dataset.fetchRemote(fetchSource) : fetchSource(directUrl));
                     if (!isCurrent(request)) return;
-                    const source = dataset.sourceLabel + (proxy ? ' via proxy' : ' direct');
+                    const source = dataset.snapshotOnly ? 'Published Snapshot' : dataset.sourceLabel + (proxy ? ' via proxy' : ' direct');
                     if (!applyText(text, source, request.key)) throw new Error('No usable records');
                     if (isCurrent(request)) onStatus('Success!', SUCCESS_COLOR, 3000);
                     return;
                 } catch {
                     if (!isCurrent(request)) return;
-                    onStatus(proxy ? 'Fetch Failed' : 'Trying Proxy...', proxy ? ERROR_COLOR : undefined);
+                    const failed = proxy || dataset.snapshotOnly;
+                    onStatus(failed ? 'Fetch Failed' : 'Trying Proxy...', failed ? ERROR_COLOR : undefined);
                 }
             }
         } finally {

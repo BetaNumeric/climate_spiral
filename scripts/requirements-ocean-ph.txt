@@ -1,0 +1,6 @@
+numpy>=2.2,<3
+xarray>=2025.1,<2027
+zarr>=3.0,<4
+fsspec>=2025.1,<2027
+aiohttp>=3.11,<4
+requests>=2.32,<3

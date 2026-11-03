@@ -74,7 +74,8 @@ test('previous video markers retain dataset keys containing digits', () => {
 });
 
 test('README rotation excludes archived models and still accepts their previous video markers', () => {
-  assert.equal(SECONDARY_DATASETS.length, 8);
+  assert.equal(SECONDARY_DATASETS.length, 9);
+  assert.equal(chooseSecondaryDataset(null, 'oceanph').title, 'Ocean Surface pH');
   for (const key of ['arcticoras5', 'antarcticoras5', 'arcticgiomas', 'antarcticgiomas']) {
     assert.throws(() => chooseSecondaryDataset(null, key), /Unknown secondary dataset/);
     const previous = previousSecondaryDataset(`<!-- README_VIDEO_DATASET: ${key} -->`);
