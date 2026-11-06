@@ -24,7 +24,7 @@ With Node.js 20 or newer, run `npm ci` and `npm test` for the parser, updater, l
 
 Run `npm run check:geometry` against the local server to check welded joins, smoothing, line mode, unfolding and restoration on desktop and mobile. It saves screenshots and geometry hashes under `climate-tube-continuity` in the system temporary directory. An optional directory name passed after `--` keeps a separate baseline for before/after comparisons.
 
-`node scripts/check-line-settings.cjs` checks independent line/tube selection, visible width changes, tube sides and cap detail, every curve-sampling setting in both modes, smoothing toggle state, month retention, layout morphs, model exports, and recording locks on desktop and mobile. It also decodes a completed wide-line video with increased curve detail on desktop. Screenshots and samples are saved under `climate-line-settings` in the system temporary directory.
+`node scripts/check-line-settings.cjs` checks independent line/tube selection, visible width changes, tube sides and cap detail, every curve-sampling setting in both modes, smoothing toggle state, month retention, layout morphs, model exports, and recording locks on desktop and mobile. Year-spacing checks compare the very first rendered frame with a settled frame across palettes, layouts, playback states, and zero/positive spacing. The scene synchronizes wide-line instance buffers after visual updates, before Three.js uploads them, so a rebuild cannot briefly display the source spiral or Value palette. The test also decodes a completed wide-line video with increased curve detail on desktop. Screenshots and samples are saved under `climate-line-settings` in the system temporary directory.
 
 `node scripts/check-spiral-colors.cjs` verifies native coloring controls, geometry/timeline hashes, original-color restoration, monthly baseline/fallback and smoothing independence, uniform yearly colors and incomplete-year handling, every color legend, line morphs, dataset switching, recording locks, and decoded video gradients on desktop and mobile. Screenshots and video samples are saved under `climate-spiral-colors` in the system temporary directory.
 
@@ -39,6 +39,8 @@ For browser export checks, install dependencies with `npm ci`, install Chrome fo
 `node scripts/check-readme-camera-paths.mjs` checks the default two-second movements and one-second pauses, both README camera paths, stationary pauses, preview restoration, and nonblank frames on desktop and mobile. Screenshots are saved under `climate-readme-camera-paths` in the system temporary directory. It uses the local server at port 8000, or `README_VIDEO_BASE_URL` when set.
 
 The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame.
+
+`node scripts/check-setting-state.cjs` checks the appearance settings with a small sparse-history fixture on desktop and mobile. It verifies line position/color buffers before the first render, visible geometry, and retained layout, palette, playback state, and month. Interpolation changes retain the calendar date rather than a geometry index; removing an interpolated month selects the nearest available month without pausing playback.
 
 ## Data Updates
 

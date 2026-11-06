@@ -16,9 +16,11 @@ window.lineTest = {
     detail: CONFIG.curveSegments, sampling: pointsPerObservation,
     observations: timelineStops.length, capSides: endCapMesh.geometry.parameters.segments,
     vertices: spiralMesh.geometry.attributes.position.count, samples: generatedGeometryData.length,
-    date: generatedGeometryData[Math.floor(animationIndex / (CONFIG.radialSegments * 6))].decimalYear }),
+    date: generatedGeometryData[Math.floor(animationIndex / (CONFIG.radialSegments * 6))].decimalYear,
+    mix: layoutMix, colorMode: document.getElementById('colorMode').value,
+    spacing: CONFIG.heightPerYear, cameraOffset: activeCamera.position.clone().sub(controls.target).toArray() }),
   morph(mix) { layoutTransition = null; layoutMix = mix; applyLayout(); },
-  pixels() {
+  pixelData() {
     const hidden = scene.children.filter(object => !object.isLight && object !== spiralMesh && object !== spiralLine);
     const visible = hidden.map(object => object.visible);
     hidden.forEach(object => object.visible = false);
@@ -26,9 +28,30 @@ window.lineTest = {
     const canvas = document.createElement('canvas'); canvas.width = 640; canvas.height = 400;
     const ctx = canvas.getContext('2d'); ctx.drawImage(renderer.domElement, 0, 0, 640, 400);
     const pixels = ctx.getImageData(0, 0, 640, 400).data;
-    let lit = 0; for (let i = 0; i < pixels.length; i += 4) if (Math.max(pixels[i], pixels[i+1], pixels[i+2]) > 20) lit++;
     hidden.forEach((object, i) => object.visible = visible[i]);
+    return pixels;
+  },
+  pixels() {
+    const pixels = this.pixelData();
+    let lit = 0; for (let i = 0; i < pixels.length; i += 4) if (Math.max(pixels[i], pixels[i+1], pixels[i+2]) > 20) lit++;
     return lit;
+  },
+  spacingFrame(value, atEnd, playing) {
+    setPlaybackPosition(atEnd ? totalIndices : timelineStops[Math.floor(timelineStops.length / 2)]);
+    if (playing) toggleAnimation();
+    const before = this.state();
+    const slider = document.getElementById('spacingSlider');
+    slider.value = value; slider.dispatchEvent(new Event('input', { bubbles: true }));
+    const after = this.state();
+    // No manual line.sync(): the first render must already use the selected layout and palette.
+    const first = this.pixelData(), second = this.pixelData();
+    let changed = 0, lit = 0;
+    for (let i = 0; i < first.length; i += 4) {
+      if (Math.max(first[i], first[i+1], first[i+2]) > 20) lit++;
+      if (first[i] !== second[i] || first[i+1] !== second[i+1] || first[i+2] !== second[i+2]) changed++;
+    }
+    if (isAnimating) toggleAnimation();
+    return { before, after, changed, lit };
   },
   topology() {
     spiralLine.sync();
@@ -123,6 +146,34 @@ window.lineTest = {
         assert.ok(topology.finite && topology.error < 1e-6 && topology.visible > 0);
         assert.ok(await page.evaluate(() => lineTest.pixels()) > 100);
       }
+      for (const [tube, color, mix, atEnd, playing] of [
+        [false, 'year', 1, false, false], [false, 'single', 1, false, true],
+        [false, 'annual', 0.5, true, false], [false, 'seasonal', 0, false, true],
+        [false, 'value', 1, true, false], [false, 'year', 0, false, false],
+        [true, 'year', 1, false, false],
+      ]) {
+        await page.locator('#tubeToggle').setChecked(tube);
+        await page.selectOption('#colorMode', color);
+        await page.evaluate(mix => lineTest.morph(mix), mix);
+        for (const spacing of [0.12, 0.6, 0, 0.24]) {
+          const frame = await page.evaluate(({ spacing, atEnd, playing }) => lineTest.spacingFrame(spacing, atEnd, playing), { spacing, atEnd, playing });
+          const label = name + ': ' + [tube ? 'tube' : 'line', color, mix, atEnd, playing, spacing].join(', ');
+          for (const key of ['date', 'progress', 'observations', 'mix', 'colorMode', 'playing', 'tube']) {
+            assert.deepEqual(frame.after[key], frame.before[key], label + ': preserve ' + key);
+          }
+          frame.after.cameraOffset.forEach((value, axis) => {
+            assert.ok(Math.abs(value - frame.before.cameraOffset[axis]) < 1e-8, label + ': preserve camera orientation');
+          });
+          assert.equal(frame.after.spacing, spacing);
+          assert.equal(frame.changed, 0, label + ': the first frame must match the settled frame');
+          assert.ok(frame.lit > 100, label + ': line-only canvas must not be blank');
+        }
+        if (!tube && color === 'year' && mix === 1) {
+          await page.screenshot({ path: join(output, name + '-unwrapped-year-spacing.png') });
+        }
+      }
+      await page.uncheck('#tubeToggle'); await page.selectOption('#colorMode', 'value');
+      await page.evaluate(() => { lineTest.morph(0); lineTest.prepare(); });
       assert.equal(await page.locator('#settingsPanel').evaluate(element => element.scrollWidth <= element.clientWidth), true);
       await page.click('#exportSettings > summary');
       const download = page.waitForEvent('download'); await page.click('#exportBtn');
@@ -176,7 +227,7 @@ window.lineTest = {
       assert.equal((await page.evaluate(() => lineTest.state())).date, original.date);
       assert.deepEqual(errors, []);
       await context.close();
-      console.log(name + ': independent modes, visible width, tube sides, timeline retention, morphs, model export, and recording locks passed');
+      console.log(name + ': independent modes, visible width, tube sides, timeline retention, morphs, first-frame spacing/color retention, model export, and recording locks passed');
     }
     console.log('Screenshots: ' + output);
   } finally { await browser.close(); }

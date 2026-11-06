@@ -1308,7 +1308,16 @@
                 if(endCapMesh) endCapMesh.visible = visible;
             });
             
-            interpSwitch.addEventListener('change', updateDataVisualization);
+            interpSwitch.addEventListener('change', () => {
+                if (videoController.isBusy) return;
+                const stride = CONFIG.radialSegments * 6;
+                const date = generatedGeometryData?.[Math.floor(animationIndex / stride)]?.decimalYear;
+                if (!updateDataVisualization()) return;
+                // Interpolation changes the number of months, so preserve the date rather than its index.
+                const distance = index => Math.abs(generatedGeometryData[Math.floor(index / stride)].decimalYear - date);
+                const closest = timelineStops.reduce((best, stop) => distance(stop) < distance(best) ? stop : best, 0);
+                setPlaybackPosition(closest, false);
+            });
             smoothSpiralSwitch.addEventListener('change', () => updateLineSettings());
             datasetSelect.addEventListener('change', (e) => {
                 const nextDatasetKey = e.target.value;
@@ -2245,6 +2254,7 @@
                  if(endCapMesh) endCapMesh.visible = false;
                  // Show full geometry including baked end cap
                  spiralMesh.geometry.setDrawRange(0, Infinity);
+                 spiralLine?.sync();
                  return; 
             }
 
@@ -2312,6 +2322,8 @@
                     }
                 }
             }
+            // Wide-line instance buffers must be ready before the renderer uploads this frame.
+            spiralLine?.sync();
         }
         
         function updateAnimation() {
