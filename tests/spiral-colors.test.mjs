@@ -6,7 +6,7 @@ import { graphLayout } from '../spiral-layout.mjs';
 import { getDatasetDisplay } from '../dataset-display.mjs';
 import { DEFAULT_SINGLE_COLOR, YEAR_COLOR_STOPS, getYearColorFraction,
     ANOMALY_COLOR_STOPS, UNAVAILABLE_ANOMALY_COLOR, createSeasonalColorModel,
-    getSpiralColorDisplay, sampleColorStops, recolorSpiral } from '../spiral-colors.mjs';
+    getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral } from '../spiral-colors.mjs';
 import { readFile } from 'node:fs/promises';
 import { DATASET_CONFIG } from '../datasets.mjs';
 
@@ -99,32 +99,80 @@ test('yearly anomalies average twelve distinct monthly deviations and keep a fix
     assert.equal(duplicate.yearlyAnomalyAt(1991), model.yearlyAnomalyAt(1991));
 });
 
-test('yearly anomalies exclude incomplete years, nonfinite months, and gaps without substituting zero', () => {
+test('yearly anomalies omit nonfinite months and only leave absent years unavailable', () => {
     const data = seasonalYears(1991, 2020);
     data[0].anomalies.pop();
     data[1].anomalies[5] = NaN;
     data.push({ year: 2026, anomalies: [3], fractions: [0] });
     const model = createSeasonalColorModel(data);
-    assert.equal(model.annualCount, 28);
-    for (const year of [1990, 1991, 1992, 2021, 2026]) assert.equal(model.yearlyAnomalyAt(year + 0.5), null);
+    assert.equal(model.annualCount, 31);
+    for (const year of [1990, 2021]) assert.equal(model.yearlyAnomalyAt(year + 0.5), null);
+    for (const year of [1991, 1992]) {
+        assert.equal(model.yearlyMonthCountAt(year), 11);
+        assert.ok(Number.isFinite(model.yearlyAnomalyAt(year)));
+    }
     assert.equal(model.yearlyAnomalyAt(2020 + 11 / 12), model.yearlyAnomalyAt(2020));
     assert.equal(model.yearlyAnomalyAt(2021 - 1e-9), null);
-    assert.notEqual(model.anomalyAt(2026), null, 'An observed month still has a monthly anomaly');
+    assert.equal(model.yearlyAnomalyAt(2026), model.anomalyAt(2026), 'One recorded month supplies the yearly color');
 });
 
-test('yearly legends use only complete-year magnitudes and remain distinct from monthly legends', () => {
+test('partial-year colors average any number of available monthly deviations without inventing months', () => {
+    const baseline = seasonalYears(1991, 2020).map(entry => ({ ...entry,
+        anomalies: Array.from({ length: 12 }, (_, month) => month * 100) }));
+    for (let count = 0; count <= 12; count++) {
+        const data = [...baseline, { year: 2026,
+            anomalies: Array.from({ length: count }, (_, month) => month * 100 + month + 1) }];
+        const before = structuredClone(data), model = createSeasonalColorModel(data);
+        assert.equal(model.yearlyMonthCountAt(2026 + 11 / 12), count);
+        assert.equal(model.yearlyAnomalyAt(2026), count > 0 ? (count + 1) / 2 : null);
+        assert.equal(model.annualCount, 30 + Number(count > 0));
+        assert.equal(model.anomalyAt(2026 + count / 12), null, 'Unobserved months must remain missing');
+        assert.deepEqual(data, before);
+    }
+});
+
+test('partial-year colors use distinct real source months, including nonconsecutive coverage', () => {
+    const months = [0, 2, 4, 6, 8, 11];
+    const baseline = seasonalYears(1991, 2020).map(entry => ({ ...entry,
+        anomalies: Array.from({ length: 12 }, (_, month) => month * 100) }));
+    const partial = { year: 1990, anomalies: Array(6).fill(0),
+        displayValues: months.map(month => month * 100 + month + 1), fractions: months.map(month => month / 12) };
+    const data = [...baseline, partial, partial];
+    const model = createSeasonalColorModel(data);
+    assert.equal(model.yearlyMonthCountAt(1990), 6);
+    assert.equal(model.yearlyMonthCountAt(1989), 0);
+    assert.equal(model.yearlyAnomalyAt(1990), 37 / 6);
+    assert.equal(model.annualMagnitude, 37 / 6, 'Partial-year values must fit the annual color range');
+    assert.equal(model.anomalyAt(1990 + 1 / 12), null);
+    assert.deepEqual(getSpiralColorDisplay('annual', getDatasetDisplay('temperature'), { seasonal: model }).legendRange, [-6.2, 6.2]);
+});
+
+test('yearly coverage captions distinguish complete, partial and absent records', () => {
+    assert.equal(getYearlyCoverageCaption(0), 'No data \u00b7 0/12 months');
+    for (let count = 1; count < 12; count++) assert.equal(getYearlyCoverageCaption(count), `Partial year \u00b7 ${count}/12 months`);
+    assert.equal(getYearlyCoverageCaption(12), '');
+});
+
+test('yearly legends include single-month extremes and retain their own caption and statistics', () => {
     const data = seasonalYears(1991, 2020);
     data.push({ year: 2026, anomalies: [10000] });
     const seasonal = createSeasonalColorModel(data), measurement = getDatasetDisplay('temperature');
     const monthly = getSpiralColorDisplay('seasonal', measurement, { seasonal });
     const annual = getSpiralColorDisplay('annual', measurement, { seasonal });
-    assert.deepEqual(annual.legendRange, [-15, 15]);
+    assert.deepEqual(annual.legendRange, [-10000, 10000]);
     assert.ok(monthly.legendRange[1] > 9000);
     assert.match(annual.caption, /Yearly.*1991-2020 mean/);
     assert.deepEqual(annual.legendStops, monthly.legendStops);
     assert.equal(annual.showMarker, true);
+    const empty = createSeasonalColorModel([]);
+    assert.equal(empty.annualCount, 0);
+    assert.equal(empty.yearlyAnomalyAt(2000), null);
+    assert.equal(getSpiralColorDisplay('annual', measurement, { seasonal: empty }).showMarker, false);
     const incomplete = createSeasonalColorModel([{ year: 2000, anomalies: [0] }]);
-    assert.equal(getSpiralColorDisplay('annual', measurement, { seasonal: incomplete }).showMarker, false);
+    assert.equal(getSpiralColorDisplay('annual', measurement, { seasonal: incomplete }).showMarker, true);
+    assert.equal(incomplete.yearlyAnomalyAt(2000), 0);
+    const partial = createSeasonalColorModel([{ year: 2000, anomalies: Array(6).fill(10) }]);
+    assert.equal(getSpiralColorDisplay('annual', measurement, { seasonal: partial }).showMarker, true);
     const complete = createSeasonalColorModel([{ year: 2000, anomalies: Array(12).fill(10) }]);
     assert.equal(complete.yearlyAnomalyAt(2000), 0);
     const constant = getSpiralColorDisplay('annual', measurement, { seasonal: complete });
@@ -173,12 +221,14 @@ test('all bundled datasets have adequate seasonal reference coverage in real sou
                 const value = entry.displayValues?.[index] ?? entry.anomalies[index];
                 assert.ok(Math.abs(model.anomalyAt(entry.year + month / 12) - (value - model.means[month])) < 1e-8, key);
             }
-            if (new Set(entry.fractions).size === 12) {
+            const count = new Set(entry.fractions).size;
+            assert.equal(model.yearlyMonthCountAt(entry.year), count, key + ' coverage');
+            if (count > 0) {
                 const annual = entry.anomalies.reduce((sum, value, index) => sum
-                    + (entry.displayValues?.[index] ?? value) - model.means[Math.round(entry.fractions[index] * 12)], 0) / 12;
-                assert.ok(Math.abs(model.yearlyAnomalyAt(entry.year) - annual) < 1e-8, key + ' complete year');
+                    + (entry.displayValues?.[index] ?? value) - model.means[Math.round(entry.fractions[index] * 12)], 0) / count;
+                assert.ok(Math.abs(model.yearlyAnomalyAt(entry.year) - annual) < 1e-8, key + ' eligible year');
             } else {
-                assert.equal(model.yearlyAnomalyAt(entry.year), null, key + ' incomplete year');
+                assert.equal(model.yearlyAnomalyAt(entry.year), null, key + ' absent year');
             }
         }
     }

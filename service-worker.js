@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "climate-spiral-";
-const CACHE_NAME = `${CACHE_PREFIX}v69`;
+const CACHE_NAME = `${CACHE_PREFIX}v76`;
 const REMOTE_CACHE_ORIGINS = new Set(["https://cdn.jsdelivr.net"]);
 const DATA_ASSETS = [
   "./data/GLB.Ts+dSST.txt",
@@ -39,6 +39,7 @@ const CORE_ASSETS = [
   "./spiral-line.mjs",
   "./spiral-colors.mjs",
   "./video-export.mjs",
+  "./svg-export.mjs",
   "./video-mux.mjs",
   "./vendor/mediabunny/mediabunny.min.mjs",
   "./methane-data.mjs",

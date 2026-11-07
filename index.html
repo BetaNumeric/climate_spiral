@@ -280,6 +280,11 @@
                         <span>3D Model</span>
                         <button id="exportBtn" class="upload-label" type="button">Export .glb</button>
                     </div>
+                    <div class="setting-row">
+                        <span>2D Spiral</span>
+                        <button id="svgExportBtn" class="upload-label" type="button" title="Full-history top-down spiral with current colors and line width">Export .svg</button>
+                    </div>
+                    <p id="svgExportStatus" role="alert"></p>
                     <details id="videoAdvanced" class="settings-section">
                         <summary>Advanced video settings</summary>
                         <div class="settings-section-content">
@@ -423,9 +428,10 @@
         import { createSpiralGeometry } from './spiral-geometry.mjs';
         import { createSpiralLine } from './spiral-line.mjs';
         import { YEAR_COLOR_STOPS, ANOMALY_COLOR_STOPS, UNAVAILABLE_ANOMALY_COLOR, createSeasonalColorModel,
-            getYearColorFraction, getSpiralColorDisplay, sampleColorStops, recolorSpiral } from './spiral-colors.mjs';
+            getYearColorFraction, getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral } from './spiral-colors.mjs';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+        import { createSpiralSvg } from './svg-export.mjs';
         import { calendarYear, layoutEase, graphLayout, unrollPolar, unrollFrame,
             monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition } from './spiral-layout.mjs';
         import { VIDEO_EXPORT_FPS } from './video-export.mjs';
@@ -500,6 +506,7 @@
 
         let currentDatasetKey = "temperature";
         let currentDataText = '';
+        let visualizationDatasetKey = null;
         let generatedGeometryData = null; // Store data for animation mapping
         let seasonalColorModel = null;
         let pointsPerObservation = 1;
@@ -971,6 +978,56 @@
             );
         }
 
+        function exportSVG() {
+            if (!generatedGeometryData?.length || visualizationDatasetKey !== currentDatasetKey || videoController.isRecording) return;
+            const status = document.getElementById('svgExportStatus');
+            status.textContent = '';
+            try {
+                const dataset = getDatasetPresentation(currentDatasetKey, { snapshot: localSnapshot,
+                    temperatureDisplay: getLocalTemperatureMode() });
+                const last = generatedGeometryData.at(-1);
+                const year = calendarYear(last.decimalYear);
+                const endDate = MONTHS_NAMES[Math.min(11, Math.round((last.decimalYear - year) * 12))] + ' ' + year;
+                const location = currentDatasetKey === 'local' && localSnapshot
+                    ? localSnapshot.location.name.replaceAll('_', ' ') : '';
+                const legend = getActiveColorDisplay();
+                const mode = document.getElementById('colorMode').value;
+                const legendValue = mode === 'year' ? year : mode === 'seasonal' ? last.seasonalAnomaly
+                    : mode === 'annual' ? last.yearlyAnomaly : last.displayValue;
+                const legendPercent = legend.showMarker && !last.spiralMissing && Number.isFinite(legendValue)
+                    ? getLegendPercent(legendValue, legend) : null;
+                const coverageCaption = mode === 'annual'
+                    ? getYearlyCoverageCaption(seasonalColorModel.yearlyMonthCountAt(last.decimalYear)) : '';
+                if (coverageCaption) legend.caption = (legend.caption ?? '') + ' | ' + coverageCaption;
+                const svg = createSpiralSvg({
+                    samples: generatedGeometryData.map(point => ({ x: point.spiralPoint.x, y: point.spiralPoint.z,
+                        color: '#' + point.color.getHexString(), decimalYear: point.decimalYear, missing: point.spiralMissing })),
+                    preserveMonthlyGaps: Boolean(getActiveDataset().preserveMonthlyGaps),
+                    lineWidth: DEFAULT_TUBE_RADIUS * 2 * document.getElementById('thicknessSlider').valueAsNumber,
+                    monthRadius: getSpiralRadius(getOuterRingValue(currentMaxAnomaly)) + CONFIG.monthLabelOffset,
+                    months: MONTHS_NAMES,
+                    references: getReferenceValues().map(value => ({ radius: getSpiralRadius(value), label: formatReferenceValue(value, getActiveDisplay()) })),
+                    annotations: document.getElementById('helpersToggle').checked,
+                    title: location ? dataset.title + ' - ' + location : dataset.title,
+                    subtitle: startYear + '-' + year + ' | ' + dataset.metricLabel,
+                    description: dataset.description,
+                    sourceLabel: dataset.sourceLabel, sourceHref: dataset.sourceHref,
+                    legend, legendPercent, endYear: year, endDate, endValue: formatMetricValue(last.displayValue),
+                });
+                const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'climate-spiral-' + currentDatasetKey + '.svg';
+                link.hidden = true;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+            } catch (error) {
+                status.textContent = 'SVG export failed: ' + error.message;
+            }
+        }
+
         function getVideoFraming(layouts) {
             let radius = layouts.includes(1) ? monthlyLayout.radius : getYearLabelRadius(currentMaxAnomaly);
             if (Math.min(...layouts) < Math.max(...layouts)) {
@@ -1338,6 +1395,7 @@
                 }
                 document.getElementById('singleColorRow').hidden = colorMode.value !== 'single';
                 currentDatasetKey = nextDatasetKey;
+                document.getElementById('svgExportBtn').disabled = true;
                 if (nextDatasetKey === 'local') clearDataVisualization();
                 applyDatasetUI();
                 datasetLoader.loadBundled();
@@ -1360,6 +1418,7 @@
             
             fetchBtn.addEventListener('click', () => datasetLoader.fetchLatest());
             exportBtn.addEventListener('click', exportGLTF);
+            document.getElementById('svgExportBtn').addEventListener('click', exportSVG);
             videoController.setupUI();
 
             const timelineContainerEl = document.getElementById('timelineContainer');
@@ -1508,8 +1567,10 @@
                     const legendValue = mode === 'year' ? displayYear
                         : mode === 'seasonal' ? ptData.seasonalAnomaly
                         : mode === 'annual' ? ptData.yearlyAnomaly : currentDisplayValue;
+                    const coverageCaption = mode === 'annual'
+                        ? getYearlyCoverageCaption(seasonalColorModel.yearlyMonthCountAt(exactYear)) : '';
                     document.getElementById('legendCaption').textContent = (colorDisplay.caption ?? '')
-                        + (mode === 'annual' && !Number.isFinite(legendValue) ? ' \u00b7 Incomplete year' : '');
+                        + (coverageCaption ? ' \u00b7 ' + coverageCaption : '');
                     document.getElementById('legendMarker').hidden = Boolean(ptData.spiralMissing)
                         || !colorDisplay.showMarker || !Number.isFinite(legendValue);
                     if (colorDisplay.showMarker) {
@@ -1578,6 +1639,7 @@
         }
 
         function updatePlaybackButtonAvailability() {
+            document.getElementById('svgExportBtn').disabled = totalIndices <= 0 || visualizationDatasetKey !== currentDatasetKey || Boolean(videoController?.isRecording);
             document.getElementById('playBtn').disabled = totalIndices <= 0;
             document.getElementById('timelineSlider').disabled = totalIndices <= 0;
             const atStart = totalIndices <= 0 || animationIndex <= 0.5;
@@ -1677,6 +1739,7 @@
             tempGridGroup = tempLabelGroup = tempVerticalGroup = null;
             yearIndicatorMesh.visible = false;
             currentDataText = '';
+            visualizationDatasetKey = null;
             generatedGeometryData = null;
             seasonalColorModel = null;
             document.getElementById('legendCaption').textContent = '';
@@ -1727,6 +1790,7 @@
             // Normalize display radii, leaving values and labeled reference ticks in their source units.
             datasetRadiusScale = CONFIG.outerRadius / getUnscaledSpiralRadius(getOuterRingValue(currentMaxAnomaly));
             seasonalColorModel = createSeasonalColorModel(rawData);
+            visualizationDatasetKey = currentDatasetKey;
             createSpiral(processedData);
             generatedGeometryData?.forEach(point => {
                 point.seasonalAnomaly = point.spiralMissing ? null : seasonalColorModel.anomalyAt(point.decimalYear);

@@ -53,7 +53,7 @@ test('service worker caches the retained datasets and clears the previous app ca
     assert(requests.includes(origin + 'data/ocean-ph.json'));
     assert(requests.includes(origin + 'data/sea-ice-north.json'));
     assert(requests.includes(origin + 'data/sea-ice-south.json'));
-    for (const module of ['datasets.mjs', 'dataset-loader.mjs', 'gistemp-data.mjs']) {
+    for (const module of ['datasets.mjs', 'dataset-loader.mjs', 'gistemp-data.mjs', 'svg-export.mjs']) {
         assert(requests.includes(origin + module));
     }
     assert(requests.every(url => !/oras5|giomas|enso|Rnino34|\/archive\//i.test(url)));

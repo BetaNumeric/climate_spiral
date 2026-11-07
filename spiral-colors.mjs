@@ -4,6 +4,11 @@ export const DEFAULT_SINGLE_COLOR = '#d7e3ea';
 export const ANOMALY_COLOR_STOPS = [[0, '#2455d6'], [0.375, '#75abea'], [0.5, '#c7ccd2'],
     [0.625, '#ed917b'], [1, '#c9253a']];
 export const UNAVAILABLE_ANOMALY_COLOR = '#737980';
+export function getYearlyCoverageCaption(monthCount) {
+    if (monthCount === 12) return '';
+    return (monthCount > 0 ? 'Partial year' : 'No data')
+        + ' \u00b7 ' + monthCount + '/12 months';
+}
 
 export function createSeasonalColorModel(data) {
     const observations = new Map();
@@ -38,8 +43,7 @@ export function createSeasonalColorModel(data) {
         total.count++;
         annualTotals.set(year, total);
     }
-    const annualAnomalies = new Map([...annualTotals].filter(([, total]) => total.count === 12)
-        .map(([year, total]) => [year, total.sum / 12]));
+    const annualAnomalies = new Map([...annualTotals].map(([year, total]) => [year, total.sum / total.count]));
     let magnitude = 0;
     for (const anomaly of anomalies.values()) magnitude = Math.max(magnitude, Math.abs(anomaly));
     let annualMagnitude = 0;
@@ -54,6 +58,9 @@ export function createSeasonalColorModel(data) {
             : 'Yearly \u0394 unavailable',
         yearlyAnomalyAt(decimalYear) {
             return annualAnomalies.get(Math.floor(decimalYear + 1e-7)) ?? null;
+        },
+        yearlyMonthCountAt(decimalYear) {
+            return annualTotals.get(Math.floor(decimalYear + 1e-7))?.count ?? 0;
         },
         anomalyAt(decimalYear) {
             const month = decimalYear * 12, rounded = Math.round(month);

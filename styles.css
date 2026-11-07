@@ -673,13 +673,13 @@ input:checked + .slider-switch:before {
 #videoPreviewTime { min-width: 76px; text-align: center; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
 #videoCustomSize[hidden], #videoTransitionRow[hidden] { display: none; }
 #videoExportProgress { width: 100%; accent-color: #8b9be1; }
-#videoExportStatus {
+#videoExportStatus, #svgExportStatus {
     margin: 8px 0;
     font-size: 0.8rem;
     color: #aaa;
     overflow-wrap: anywhere;
 }
-#videoExportStatus:empty { display: none; }
+#videoExportStatus:empty, #svgExportStatus:empty { display: none; }
 
 .loading-text {
     color: #f39c12;

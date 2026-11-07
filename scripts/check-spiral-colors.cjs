@@ -43,6 +43,13 @@ window.colorTest = {
     ]);
     this.prepare();
   },
+  partialFixture(count) {
+    updateDataVisualization([2000, 2001].map((year, index) => ({ year,
+      anomalies: Array.from({ length: index ? count : 12 }, (_, month) => 0.1 + month / 100 + index / 10),
+      displayValues: Array.from({ length: index ? count : 12 }, (_, month) => 10 + month + index * 2),
+      fractions: Array.from({ length: index ? count : 12 }, (_, month) => month / 12) })));
+    setPlaybackPosition(timelineStops.at(-1));
+  },
   restore() { updateDataVisualization(); this.prepare(); },
   morph(mix) { layoutTransition = null; layoutMix = mix; applyLayout(); },
   pixelCount() {
@@ -160,10 +167,31 @@ window.colorTest = {
       assert.equal(fallback.marker, false);
       await page.selectOption('#colorMode', 'annual');
       const incomplete = await page.evaluate(() => colorTest.state());
-      assert.equal(incomplete.yearlyAnomaly, null);
-      assert.equal(incomplete.marker, true);
-      assert.match(incomplete.caption, /Incomplete year/);
-      assert.equal(incomplete.firstColor, '737980');
+      assert.equal(incomplete.yearlyAnomaly, 1.5);
+      assert.equal(incomplete.marker, false);
+      assert.match(incomplete.caption, /Partial year.*2\/12 months/);
+      assert.notEqual(incomplete.firstColor, '737980');
+      await page.evaluate(() => colorTest.partialFixture(9));
+      const partial = await page.evaluate(() => colorTest.state());
+      assert.equal(partial.yearlyAnomaly, 1);
+      assert.equal(partial.marker, false);
+      assert.match(partial.caption, /Partial year.*9\/12 months/);
+      assert.notEqual(partial.lastColor, '737980');
+      assert.ok((await page.evaluate(() => colorTest.annualYearColors())).every(([, count]) => count === 1));
+      await page.screenshot({ path: join(output, name + '-partial-year.png') });
+      for (const count of [1, 3, 5]) {
+        await page.evaluate(count => colorTest.partialFixture(count), count);
+        const sparse = await page.evaluate(() => colorTest.state());
+        assert.equal(sparse.yearlyAnomaly, 1);
+        assert.equal(sparse.marker, false);
+        assert.match(sparse.caption, new RegExp('Partial year.*' + count + '/12 months'));
+        assert.notEqual(sparse.lastColor, '737980');
+      }
+      await page.evaluate(() => colorTest.partialFixture(12));
+      const complete = await page.evaluate(() => colorTest.state());
+      assert.equal(complete.yearlyAnomaly, 1);
+      assert.equal(complete.marker, false);
+      assert.doesNotMatch(complete.caption, /Partial year|No data/);
       await page.selectOption('#colorMode', 'seasonal');
       await page.evaluate(() => colorTest.restore());
       await page.click('#settingsBtn'); await page.click('#infoBtn');
