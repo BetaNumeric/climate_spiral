@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "SWE00138226",
     "name": "BORAS",
@@ -153,6 +153,6 @@
     "SWE001382262023TAVG  149  E  113  E   56  E  591  E 1150  E 1695  E 1550  E 1572  E 1569  E  725  E  217  E  -20  E",
     "SWE001382262024TAVG -310  E  166  E  403  E  604  E 1525  E 1479  E 1636  E 1654  E 1374  E  927  E  365  E  248  E",
     "SWE001382262025TAVG   99  E  -52  E  450  E  882  E 1049  E 1443  E 1866  E 1575  E 1397  E  820  E  390  E  373  E",
-    "SWE001382262026TAVG -333  E -395  E  439  E  682  E 1110  E 1624  E 1756  E 1592  E-9999   -9999   -9999   -9999   "
+    "SWE001382262026TAVG -333  E -395  E  439  E  682  E 1110  E 1624  E 1756  E 1594  E-9999   -9999   -9999   -9999   "
   ]
 }

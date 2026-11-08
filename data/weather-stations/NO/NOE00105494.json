@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "NOE00105494",
     "name": "VARDOE",
@@ -103,6 +103,6 @@
     "NOE001054942023TAVG -152  E -229  E -436  E   93  E  621  E  754  E 1007  E 1231  E  914  E  178  E -106  E -404  E",
     "NOE001054942024TAVG -422  E -405  E -206  E -142  E  311  E  694  E 1241  E 1374  E 1119  E  507  E  174  E -229  E",
     "NOE001054942025TAVG -250  E  -91  E -164  E -174  E  461  E  763  E 1098  E 1174  E 1117  E  549  E   19  E -119  E",
-    "NOE001054942026TAVG -447  E -520  E   13  E  249  E  489  E  893  E 1193  E 1064  E-9999   -9999   -9999   -9999   "
+    "NOE001054942026TAVG -447  E -520  E   13  E  249  E  489  E  893  E 1193  E 1064  E  922  E-9999   -9999   -9999   "
   ]
 }

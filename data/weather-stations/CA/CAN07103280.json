@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN07103280",
     "name": "INUKJUAK",
@@ -98,6 +98,6 @@
     "CAN071032802023TAVG-2133  C-2849  C-2005  C -826  C   32  C  872  C 1183  C 1241  C  742  C  230  C -430  C -847  C",
     "CAN071032802024TAVG-1816  C-2268  C-1535  C -783  C  195  C  784  C 1044  C 1254  C  979  C  406  C -202  C -936  C",
     "CAN071032802025TAVG-1519  C-2158  C-1874  C -899  C -286  C  494  C  902  C 1083  C  697  C  378  C-9999   -9999   ",
-    "CAN071032802026TAVG-2182  C-2287  C-2654  C-1338  C  -49  C 1034  C 1283  C 1134  C  883  C-9999   -9999   -9999   "
+    "CAN071032802026TAVG-2182  C-2287  C-2654  C-1338  C  -49  C 1034  C 1283  C 1134  C  883  C   94  C-9999   -9999   "
   ]
 }

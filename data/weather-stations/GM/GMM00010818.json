@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GMM00010818",
     "name": "KLIPPENECK_CLIFF",
@@ -90,6 +90,6 @@
     "GMM000108182023TAVG    8  E  169  E  433  E  537  E 1151  E 1755  E 1776  E 1749  E 1686  E 1201  E  312  E  251  E",
     "GMM000108182024TAVG   55  E  470  E  586  E  786  E 1164  E 1507  E 1753  E 1912  E 1252  E 1044  E  373  E  112  E",
     "GMM000108182025TAVG  113  E   85  E  532  E  907  E 1104  E 1806  E 1647  E 1726  E 1251  E  753  E  400  E  242  E",
-    "GMM000108182026TAVG   -6  E  317  E  466  E  895  E 1300  E 1881  E 1999  E 2054  E 1610  P-9999   -9999   -9999   "
+    "GMM000108182026TAVG   -6  E  317  E  466  E  895  E 1300  E 1881  E 1999  E 2054  E 1607  E  965  P-9999   -9999   "
   ]
 }

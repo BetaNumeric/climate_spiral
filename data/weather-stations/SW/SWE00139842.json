@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "SWE00139842",
     "name": "LJUSNEDAL",
@@ -107,6 +107,6 @@
     "SWE001398422023TAVG -949  E -702  E -817  E  -73  E  478  E 1239  E 1265  E 1198  E  888  E  -35  E -992  E-1405  E",
     "SWE001398422024TAVG-1172  E -896  E -294  E  -39  E  993  E 1129  E 1255  E 1199  E  828  E  310  E-9999    -574  E",
     "SWE001398422025TAVG -836  E-9999    -101  E  280  E  582  E-9999    1500  E 1112  E  953  E  374  E -304  E -424  E",
-    "SWE001398422026TAVG-1473  E-1453  E  -87  E  155  E  620  E 1216  E 1176  E 1110  E-9999   -9999   -9999   -9999   "
+    "SWE001398422026TAVG-1473  E-1453  E  -87  E  155  E  620  E 1216  E 1176  E 1102  E  710  E-9999   -9999   -9999   "
   ]
 }

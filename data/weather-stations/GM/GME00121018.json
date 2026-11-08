@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GME00121018",
     "name": "ARKONA",
@@ -93,6 +93,6 @@
     "GME001210182023TAVG  398  E  292  E  477  E  631  E 1095  E 1686  E 1751  E 1759  E 1780  E 1156  E  573  E  362  E",
     "GME001210182024TAVG  209  E  475  E  551  E  822  E 1286  E 1552  E 1772  E 1908  E 1644  E 1155  E  638  E  504  E",
     "GME001210182025TAVG  253  E  199  E  530  E  882  E 1156  E 1607  E 1857  E 1795  E 1637  E 1078  E  598  E  478  E",
-    "GME001210182026TAVG  -24  E  -11  E  604  E  704  E 1237  E 1745  E 1819  E 1818  E 1570  P-9999   -9999   -9999   "
+    "GME001210182026TAVG  -24  E  -11  E  604  E  704  E 1237  E 1745  E 1819  E 1818  E 1569  E 1165  3-9999   -9999   "
   ]
 }

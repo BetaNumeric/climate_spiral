@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GM000010393",
     "name": "LINDENBERG",
@@ -131,6 +131,6 @@
     "GM0000103932023TAVG  371  E  293  E  581  E  789  E 1389  E 1924  E 1998  E 1970  E 1897  E 1217  E  532  E  334  E",
     "GM0000103932024TAVG   89  E  678  E  815  E 1135  E 1727  E 1817  E 2013  E 2112  E 1756  E 1149  E  487  E  313  E",
     "GM0000103932025TAVG  239  E  121  E  689  E 1175  E 1298  E 1905  E 1939  E 1880  E 1610  E 1018  E  533  E  270  E",
-    "GM0000103932026TAVG -231  E   74  E  760  E  896  E 1481  E 2027  E 1970  E 2001  E 1640  P-9999   -9999   -9999   "
+    "GM0000103932026TAVG -231  E   74  E  760  E  896  E 1481  E 2027  E 1970  E 2001  E 1641  E 1135  P-9999   -9999   "
   ]
 }

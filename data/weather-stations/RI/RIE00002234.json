@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "RIE00002234",
     "name": "NEGOTIN",
@@ -11,10 +11,10 @@
     "elevation": 42
   },
   "years": [
-    "RIE000022341949TAVG-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk 1985  k 1728  k 1136  k  712  k  377  k",
-    "RIE000022341950TAVG -483  k   74  k  723  k 1492  k 1805  k 2142  k 2475  k 2340  k 1980  k 1156  k  511  k  447  k",
-    "RIE000022341951TAVG  131  k  117  k  750  k 1325  k 1806  k 2142  k 2240  k 2339  k 1895  k  930  k  737  k  285  k",
-    "RIE000022341952TAVG  195  k  306  k  458  k 1311  k 1597  k 2074  k 2366  k 2467  k 1944  k 1225  k  588  k  188  k",
+    "RIE000022341949TAVG-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk-9999 Xk 1987  k 1730  k 1138  k  714  k  379  k",
+    "RIE000022341950TAVG -481  k   76  k  725  k 1494  k 1807  k 2144  k 2477  k 2342  k 1982  k 1158  k  513  k  449  k",
+    "RIE000022341951TAVG  133  k  119  k  752  k 1327  k 1808  k 2144  k 2242  k 2341  k 1897  k  932  k  739  k  287  k",
+    "RIE000022341952TAVG  197  k  308  k  460  k 1313  k 1599  k 2076  k 2368  k 2469  k 1946  k 1227  k  590  k  190  k",
     "RIE000022341953TAVG  118  k  168  k  554  k 1166  k 1580  k 2109  k 2288  k 2131  k 1806  k 1113  k  391  k  -23  k",
     "RIE000022341954TAVG -645  k -882  k  213  k  941  k 1648  k 2212  k 2178  k 2128  k 1926  k 1215  k  580  k  270  k",
     "RIE000022341955TAVG  -14  k  123  k  381  k  852  k 1719  k 2011  k 2225  k 2055  k 1771  k 1299  k  596  k  399  k",

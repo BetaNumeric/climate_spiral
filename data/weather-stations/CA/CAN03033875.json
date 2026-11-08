@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN03033875",
     "name": "LETHBRIDGE",
@@ -92,6 +92,6 @@
     "CAN030338752023TAVG -183  C -337  C -479  C  502  C 1433  C 1685  C 1936  C 1907  C 1411  C  546  C  266  C  191  C",
     "CAN030338752024TAVG -909  C -477  C -328  C  634  C 1032  C 1422  C 2047  C 1817  C 1546  C  912  C -297  C -155  C",
     "CAN030338752025TAVG -449  C-1235  C  191  C  630  C 1293  C 1539  C 1731  C 1834  C 1643  C  708  C   87  C -506  C",
-    "CAN030338752026TAVG -193  C -176  C  108  C  469  C 1309  C 1401  C 1972  C 1735  C 1325  C-9999   -9999   -9999   "
+    "CAN030338752026TAVG -193  C -176  C  108  C  469  C 1309  C 1401  C 1972  C 1735  C 1325  C  691  C-9999   -9999   "
   ]
 }

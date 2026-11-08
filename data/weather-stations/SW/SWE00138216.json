@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "SWE00138216",
     "name": "PRASTKULLA",
@@ -96,6 +96,6 @@
     "SWE001382162023TAVG  -13  E  -47  E   11  E  497  E 1089  E 1633  E 1513  E 1498  E 1478  E  600  E   41  E -161  E",
     "SWE001382162024TAVG -392  E   45  E  288  E  518  E 1411  E 1420  E 1609  E 1607  E 1334  E  832  E  259  E   73  E",
     "SWE001382162025TAVG  -23  E -120  E  389  E  815  E  987  E 1418  E 1761  E 1532  E 1330  E  711  E  260  E  239  E",
-    "SWE001382162026TAVG -439  E -499  E  442  E  629  E 1108  E 1616  E 1659  E-9999   -9999   -9999   -9999   -9999   "
+    "SWE001382162026TAVG -439  E -499  E  442  E  629  E 1108  E 1616  E 1659  E 1571  E 1259  E-9999   -9999   -9999   "
   ]
 }

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GME00121078",
     "name": "BAD_LIPPSPRINGE",
@@ -90,6 +90,6 @@
     "GME001210782023TAVG  411  E  422  E  616  E  784  E 1292  E 1849  E 1820  E 1793  E 1783  E 1291  E  614  E  519  E",
     "GME001210782024TAVG  221  E  753  E  825  E 1044  E 1536  E 1596  E 1856  E 1990  E 1580  E 1150  E  592  E  412  E",
     "GME001210782025TAVG  267  E  290  E  645  E 1058  E 1280  E 1764  E 1840  E 1787  E 1565  E 1036  E  656  E  436  E",
-    "GME001210782026TAVG   92  E  431  E  717  E  891  E 1343  E 1931  E 1862  E 1932  E 1640  P-9999   -9999   -9999   "
+    "GME001210782026TAVG   92  E  431  E  717  E  891  E 1343  E 1931  E 1862  E 1932  E 1641  E 1145  3-9999   -9999   "
   ]
 }

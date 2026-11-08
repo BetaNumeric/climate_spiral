@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "AM000037801",
     "name": "GAVAR",
@@ -130,6 +130,6 @@
     "AM0000378012023TAVG -679  S -590  S  389  S  668  S  972  S 1365  S 1580  S 1735  S 1291  S  830  S  517  S  -74  S",
     "AM0000378012024TAVG -271  S -243  S   37  S  862  S  880  S 1463  S 1603  S 1666  S 1295  S  626  S  135  S -329  S",
     "AM0000378012025TAVG -543  Z -763  Z   92  Z  630  Z 1067  Z 1260  Z 1655  Z 1772  Z 1156  Z  770  Z  292  Z -233  Z",
-    "AM0000378012026TAVG -644  Z   -1  Z-9999     417  Z  839  Z 1240  Z 1680  Z 1640  Z 1280  Z-9999   -9999   -9999   "
+    "AM0000378012026TAVG -644  Z   -1  Z-9999     417  Z  839  Z 1240  Z 1680  Z 1640  Z 1280  Z  869  Z-9999   -9999   "
   ]
 }

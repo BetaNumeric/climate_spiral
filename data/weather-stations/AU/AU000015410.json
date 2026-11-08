@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "AU000015410",
     "name": "SONNBLICK",
@@ -151,6 +151,6 @@
     "AU0000154102023TAVG-1093  E -985  E -823  E -863  E -216  E  235  E  481  E  445  E  440  E   -5  E -928  E -813  E",
     "AU0000154102024TAVG -989  E -730  E -782  E -437  E-9999   -9999     583  E  710  E  -54  E -102  E -546  E -889  E",
     "AU0000154102025TAVG -982  E -897  E -749  E -495  E -288  E  524  E  294  E  446  E  152  E -440  E -666  E -639  E",
-    "AU0000154102026TAVG-1153  E -939  E -955  E -498  E -197  E  389  E  490  E  680  E-9999   -9999   -9999   -9999   "
+    "AU0000154102026TAVG-1153  E -939  E -955  E -498  E -197  E  389  E  490  E  680  E  224  E-9999   -9999   -9999   "
   ]
 }

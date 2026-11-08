@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN01126510",
     "name": "PRINCETON_A",
@@ -101,6 +101,6 @@
     "CAN011265102023TAVG -283  C -256  C   91  C  604  C 1522  C 1637  C 1971  C 1978  C 1368  C  702  C   21  C -107  C",
     "CAN011265102024TAVG -638  C-9999   -9999   -9999   -9999   -9999   -9999   -9999    1491  C  751  C  113  C -232  C",
     "CAN011265102025TAVG -518  C -539  C  426  C  809  C 1264  C 1629  C 2033  C 2031  C 1752  C  625  C  225  C -184  C",
-    "CAN011265102026TAVG -258  C   54  C  390  C  826  C 1310  C 1523  C 1982  C 1887  C 1324  C-9999   -9999   -9999   "
+    "CAN011265102026TAVG -258  C   54  C  390  C  826  C 1310  C 1523  C 1982  C 1887  C 1324  C  796  C-9999   -9999   "
   ]
 }

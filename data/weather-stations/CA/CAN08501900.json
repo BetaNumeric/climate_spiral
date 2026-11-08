@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN08501900",
     "name": "GOOSE_A",
@@ -96,6 +96,6 @@
     "CAN085019002023TAVG-1520  C-1983  C -513  C   15  C  527  C 1194  C 2057  C 1550  C 1181  C  684  C -400  C -651  C",
     "CAN085019002024TAVG-1301  C-1058  C -452  C  199  C  604  C 1504  C 1800  C 1694  C 1213  C  430  C  -45  C -832  C",
     "CAN085019002025TAVG -912  C-1342  C -962  C  -58  C  511  C 1186  C 1726  C 1578  C 1075  C  759  C  -68  C-1255  C",
-    "CAN085019002026TAVG-1434  C -818  C-1447  C -395  C  720  C 1217  C 1842  C 1781  C 1080  C-9999   -9999   -9999   "
+    "CAN085019002026TAVG-1434  C -818  C-1447  C -395  C  720  C 1217  C 1842  C 1781  C 1080  C  374  C-9999   -9999   "
   ]
 }

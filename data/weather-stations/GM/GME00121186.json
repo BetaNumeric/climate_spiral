@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GME00121186",
     "name": "WEIDEN",
@@ -90,6 +90,6 @@
     "GME001211862023TAVG  229  E  150  E  541  E  700  E 1319  E 1814  E 1941  E 1889  E 1681  E 1120  E  454  E  242  E",
     "GME001211862024TAVG   29  E  603  E  735  E  984  E 1425  E 1756  E 1916  E 2032  E 1526  E 1020  E  378  E  101  E",
     "GME001211862025TAVG   91  E   -2  E  619  E 1042  E 1188  E 1873  E 1816  E 1793  E 1424  E  858  E  302  E  133  E",
-    "GME001211862026TAVG -245  E  278  E  580  E  881  E 1420  E 1944  E 1943  E 2081  E 1495  P-9999   -9999   -9999   "
+    "GME001211862026TAVG -245  E  278  E  580  E  881  E 1420  E 1944  E 1943  E 2081  E 1494  E  960  P-9999   -9999   "
   ]
 }

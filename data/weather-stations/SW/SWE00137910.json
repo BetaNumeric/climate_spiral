@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "SWE00137910",
     "name": "HOBURG",
@@ -113,6 +113,6 @@
     "SWE001379102023TAVG  286  E  202  E  200  E  611  E 1100  E 1679  E 1737  E 1715  E 1645  E  900  E  423  E  186  E",
     "SWE001379102024TAVG  -27  E  182  E  314  E  514  E 1329  E 1561  E 1767  E 1872  E 1628  E 1120  E  603  E  393  E",
     "SWE001379102025TAVG  268  E  111  E  405  E  738  E  903  E 1444  E 1928  E 1734  E 1603  E 1065  E  682  E  511  E",
-    "SWE001379102026TAVG  -55  E -170  E  388  E  593  E 1086  E 1695  E 1740  E 1780  E-9999   -9999   -9999   -9999   "
+    "SWE001379102026TAVG  -55  E -170  E  388  E  593  E 1086  E 1695  E 1740  E 1780  E 1501  E-9999   -9999   -9999   "
   ]
 }

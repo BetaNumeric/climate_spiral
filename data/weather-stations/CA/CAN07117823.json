@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN07117823",
     "name": "SCHEFFERVILLE",
@@ -75,6 +75,6 @@
     "CAN071178232023TAVG-2168  C-2492  C-1086  C -323  C  373  C 1144  C 1688  C 1284  C  954  C  380  C -807  C-1259  C",
     "CAN071178232024TAVG-1914  C-1678  C -857  C -378  C  452  C 1283  C 1432  C 1443  C  968  C  220  C -393  C-1277  C",
     "CAN071178232025TAVG-1579  C-2043  C-1703  C -522  C  243  C  899  C 1352  C-9999   -9999   -9999    -633  C-1869  C",
-    "CAN071178232026TAVG-2289  C-1811  C-2159  C -872  C  357  C 1102  C 1433  C 1366  C  875  C-9999   -9999   -9999   "
+    "CAN071178232026TAVG-2289  C-1811  C-2159  C -872  C  357  C 1102  C 1433  C 1366  C  875  C   50  C-9999   -9999   "
   ]
 }

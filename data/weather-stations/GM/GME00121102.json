@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GME00121102",
     "name": "NORDERNEY",
@@ -137,6 +137,6 @@
     "GME001211022023TAVG  544  E  554  E  641  E  823  E 1183  E 1697  E 1793  E 1819  E 1839  E 1255  E  794  E  565  E",
     "GME001211022024TAVG  394  E  682  E  788  E 1016  E 1560  E 1550  E 1773  E 1934  E 1664  E 1239  E  752  E  600  E",
     "GME001211022025TAVG  372  E  293  E  691  E  971  E 1270  E 1685  E 1878  E 1835  E 1617  E 1209  E  761  E  584  E",
-    "GME001211022026TAVG   86  E  176  E  715  E  921  E 1287  E 1748  E 1822  E 1890  E 1700  P-9999   -9999   -9999   "
+    "GME001211022026TAVG   86  E  176  E  715  E  921  E 1287  E 1748  E 1822  E 1890  E 1699  E 1265  3-9999   -9999   "
   ]
 }

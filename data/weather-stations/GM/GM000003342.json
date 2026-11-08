@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "GM000003342",
     "name": "POTSDAM",
@@ -144,6 +144,6 @@
     "GM0000033422023TAVG  418  E  337  E  623  E  847  E 1420  E 1967  E 2000  E 1998  E 1906  E 1216  E  546  E  343  E",
     "GM0000033422024TAVG  126  E  688  E  837  E 1190  E 1746  E 1828  E 2015  E 2151  E 1765  E 1144  E  508  E  355  E",
     "GM0000033422025TAVG  245  E  177  E  747  E 1231  E 1368  E 1962  E 1976  E 1922  E 1608  E 1011  E  522  E  296  E",
-    "GM0000033422026TAVG -220  E  103  E  769  E  930  E 1492  E 2041  E 1989  E 2012  E 1670  P-9999   -9999   -9999   "
+    "GM0000033422026TAVG -220  E  103  E  769  E  930  E 1492  E 2041  E 1989  E 2012  E 1668  E 1135  3-9999   -9999   "
   ]
 }

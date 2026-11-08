@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "SWE00138618",
     "name": "LANDSORT",
@@ -111,6 +111,6 @@
     "SWE001386182023TAVG  213  E  127  E  113  E  417  E 1025  E 1656  E 1664  E 1583  E 1562  E  769  E  310  E  -24  E",
     "SWE001386182024TAVG -196  E   82  E  199  E  381  E 1054  E 1513  E 1696  E 1757  E 1485  E 1081  E  490  E  319  E",
     "SWE001386182025TAVG  154  E   29  E  350  E  662  E  933  E 1448  E 1840  E 1694  E 1576  E 1028  E  565  E  458  E",
-    "SWE001386182026TAVG  -23  E -252  E  357  E  597  E 1062  E 1647  E 1815  E 1781  E-9999   -9999   -9999   -9999   "
+    "SWE001386182026TAVG  -23  E -252  E  357  E  597  E 1062  E 1647  E 1815  E 1781  E 1484  E-9999   -9999   -9999   "
   ]
 }

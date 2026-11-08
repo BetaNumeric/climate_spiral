@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "NOE00109631",
     "name": "LINDESNES_FYR",
@@ -97,6 +97,6 @@
     "NOE001096312023TAVG  410  E  536  E  286  E  674  E  948  E 1516  E 1435  E 1533  E 1536  E  870  E  378  E  254  E",
     "NOE001096312024TAVG  121  E  255  E  434  E  635  E 1418  E 1317  E 1518  E 1607  E 1468  E 1138  E  723  E  595  E",
     "NOE001096312025TAVG  363  E  284  E  517  E  810  E 1077  E 1305  E 1803  E 1610  E 1447  E 1149  E  756  E  698  E",
-    "NOE001096312026TAVG  -30  E  -43  E  448  E  666  E  934  E 1399  E 1608  E 1537  E-9999   -9999   -9999   -9999   "
+    "NOE001096312026TAVG  -30  E  -43  E  448  E  666  E  934  E 1399  E 1608  E 1537  E 1418  E-9999   -9999   -9999   "
   ]
 }

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "NOE00105483",
     "name": "OKSOEY_FYR",
@@ -151,6 +151,6 @@
     "NOE001054832023TAVG  325  E  491  E  256  E  646  E 1099  E 1623  E 1502  E 1590  E 1535  E  865  E  344  E  194  E",
     "NOE001054832024TAVG   -4  E  220  E  420  E  628  E 1401  E 1430  E 1608  E 1648  E 1448  E 1110  E  663  E  560  E",
     "NOE001054832025TAVG  258  E  199  E  524  E  852  E 1146  E 1416  E 1880  E 1662  E 1458  E 1127  E  694  E  626  E",
-    "NOE001054832026TAVG  -54  E -108  E  436  E  735  E 1034  E 1498  E 1779  E 1615  E-9999   -9999   -9999   -9999   "
+    "NOE001054832026TAVG  -54  E -108  E  436  E  735  E 1034  E 1498  E 1779  E 1615  E 1434  E-9999   -9999   -9999   "
   ]
 }

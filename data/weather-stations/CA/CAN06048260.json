@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN06048260",
     "name": "THUNDER_BAY",
@@ -81,6 +81,6 @@
     "CAN060482602023TAVG -968  C-1147  C -612  C   77  C  989  C 1609  C 1742  C 1660  C 1503  C  618  C -121  C -184  C",
     "CAN060482602024TAVG-1004  C -643  C -243  C  349  C 1034  C 1433  C 1874  C 1826  C 1571  C  747  C  138  C -712  C",
     "CAN060482602025TAVG-1340  C-1268  C -418  C  121  C  937  C 1489  C 1829  C 1746  C 1422  C  841  C-9999   -9999   ",
-    "CAN060482602026TAVG-9999   -9999   -9999     132  C  761  C 1484  C 2027  C 1720  C 1414  C-9999   -9999   -9999   "
+    "CAN060482602026TAVG-9999   -9999   -9999     132  C  761  C 1484  C 2027  C 1720  C 1414  C  782  C-9999   -9999   "
   ]
 }

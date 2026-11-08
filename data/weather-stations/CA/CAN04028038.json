@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN04028038",
     "name": "SWIFT_CURRENT",
@@ -83,6 +83,6 @@
     "CAN040280382023TAVG -760  C -855  C -939  C  149  C 1454  C 1776  C 1862  C 1929  C 1545  C  431  C  -44  C  -31  C",
     "CAN040280382024TAVG-1209  C -583  C -498  C  647  C 1085  C 1399  C 2091  C 1944  C 1645  C  828  C -438  C -761  C",
     "CAN040280382025TAVG-1071  C-1671  C  -63  C  605  C 1331  C 1559  C 1791  C 1888  C 1649  C  691  C  -60  C-1044  C",
-    "CAN040280382026TAVG -899  C -398  C -296  C  249  C 1311  C 1422  C 2054  C 1827  C 1431  C-9999   -9999   -9999   "
+    "CAN040280382026TAVG -899  C -398  C -296  C  249  C 1311  C 1422  C 2054  C 1827  C 1431  C  674  C-9999   -9999   "
   ]
 }

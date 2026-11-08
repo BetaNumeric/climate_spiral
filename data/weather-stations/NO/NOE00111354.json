@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "NOE00111354",
     "name": "MAKKAUR_FYR",
@@ -86,6 +86,6 @@
     "NOE001113542023TAVG -146  E -176  E -467  E  111  E  645  E  796  E 1044  E 1344  E  956  E  188  E  -85  E -445  E",
     "NOE001113542024TAVG -328  E -411  E -224  E -178  E  350  E  737  E 1387  E 1603  E 1211  E  514  E  235  E -225  E",
     "NOE001113542025TAVG -212  E  -68  E -186  E -158  E  476  E  787  E 1155  E 1257  E 1228  E  545  E   10  E  -97  E",
-    "NOE001113542026TAVG -446  E -493  E   30  E  239  E  532  E  982  E 1284  E 1132  E-9999   -9999   -9999   -9999   "
+    "NOE001113542026TAVG -446  E -493  E   30  E  239  E  532  E  982  E 1284  E 1132  E  945  E-9999   -9999   -9999   "
   ]
 }

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "NOAA GHCN-Monthly v4",
   "adjustment": "QCF",
-  "release": "ghcnm.tavg.v4.0.1.20261007.qcf",
+  "release": "ghcnm.tavg.v4.0.1.20261107.qcf",
   "station": {
     "id": "CAN08205700",
     "name": "SYDNEY_A",
@@ -87,6 +87,6 @@
     "CAN082057002013TAVG -543  C -475  C -131  C  248  C  948  C 1418  C 1930  C 1849  C 1483  C  900  C  357  C -361  C",
     "CAN082057002014TAVG -502  C -660  C -525  C  205  C  673  C 1286  C 2043  C-9999   -9999   -9999   -9999   -9999   ",
     "CAN082057002025TAVG -279  Z -504  Z   53  Z  358  Z  898  Z 1518  Z 1987  Z 1868  Z 1520  Z 1089  Z  437  Z -143  Z",
-    "CAN082057002026TAVG -417  Z -315  Z -157  Z  202  Z  841  Z 1233  Z 1814  Z 1962  Z 1358  Z-9999   -9999   -9999   "
+    "CAN082057002026TAVG -417  Z -315  Z -157  Z  202  Z  841  Z 1233  Z 1814  Z 1962  Z 1358  Z  899  Z-9999   -9999   "
   ]
 }
