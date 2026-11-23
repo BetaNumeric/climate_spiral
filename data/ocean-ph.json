@@ -23,7 +23,7 @@
       "gridSha256": "02b8653ff8a32919f396511d6d5e859b1101c4f977a494e0b151635adedb96fb"
     }
   },
-  "through": "2026-09",
+  "through": "2026-10",
   "records": [
     {
       "month": "1985-01",
@@ -3531,6 +3531,13 @@
       "validAreaKm2": 349703861.4,
       "product": "nrt",
       "etag": "\"199990a0b08dd4d946409cd07fb0509b\""
+    },
+    {
+      "month": "2026-10",
+      "ph": 8.041402,
+      "validAreaKm2": 349701846.2,
+      "product": "nrt",
+      "etag": "\"01d97b893e074afc5288cbb2774ecd1c\""
     }
   ]
 }
