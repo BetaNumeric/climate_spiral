@@ -90,20 +90,11 @@ export function getVideoRecorderOptions(mimeType, width, height) {
   };
 }
 
-export function getVideoFramePlan(observationCount, monthsPerFrame, turnSeconds = 0, pathSteps = 1) {
+export function getVideoFramePlan(observationCount, monthsPerFrame, steps) {
   if (!Number.isInteger(observationCount) || observationCount < 2) throw new Error('No monthly data is available to export.');
   if (!Number.isInteger(monthsPerFrame) || monthsPerFrame < 1 || monthsPerFrame > 12) {
     throw new Error('Choose between 1 and 12 months per frame.');
   }
-  if (!Number.isFinite(turnSeconds) || turnSeconds < 0 || turnSeconds > 10) {
-    throw new Error('Transition must be between 0 and 10 seconds.');
-  }
-  if (Number.isInteger(pathSteps) && (pathSteps < 0 || pathSteps > MAX_VIDEO_PATH_STEPS)) {
-    throw new Error(`Choose up to ${MAX_VIDEO_PATH_STEPS} valid camera steps.`);
-  }
-  const steps = Number.isInteger(pathSteps)
-    ? Array.from({ length: pathSteps }, () => ({ type: 'view', seconds: turnSeconds }))
-    : pathSteps;
   if (!Array.isArray(steps) || steps.length > MAX_VIDEO_PATH_STEPS || steps.some(step =>
     !['view', 'pause'].includes(step?.type) || !Number.isFinite(step.seconds)
     || step.seconds < 0 || step.seconds > (step.type === 'pause' ? 30 : 10))) {
@@ -111,13 +102,11 @@ export function getVideoFramePlan(observationCount, monthsPerFrame, turnSeconds 
   }
   const startHoldFrames = Math.round(0.25 * VIDEO_EXPORT_FPS);
   const drawSteps = Math.ceil((observationCount - 1) / monthsPerFrame);
-  const framesPerMove = Math.round(turnSeconds * VIDEO_EXPORT_FPS);
   const stepFrames = steps.map(step => Math.round(step.seconds * VIDEO_EXPORT_FPS));
   const turnFrames = stepFrames.reduce((total, frames) => total + frames, 0);
   const endHoldFrames = Math.round(0.5 * VIDEO_EXPORT_FPS);
   return {
-    observationCount, monthsPerFrame, startHoldFrames, drawSteps, framesPerMove,
-    moveCount: steps.length, stepFrames, stepTypes: steps.map(step => step.type), turnFrames, endHoldFrames,
+    observationCount, monthsPerFrame, startHoldFrames, drawSteps, stepFrames, turnFrames, endHoldFrames,
     totalFrames: startHoldFrames + drawSteps + turnFrames + endHoldFrames,
   };
 }

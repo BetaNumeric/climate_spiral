@@ -190,11 +190,6 @@ img {
     pointer-events: none;
 }
 
-/* Hidden via Settings */
-#timelineContainer.hidden-setting {
-    display: none !important;
-}
-
 #bottomWrapper.is-playing .paused-only {
     display: none;
 }

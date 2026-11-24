@@ -10,9 +10,9 @@ const hooks = `
 window.gestureTest = {
   ready: () => Boolean(spiralMesh && controls),
   prepare() {
-    // Keep native touch timing reliable when Chrome renders through SwiftShader.
+    // A smaller real scene keeps native touch timing reliable under software rendering.
     document.getElementById('smoothSpiralToggle').checked = false;
-    updateDataVisualization();
+    updateDataVisualization(parseDatasetData(currentDataText, currentDatasetKey).slice(-40));
     renderer.setPixelRatio(0.5);
     renderer.setSize(window.innerWidth, window.innerHeight);
     if (isAnimating) toggleAnimation();
@@ -68,6 +68,14 @@ async function pinch(page, session, viewport, count, factor) {
 
 async function settle(page, mix) {
   await page.waitForFunction(mix => !gestureTest.state().moving && gestureTest.state().mix === mix, mix);
+}
+
+async function doublePrimary(page, viewport, mobile) {
+  const x = viewport.width / 2, y = viewport.height / 2;
+  if (!mobile) return page.mouse.dblclick(x, y);
+  await page.touchscreen.tap(x, y);
+  await page.waitForTimeout(70);
+  await page.touchscreen.tap(x, y);
 }
 
 async function doubleTwoFingerTap(page, session, viewport, reverse = false) {
@@ -167,17 +175,22 @@ async function cameraView(page, polar, azimuth = 0) {
         const zoomed = await state(page);
         assert.equal(zoomed.mix, 0);
         assert.ok(zoomed.zoom > before.zoom * 1.2, 'Two-finger camera zoom must still work');
+        await doublePrimary(page, viewport, mobile);
+        await page.waitForFunction(() => gestureTest.state().zoom === 1);
+        await cameraView(page, 0);
         const start = touchPoints(viewport, 1);
         await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: start });
         await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: start.map(point =>
           ({ ...point, x: point.x + 50, y: point.y - 60 })) });
         await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
         assert.ok((await state(page)).polar > 0.1, 'One-finger rotation must still work');
-        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
-        await page.waitForTimeout(70);
-        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
-        await page.waitForFunction(() => !gestureTest.state().cameraMoving && gestureTest.state().polar < 0.001);
-        assert.equal((await state(page)).zoom, 1, 'Double-tap reset must still work after multi-touch');
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, 0);
+        assert.equal((await state(page)).zoom, 1, 'Double-tap must still return to top from a tilted view');
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, Math.PI / 2);
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, 0);
 
         for (const [index, azimuth] of [0, Math.PI / 2, Math.PI, -Math.PI / 2, 0].entries()) {
           await doubleTwoFingerTap(page, session, viewport, index % 2 === 0);
@@ -186,9 +199,7 @@ async function cameraView(page, polar, azimuth = 0) {
         }
         assert.ok(await page.evaluate(() => gestureTest.pixels()) > 300);
         await page.screenshot({ path: join(output, name + '-two-finger-front.png') });
-        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
-        await page.waitForTimeout(70);
-        await page.touchscreen.tap(viewport.width / 2, viewport.height / 2);
+        await doublePrimary(page, viewport, mobile);
         await cameraView(page, 0);
 
         await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -221,6 +232,15 @@ async function cameraView(page, polar, azimuth = 0) {
         assert.equal(await settings.isVisible(), true);
         assert.ok(await page.evaluate(() => gestureTest.pixels()) > 300);
         await page.screenshot({ path: join(output, name + '-settings.png') });
+        await page.click('#settingsBtn');
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, Math.PI / 2);
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, 0);
+        await page.keyboard.press('3');
+        await cameraView(page, Math.PI / 2, Math.PI / 2);
+        await doublePrimary(page, viewport, mobile);
+        await cameraView(page, 0);
       }
       assert.deepEqual(errors, []);
       await context.close();

@@ -26,7 +26,7 @@ test('README videos use both requested camera paths, randomly swapping their slo
     assert.equal(path.start, 'spiral-top');
     assert.deepEqual(path.steps.map(step => step.type), ['pause', 'view', 'pause', 'view', 'pause', 'view', 'pause']);
     assert.ok(path.steps.filter(step => step.type === 'pause').every(step => step.seconds === DEFAULT_VIDEO_PAUSE_SECONDS));
-    const plan = getVideoFramePlan(120, 7, DEFAULT_VIDEO_MOVE_SECONDS,
+    const plan = getVideoFramePlan(120, 7,
       path.steps.map(step => ({ type: step.type, seconds: step.seconds ?? DEFAULT_VIDEO_MOVE_SECONDS })));
     assert.deepEqual(plan.stepFrames, [30, 60, 30, 60, 30, 60, 30]);
     assert.equal(plan.turnFrames, 300);

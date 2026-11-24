@@ -35,7 +35,7 @@ export const DATASET_CONFIG = {
         sourceHref: "https://data.giss.nasa.gov/gistemp/",
         supportsInterpolation: true,
         parse: parseGISSData,
-        description: "Global average surface temperature anomalies combining land air temperatures and ocean surface temperatures, relative to 1951-1980. Source: NASA GISTEMP. Each coil represents a year."
+        description: "Global surface temperature anomalies combining land air and ocean surface temperatures, relative to 1951-1980."
     },
     ocean: {
         id: "ocean",
@@ -48,7 +48,7 @@ export const DATASET_CONFIG = {
         supportsInterpolation: false,
         fileExtension: ".json",
         parse: text => parseTemperatureData(text, 'ocean'),
-        description: "Global ocean surface temperature anomalies from 1850, rebased to 1951-1980. Source: NOAA Climate at a Glance (1901-2000 baseline). Each coil represents a year."
+        description: "Global ocean surface temperature anomalies from 1850, rebased from 1901-2000 to 1951-1980."
     },
     land: {
         id: "land",
@@ -61,7 +61,7 @@ export const DATASET_CONFIG = {
         supportsInterpolation: false,
         fileExtension: ".json",
         parse: text => parseTemperatureData(text, 'land'),
-        description: "Global land-only surface air temperature anomalies from 1850, rebased to 1951-1980. Source: NOAA Climate at a Glance (1901-2000 baseline). Each coil represents a year."
+        description: "Global land-only surface air temperature anomalies from 1850, rebased from 1901-2000 to 1951-1980."
     },
     arctic: {
         id: "arctic",
@@ -76,7 +76,7 @@ export const DATASET_CONFIG = {
         kind: "sea-ice",
         fileExtension: ".json",
         parse: text => parseSeaIceData(text, 'north'),
-        description: "Arctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
+        description: "Arctic monthly sea ice extent since November 1978, in million km\u00b2 (Sea Ice Index v4). Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
     },
     antarctic: {
         id: "antarctic",
@@ -91,7 +91,7 @@ export const DATASET_CONFIG = {
         kind: "sea-ice",
         fileExtension: ".json",
         parse: text => parseSeaIceData(text, 'south'),
-        description: "Antarctic monthly sea ice extent since November 1978, in million km\u00b2. NOAA/NSIDC Sea Ice Index v4. Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
+        description: "Antarctic monthly sea ice extent since November 1978, in million km\u00b2 (Sea Ice Index v4). Extent counts ocean covered by at least 15% sea ice. Gaps mark missing observations."
     },
     arcticvolume: {
         id: "arcticvolume",
@@ -128,7 +128,7 @@ export const DATASET_CONFIG = {
         sourceLabel: 'Copernicus Marine / LSCE', sourceHref: OCEAN_PH_SOURCE_URL,
         supportsInterpolation: false, preserveMonthlyGaps: true, fileExtension: '.json',
         parse: parseOceanPhData,
-        description: 'Area-weighted monthly surface-ocean pH since 1985, on the total scale. Observation-based carbonate-system reconstructions, not direct pH measurements everywhere. Lower pH means greater acidity. Recent near-real-time estimates are provisional; reprocessed history replaces them when available. The radius uses a 7.95 display offset, not a climate baseline. Source: Copernicus Marine / LSCE.'
+        description: 'Area-weighted monthly surface-ocean pH since 1985, on the total scale. Observation-based carbonate-system reconstructions, not direct pH measurements everywhere. Lower pH means greater acidity. Recent near-real-time estimates are provisional; reprocessed history replaces them when available. The radius uses a 7.95 display offset, not a climate baseline.'
     },
     co2: {
         id: "co2",
@@ -140,7 +140,7 @@ export const DATASET_CONFIG = {
         sourceHref: "https://gml.noaa.gov/ccgg/trends/mlo.html",
         supportsInterpolation: false,
         parse: parseCO2MonthlyData,
-        description: "Visualizing monthly atmospheric CO2 at Mauna Loa. Each coil represents one year."
+        description: "Monthly atmospheric CO2 concentrations at Mauna Loa, in parts per million."
     },
     methane: {
         id: "methane",
@@ -153,7 +153,7 @@ export const DATASET_CONFIG = {
         supportsInterpolation: false,
         preserveMonthlyGaps: true,
         parse: parseMethaneData,
-        description: "Global monthly mean atmospheric methane (CH4) from marine surface sites since July 1983, in ppb. Recent values are preliminary. Radius starts at 1500 ppb for display, not a climate baseline. Source: NOAA GML."
+        description: "Global monthly mean atmospheric methane (CH4) from marine surface sites since July 1983, in ppb. Recent values are preliminary. Radius starts at 1500 ppb for display, not a climate baseline."
     }
 };
 

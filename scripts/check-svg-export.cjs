@@ -4,6 +4,7 @@ const { join } = require('node:path');
 const { tmpdir } = require('node:os');
 const { chromium } = require('playwright');
 const output = join(tmpdir(), 'climate-svg-export');
+const co2Colors = [[280, '#0000ff'], [330, '#ffffff'], [430, '#800080'], [380, '#ff0000']];
 mkdirSync(output, { recursive: true });
 
 const hooks = `
@@ -12,6 +13,12 @@ window.svgTest = {
   pause() { setPlaybackPosition(timelineStops[Math.floor(timelineStops.length / 2)]); controls.enableDamping = false; },
   morph(mix) { layoutTransition = null; layoutMix = mix; applyLayout(); },
   lastYearMonths: () => seasonalColorModel.yearlyMonthCountAt(generatedGeometryData.at(-1).decimalYear),
+  observationColors() {
+    return timelineStops.map(index => {
+      const point = generatedGeometryData[index / (CONFIG.radialSegments * 6)];
+      return [point.displayValue, '#' + point.color.getHexString()];
+    });
+  },
   legendPercent() {
     const last = generatedGeometryData.at(-1), display = getActiveColorDisplay();
     const mode = document.getElementById('colorMode').value;
@@ -44,6 +51,8 @@ window.svgTest = {
         const response = await route.fetch();
         await route.fulfill({ response, body: (await response.text()).replace('// --- Configuration ---', hooks + '// --- Configuration ---') });
       });
+      await page.route('**/data/co2_mm_mlo.txt', route => route.fulfill({ contentType: 'text/plain',
+        body: co2Colors.map(([ppm], index) => `2000 ${index + 1} 2000 ${ppm}`).join('\n') }));
       await page.goto('http://127.0.0.1:8000/index.html');
       await page.waitForFunction(() => window.svgTest?.ready());
       await page.evaluate(() => svgTest.pause());
@@ -56,7 +65,7 @@ window.svgTest = {
         const expectedPercent = await page.evaluate(() => svgTest.legendPercent());
         await page.locator('#svgExportBtn').scrollIntoViewIfNeeded();
         const [result] = await Promise.all([page.waitForEvent('download', { timeout: 60000 }), page.click('#svgExportBtn')]);
-        assert.match(result.suggestedFilename(), /^climate-spiral-[a-z]+\.svg$/);
+        assert.match(result.suggestedFilename(), /^climate-spiral-[a-z0-9]+\.svg$/);
         const path = join(output, name + '-' + label + '.svg');
         await result.saveAs(path);
         const after = await page.evaluate(() => svgTest.state());
@@ -107,6 +116,7 @@ window.svgTest = {
             return { namespace: xml.documentElement.namespaceURI, title: xml.querySelector('title').textContent,
               paths: xml.querySelectorAll('#spiral-data path').length, months: xml.querySelectorAll('#month-labels text').length,
               guides: xml.querySelectorAll('#reference-guides circle').length, images: xml.querySelectorAll('image, foreignObject, script').length,
+              endColor: xml.querySelector('#color-legend > text:nth-of-type(2)').getAttribute('fill'),
               metadata: JSON.parse(xml.querySelector('metadata').textContent),
               markerPercent: marker ? (Number(marker.getAttribute('x')) + 1 - 180) / 8.4 : null,
               width: canvas.width, height: canvas.height, lit, titlePixels, headlinePixels, png: canvas.toDataURL().split(',')[1] };
@@ -152,7 +162,7 @@ window.svgTest = {
       assert.equal(single.checked.months, 0); assert.equal(single.checked.guides, 0);
       assert.equal(single.checked.paths, 1, 'Complete single-color history must be one continuous SVG path');
       await page.check('#helpersToggle'); await page.selectOption('#colorMode', 'value');
-      for (const [dataset, source] of [['arctic', 'NSIDC'], ['oceanph', 'Copernicus'], ['arcticvolume', 'PIOMAS']]) {
+      for (const [dataset, source] of [['arctic', 'NSIDC'], ['oceanph', 'Copernicus'], ['co2', 'NOAA'], ['arcticvolume', 'PIOMAS']]) {
         const previousMesh = (await page.evaluate(() => svgTest.state())).mesh;
         await page.selectOption('#datasetSelect', dataset);
         await page.waitForFunction(({ key, previousMesh }) => svgTest.ready() && svgTest.state().dataset === key
@@ -161,6 +171,11 @@ window.svgTest = {
         if (dataset === 'arcticvolume') await page.selectOption('#colorMode', 'annual');
         const result = await download(dataset);
         assert.ok(result.checked.metadata.source.includes(source));
+        if (dataset === 'co2') {
+          assert.deepEqual(await page.evaluate(() => svgTest.observationColors()), co2Colors);
+          assert.equal(result.checked.endColor, '#ff0000', '380 ppm must be red in the exported legend');
+          assert.ok(Math.abs(result.checked.markerPercent - 200 / 3) < 1e-8);
+        }
         if (dataset === 'arcticvolume') {
           assert.notEqual(result.checked.markerPercent, null, 'A sparse last year still needs its annual-color marker');
           const count = await page.evaluate(() => svgTest.lastYearMonths());

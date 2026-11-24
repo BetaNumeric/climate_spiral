@@ -188,6 +188,7 @@ async function checkSeeking(page) {
     assert.equal(turned.zoom, orbit.zoom);
     assert.equal((await page.evaluate(() => window.exportTest.phase())).progress, 1);
     await page.waitForFunction(() => document.querySelector('#videoExportStatus').textContent === 'Download started.');
+    assert.equal(await page.locator('#exportSectionStatus').textContent(), '');
     assert.match((await firstDownload).suggestedFilename(), /^climate-spiral-.*\.(mp4|webm)$/);
     assert.equal(await page.locator('#videoDownload').isVisible(), false);
     const after = await page.evaluate(() => window.exportTest.snapshot());
@@ -242,11 +243,14 @@ async function checkSeeking(page) {
     const pausedFrame = (await page.evaluate(() => window.exportTest.exportState())).frameIndex;
     assert.equal((await page.evaluate(() => window.exportTest.exportState())).paused, true);
     assert.match(await page.locator('#videoExportStatus').textContent(), /Paused at/);
+    assert.equal(await page.locator('#exportSectionStatus').textContent(), 'Paused');
     await page.waitForTimeout(500);
     assert.equal((await page.evaluate(() => window.exportTest.exportState())).frameIndex, pausedFrame);
     await page.evaluate(() => window.exportTest.setExportPaused(false));
     await page.waitForFunction(frame => window.exportTest.exportState().frameIndex > frame, pausedFrame);
     await page.click('#videoExportBtn');
+    assert.equal(await page.locator('#videoExportStatus').textContent(), 'Export cancelled.');
+    assert.equal(await page.locator('#exportSectionStatus').textContent(), '', 'A previous download must not leave a Ready badge');
     assert.deepEqual(await page.evaluate(() => window.exportTest.snapshot()), before);
     assert.equal(await page.locator('#videoDownload').isVisible(), false);
 

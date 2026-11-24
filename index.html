@@ -40,7 +40,7 @@
         </button>
         <div id="infoDetails">
             <h1>Climate Spiral</h1>
-            <p id="infoDescription">Visualizing global temperature anomalies relative to the 1951-1980 baseline. Each coil represents a year.</p>
+            <p id="infoDescription"></p>
             <p>
                 Source: <a id="sourceLink" href="https://data.giss.nasa.gov/gistemp/" target="_blank">NASA GISS</a><br>
                 Code: <a href="https://github.com/BetaNumeric/climate_spiral" target="_blank">GitHub</a>
@@ -67,12 +67,7 @@
         <div class="legend">
             <div id="legendMarker"></div>
         </div>
-        <div class="legend-labels">
-            <span id="legendLabel0">-1.0</span>
-            <span id="legendLabel1">0°C</span>
-            <span id="legendLabel2">+1.0</span>
-            <span id="legendLabel3">+2.0</span>
-        </div>
+        <div class="legend-labels"></div>
         <div id="legendCaption"></div>
     </div>
 
@@ -437,13 +432,13 @@
         import { VIDEO_EXPORT_FPS } from './video-export.mjs';
         import { DATASET_CONFIG, getDatasetByKey, getDatasetPresentation, parseDatasetData, hasUsableData } from './datasets.mjs';
         import { createDatasetLoader } from './dataset-loader.mjs';
-        import { CO2_BASELINE_PPM, CO2_REFERENCE_RINGS_PPM, co2PpmToSpiralValue, spiralValueToCo2Ppm } from './co2-data.mjs';
+        import { CO2_REFERENCE_RINGS_PPM, co2PpmToSpiralValue } from './co2-data.mjs';
         import { SEA_ICE_EXTENT_SCALE, getDatasetDisplay, formatDatasetValue,
             formatReferenceValue, getLegendPercent } from './dataset-display.mjs';
         import { localTemperatureRange, localLocationKey } from './local-temperature-data.mjs';
         import { setupLocalTemperature } from './local-temperature-ui.mjs';
         import { SEA_LEVEL_TICKS, seaLevelMmToSpiralValue } from './sea-level-data.mjs';
-        import { METHANE_AXIS_MIN, METHANE_TICKS, methanePpbToSpiralValue } from './methane-data.mjs';
+        import { METHANE_TICKS, methanePpbToSpiralValue } from './methane-data.mjs';
         import { OCEAN_PH_TICKS, oceanPhToSpiralValue } from './ocean-ph-data.mjs';
 
         // --- Configuration ---
@@ -462,18 +457,6 @@
             monthLabelOffset: 2,
             framingPadding: 4,
             framingStartYear: 1850,
-            colors: {
-                cold: new THREE.Color(0x0000ff),
-                neutral: new THREE.Color(0xffffff),
-                hot: new THREE.Color(0xff0000),
-                extreme: new THREE.Color(0x800080),
-                iceLow: new THREE.Color(0x176b87),
-                iceHigh: new THREE.Color(0xeffbff),
-                methaneLow: new THREE.Color(0x2a9d8f),
-                methaneHigh: new THREE.Color(0xffd166),
-                seaLevelLow: new THREE.Color(0x39b9db),
-                seaLevelHigh: new THREE.Color(0xff7866)
-            },
             angleOffset: -Math.PI / 2 // Rotate -90 deg to put Jan at Top
         };
         
@@ -1548,16 +1531,13 @@
                     const currentAnomaly = ptData.anomaly || 0;
                     const currentDisplayValue = Number.isFinite(ptData.displayValue) ? ptData.displayValue : currentAnomaly;
                     
-                    // Update Text
                     updateYearIndicatorText(displayYear);
                     
-                    // Update Position (based on actual spiral year position, not linear time)
+                    // Track the calendar position, including gaps, rather than playback progress.
                     const yearOffset = exactYear - startYear;
                     yearIndicatorMesh.position.y = (yearOffset * CONFIG.heightPerYear) + 2; 
                     
-                    // Update Panel Info
                     document.getElementById('infoYear').innerText = displayYear;
-                    // Calc month from decimal
                     const monthIndex = Math.min(11, Math.max(0, Math.floor((exactYear - displayYear) * 12 + 1e-6)));
                     document.getElementById('infoMonth').innerText = MONTHS_NAMES[monthIndex];
                     
@@ -1577,7 +1557,6 @@
                         if (Number.isFinite(legendValue)) document.getElementById('legendMarker').style.left = getLegendPercent(legendValue, colorDisplay) + "%";
                     }
                     
-                    // Update Color
                     if (ptData.color) {
                         yearIndicatorMesh.material.color.set(ptData.color);
                         document.getElementById('infoTemp').style.color = "#" + ptData.color.getHexString();
@@ -2061,9 +2040,10 @@
 
             const rawPoints = [];
             const rawColors = [];
-            const rawMetaData = []; // To store year info per point
-            const valueDisplay = currentDatasetKey === 'local' || currentDatasetKey === 'oceanph' ? getActiveDisplay() : null;
-            const valueColors = valueDisplay?.legendStops.map(([, color]) => new THREE.Color(color));
+            const rawMetaData = [];
+            const valueDisplay = getActiveDisplay();
+            const valueStops = valueDisplay.legendStops;
+            const valueColors = valueStops.map(([, color]) => new THREE.Color(color));
             const yearLabels = new THREE.Group();
             
             const visible = document.getElementById('helpersToggle').checked;
@@ -2075,7 +2055,6 @@
             const opacityFade = Math.min(1, Math.max(0, polarAngle / OPACITY_FADE_THRESHOLD));
             const yearLabelRadius = getYearLabelRadius(currentMaxAnomaly);
 
-            // 1. Generate raw data points (monthly or daily)
             data.forEach((entry) => {
                 const sampleCount = Math.max(1, entry.anomalies.length);
                 entry.anomalies.forEach((anomaly, sampleIdx) => {
@@ -2089,50 +2068,9 @@
                     const decimalYear = entry.year + fraction;
 
                     rawPoints.push(createSpiralPoint(decimalYear, anomaly, startYearData));
-                    
-                    // Metadata for timeline
-                    rawMetaData.push({
-                        decimalYear: decimalYear,
-                        anomaly: anomaly,
-                        displayValue: displayValue,
-                    });
-
-                    // Color calculation with a fixed spectrum mapping.
-                    let colorValue = anomaly;
-                    if (currentDatasetKey === "co2") {
-                        const ppm = spiralValueToCo2Ppm(anomaly);
-                        colorValue = ((ppm - CO2_BASELINE_PPM) / (CO2_REFERENCE_RINGS_PPM[2] - CO2_BASELINE_PPM)) * 2;
-                    }
-
-                    let c = new THREE.Color();
-                    if (currentDatasetKey === 'local') {
-                        if (getLocalTemperatureMode() === 'temperature') {
-                            const fraction = getLegendPercent(displayValue, valueDisplay) / 100;
-                            sampleColorStops(valueDisplay.legendStops, valueColors, fraction, c);
-                        } else {
-                            c.lerpColors(CONFIG.colors.neutral, colorValue < 0 ? CONFIG.colors.cold : CONFIG.colors.hot,
-                                Math.min(1, Math.abs(colorValue) / localRange.extent));
-                        }
-                    } else if (currentDatasetKey === 'oceanph') {
-                        sampleColorStops(valueDisplay.legendStops, valueColors, getLegendPercent(displayValue, valueDisplay) / 100, c);
-                    } else if (currentDatasetKey === 'sealevel') {
-                        c.lerpColors(CONFIG.colors.seaLevelLow, CONFIG.colors.seaLevelHigh,
-                            THREE.MathUtils.clamp(displayValue / SEA_LEVEL_TICKS.at(-1), 0, 1));
-                    } else if (currentDatasetKey === 'methane') {
-                        const fraction = THREE.MathUtils.clamp((displayValue - METHANE_AXIS_MIN) / (METHANE_TICKS.at(-1) - METHANE_AXIS_MIN), 0, 1);
-                        c.lerpColors(CONFIG.colors.methaneLow, CONFIG.colors.methaneHigh, fraction);
-                    } else if (getActiveDataset().kind === 'sea-ice') {
-                        c.lerpColors(CONFIG.colors.iceLow, CONFIG.colors.iceHigh, Math.min(1, displayValue / getSeaIceScale().max));
-                    } else if (colorValue < 0) {
-                        const t = Math.min(1, Math.abs(colorValue));
-                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.cold, t);
-                    } else if (colorValue <= 1) {
-                        c.lerpColors(CONFIG.colors.neutral, CONFIG.colors.hot, colorValue);
-                    } else {
-                        const t = Math.min(1, colorValue - 1);
-                        c.lerpColors(CONFIG.colors.hot, CONFIG.colors.extreme, t);
-                    }
-                    rawColors.push(c);
+                    rawMetaData.push({ decimalYear, anomaly, displayValue });
+                    const colorFraction = getLegendPercent(displayValue, valueDisplay) / 100;
+                    rawColors.push(sampleColorStops(valueStops, valueColors, colorFraction, new THREE.Color()));
                 });
             });
             
@@ -2289,18 +2227,15 @@
             if (spiralLine) spiralLine.centerGeometry.setDrawRange(0, snappedIndex / stride * 2);
             const startCapIndices = CONFIG.radialSegments * 3;
             
-            // Draw Start Cap + Current Body
             spiralMesh.geometry.setDrawRange(0, startCapIndices + snappedIndex);
 
-            // --- Highlight Logic ---
             const currentRingIndex = Math.floor(snappedIndex / stride);
             const radial = CONFIG.radialSegments;
             const colorAttr = spiralMesh.geometry.attributes.color;
             const originals = spiralMesh.geometry.userData.originalColorArray;
             const lastRange = spiralMesh.geometry.userData.lastTailRange;
 
-            // 1. Restore previous tail to original colors
-            // Optimization: Only restore if valid range
+            // Restore only the rings affected by the previous highlight.
             if (lastRange.end >= lastRange.start) {
                 for (let r = lastRange.start; r <= lastRange.end; r++) {
                     const ringStartIdx = r * radial * 3;
@@ -2311,7 +2246,6 @@
                 }
             }
 
-            // Check if we are at the end of the animation
             if (animationIndex >= totalIndices) {
                  colorAttr.needsUpdate = true;
                  spiralMesh.geometry.userData.lastTailRange = { start: 0, end: -1 };
@@ -2322,7 +2256,6 @@
                  return; 
             }
 
-            // 2. Apply new tail gradient
             const tailLen = 4 * pointsPerObservation;
             const startRing = Math.max(0, currentRingIndex - tailLen);
             const endRing = currentRingIndex; // Highlight up to the current tip
@@ -2331,7 +2264,6 @@
             const tempColor = new THREE.Color();
 
             for (let r = startRing; r <= endRing; r++) {
-                // Safety check
                 if ((r + 1) * radial * 3 > colorAttr.array.length) continue;
 
                 let alpha = (r - startRing) / (endRing - startRing || 1);
@@ -2353,7 +2285,6 @@
             colorAttr.needsUpdate = true;
             spiralMesh.geometry.userData.lastTailRange = { start: startRing, end: endRing };
             
-            // Moving Lid Logic
             if (endCapMesh && generatedGeometryData) {
                 const segmentIdx = snappedIndex / stride;
                 const ptIndex = Math.min(segmentIdx, generatedGeometryData.length - 1);
@@ -2364,7 +2295,6 @@
                     endCapMesh.position.copy(data.point);
                     endCapMesh.material.color.setHex(0xffffff); // Highlight tip white
                     
-                    // Align Lid Rotation
                     // Approximate tangent with neighboring points for end-cap orientation.
                     let targetPoint;
                     const next = generatedGeometryData[ptIndex + 1];
@@ -2404,19 +2334,10 @@
             
             if (animationIndex >= totalIndices) {
                 animationIndex = totalIndices;
-                toggleAnimation(); 
-                
-                // Show baked end cap, hide moving lid
-                spiralMesh.geometry.setDrawRange(0, Infinity);
-                if(endCapMesh) endCapMesh.visible = false;
-
-                // Remove highlight (restores original colors)
-                updateSpiralVisuals(); 
-                
-            } else {
-                updateSpiralVisuals();
+                toggleAnimation();
             }
-            
+            updateSpiralVisuals();
+
             document.getElementById('timelineSlider').value = (animationIndex / totalIndices) * 100;
             updateTimelineState(animationIndex);
         }

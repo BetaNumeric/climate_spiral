@@ -75,6 +75,18 @@ function harness(t, perspective = false) {
             state.controls.update();
         },
         angles() { return new THREE.Spherical().setFromVector3(state.activeCamera.position.clone().sub(state.controls.target)); },
+        doubleClick() {
+            for (let i = 0; i < 2; i++) {
+                pointer('pointerdown', 110, 100, 0); pointer('pointerup', 110, 100, 0);
+            }
+            return pointer('dblclick', 110, 100, 0);
+        },
+        doubleTap() {
+            touch('pointerdown', 1); now += 10; touch('pointerup', 1);
+            now += 70;
+            touch('pointerdown', 1); now += 10;
+            return touch('pointerup', 1);
+        },
         doubleRight() {
             pointer('pointerdown'); now += 10; pointer('pointerup');
             now += 70;
@@ -126,6 +138,76 @@ test('all five shortcut keys select the correct views in orthographic and perspe
         h.key('1'); h.finish();
         assertView(h, 0, 0);
     }
+});
+
+test('double-click and one-finger double-tap toggle top and front, returning to top from other angles', t => {
+    for (const perspective of [false, true]) {
+        const h = harness(t, perspective);
+        for (const gesture of ['doubleClick', 'doubleTap']) {
+            h.key('1'); h.finish();
+            assert.equal(h[gesture](), true); h.finish();
+            assertView(h, Math.PI / 2, 0);
+            assert.equal(h.state.activeCamera.zoom, 1);
+            assert.equal(h[gesture](), true); h.finish();
+            assertView(h, 0, 0);
+            for (const [polar, azimuth] of [[Math.PI / 2, Math.PI / 2], [Math.PI / 2, Math.PI],
+                [Math.PI / 2, -Math.PI / 2], [Math.PI / 4, 0], [Math.PI / 36, 0]]) {
+                h.position(polar, azimuth);
+                h[gesture](); h.finish();
+                assertView(h, 0, 0);
+            }
+        }
+    }
+});
+
+test('a zoomed top view resets its framing before the next gesture switches to front', t => {
+    for (const perspective of [false, true]) {
+        const h = harness(t, perspective);
+        h.key('1'); h.finish();
+        const radius = h.angles().radius;
+        for (const [factor, gesture] of [[0.6, 'doubleClick'], [1.5, 'doubleTap']]) {
+            h.position(1e-6, 1.1, perspective ? radius / factor : radius, perspective ? 1 : factor);
+            h[gesture](); h.finish();
+            assertView(h, 0, 0);
+            assert.equal(h.state.activeCamera.zoom, 1);
+            assert.ok(Math.abs(h.angles().radius - radius) < 1e-6);
+            h[gesture](); h.finish();
+            assertView(h, Math.PI / 2, 0);
+        }
+    }
+});
+
+test('a second primary gesture reverses a top/front turn already in progress', t => {
+    const h = harness(t);
+    h.position(0, 0, 200, 1);
+    h.doubleTap(); h.flush(); h.advance(100);
+    assert.ok(h.camera.isAnimating && h.angles().phi > 0.1);
+    h.doubleClick(); h.finish();
+    assertView(h, 0, 0);
+});
+
+test('a compatibility dblclick does not re-toggle a touch gesture, but real mouse input still works', t => {
+    const h = harness(t);
+    h.setReduced(true);
+    h.position(0, 0, 200, 1);
+    h.doubleTap(); h.flush();
+    assertView(h, Math.PI / 2, 0);
+    h.pointer('dblclick', 110, 100, 0);
+    assertView(h, Math.PI / 2, 0);
+    h.doubleClick();
+    assertView(h, 0, 0);
+});
+
+test('primary gestures respect preview and recording locks, including an already queued double-tap', t => {
+    const h = harness(t);
+    h.position(0, 0);
+    h.setBusy(true);
+    h.doubleClick(); h.doubleTap(); h.flush();
+    assert.equal(h.camera.isAnimating, false);
+    h.setBusy(false);
+    h.doubleTap(); h.setBusy(true); h.flush();
+    assert.equal(h.camera.isAnimating, false);
+    assertView(h, 0, 0);
 });
 
 test('double-right-click changes top to front and cycles all four side views', t => {
@@ -261,10 +343,8 @@ test('two-finger double-tap cycles all side views with either finger lifted firs
         h.finish();
         assertView(h, Math.PI / 2, azimuth);
     }
-    // One-finger reset must still work immediately after a two-finger gesture.
-    h.touch('pointerdown', 1); h.touch('pointerup', 1);
-    h.advance(70);
-    h.touch('pointerdown', 1); h.touch('pointerup', 1);
+    // A one-finger double-tap still returns from front to top after side cycling.
+    h.doubleTap();
     h.finish();
     assertView(h, 0, 0);
 });

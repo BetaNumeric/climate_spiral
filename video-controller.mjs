@@ -56,7 +56,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         if (hasMoves && (!Number.isFinite(seconds) || seconds < 0.5 || seconds > 10)) {
             throw new Error('Seconds per move must be between 0.5 and 10.');
         }
-        return getVideoFramePlan(timelineStops.length, monthsPerFrame, seconds,
+        return getVideoFramePlan(timelineStops.length, monthsPerFrame,
             steps.map(step => ({ type: step.type, seconds: step.type === 'pause' ? step.seconds : seconds })));
     }
 
@@ -233,7 +233,7 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         document.getElementById('videoExportStatus').textContent = message;
         document.getElementById('exportSectionStatus').textContent = videoExport
             ? (videoExport.stopping ? 'Finishing...' : videoExport.paused ? 'Paused' : 'Recording')
-            : (videoDownloadUrl ? 'Ready' : '');
+            : '';
     }
 
     function drawVideoLegend(session) {

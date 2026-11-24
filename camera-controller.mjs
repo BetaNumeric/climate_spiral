@@ -2,6 +2,7 @@ const CAMERA_RESET_DURATION_MS = 450;
 const CAMERA_SNAP_DURATION_MS = 260;
 const CAMERA_SNAP_ANGLE = 10 * Math.PI / 180;
 const CAMERA_ROTATION_EPSILON = 0.1 * Math.PI / 180;
+const CAMERA_ZOOM_EPSILON = 1e-4;
 const DOUBLE_TAP_MAX_DELAY_MS = 500;
 const TAP_MAX_DURATION_MS = 300;
 const TAP_MAX_MOVEMENT_PX = 12;
@@ -75,8 +76,26 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         return nearestAngle <= CAMERA_SNAP_ANGLE ? nearest : null;
     }
 
-    function resetCameraView() {
-        setCameraView('top');
+    function getDefaultDistance(camera, perspectiveCamera, orthographicCamera) {
+        if (camera !== perspectiveCamera) return DEFAULT_ORTHOGRAPHIC_DISTANCE;
+        const defaultVisibleHeight = orthographicCamera.top - orthographicCamera.bottom;
+        const halfFov = THREE.MathUtils.degToRad(perspectiveCamera.fov / 2);
+        return defaultVisibleHeight / (2 * Math.tan(halfFov));
+    }
+
+    function toggleTopFrontView() {
+        if (isBusy()) return;
+        const { activeCamera, controls, perspectiveCamera, orthographicCamera } = getSceneState();
+        if (!activeCamera || !controls) return;
+        // A repeated gesture toggles from the pending destination, just like side cycling.
+        const current = new THREE.Spherical().setFromVector3(activeCamera.position.clone().sub(controls.target));
+        const polar = cameraResetAnimation?.endPolar ?? current.phi;
+        const zoom = cameraResetAnimation?.endZoom ?? activeCamera.zoom;
+        const distance = cameraResetAnimation?.endDistance ?? current.radius;
+        const defaultDistance = getDefaultDistance(activeCamera, perspectiveCamera, orthographicCamera);
+        const zoomed = Math.abs(zoom - 1) > CAMERA_ZOOM_EPSILON
+            || (activeCamera === perspectiveCamera && Math.abs(distance / defaultDistance - 1) > CAMERA_ZOOM_EPSILON);
+        setCameraView(polar <= CAMERA_ROTATION_EPSILON && !zoomed ? 'front' : 'top');
     }
 
     function cycleSideView(step = 1, { fromTop = true } = {}) {
@@ -119,17 +138,11 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         controls.enableDamping = dampingEnabled;
         controls.enabled = false;
 
-        let endDistance = DEFAULT_ORTHOGRAPHIC_DISTANCE;
-        if (camera === perspectiveCamera) {
-            const defaultVisibleHeight = orthographicCamera.top - orthographicCamera.bottom;
-            const halfFov = THREE.MathUtils.degToRad(perspectiveCamera.fov / 2);
-            endDistance = defaultVisibleHeight / (2 * Math.tan(halfFov));
-        }
-
         const startSpherical = new THREE.Spherical().setFromVector3(
             startPosition.clone().sub(startTarget)
         );
-        if (preserveFraming) endDistance = startSpherical.radius;
+        const endDistance = preserveFraming ? startSpherical.radius
+            : getDefaultDistance(camera, perspectiveCamera, orthographicCamera);
         const { polar: endPolar, azimuth: endAzimuth } = CAMERA_VIEWS[view];
         const thetaDelta = Math.atan2(
             Math.sin(endAzimuth - startSpherical.theta),
@@ -200,10 +213,14 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         let previousTwoFingerTap = null;
         let rightClickCandidate = null;
         let previousRightClick = null;
+        let lastPointerType = null;
 
         canvas.addEventListener('dblclick', (event) => {
             event.preventDefault();
-            if (event.button === 0) resetCameraView();
+            // The touch pointer handler already handles double-taps, including browsers that emit dblclick too.
+            if (event.button === 0 && lastPointerType !== 'touch' && !event.sourceCapabilities?.firesTouchEvents) {
+                toggleTopFrontView();
+            }
         });
 
         document.addEventListener('keydown', (event) => {
@@ -221,6 +238,7 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
         });
 
         canvas.addEventListener('pointerdown', (event) => {
+            lastPointerType = event.pointerType;
             if (event.pointerType === 'mouse') {
                 rightClickCandidate = event.button === 2 ? {
                     pointerId: event.pointerId, startTime: performance.now(),
@@ -340,7 +358,7 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
                 if (isDoubleTap) {
                     event.preventDefault();
                     previousTap = null;
-                    requestAnimationFrame(resetCameraView);
+                    requestAnimationFrame(toggleTopFrontView);
                 } else {
                     previousTap = { time: now, x: event.clientX, y: event.clientY };
                 }

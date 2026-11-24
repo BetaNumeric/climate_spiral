@@ -2,14 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { VIDEO_EXPORT_FPS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming,
   getVideoLayout, getVideoOrbitFrame, getVideoRecorderOptions, DEFAULT_VIDEO_CAMERA_PATH,
-  DEFAULT_VIDEO_MOVE_SECONDS } from '../video-export.mjs';
+  DEFAULT_VIDEO_MOVE_SECONDS, MAX_VIDEO_PATH_STEPS } from '../video-export.mjs';
+
+const move = seconds => ({ type: 'view', seconds });
 
 test('default camera path draws top-down and holds before and after its two-second front move', () => {
   assert.equal(DEFAULT_VIDEO_CAMERA_PATH.start, 'spiral-top');
   assert.deepEqual(DEFAULT_VIDEO_CAMERA_PATH.steps.map(step => step.type === 'pause' ? 'pause' : step.view),
     ['pause', 'spiral-front', 'pause']);
   assert.equal(DEFAULT_VIDEO_MOVE_SECONDS, 2);
-  const plan = getVideoFramePlan(120, 7, DEFAULT_VIDEO_MOVE_SECONDS,
+  const plan = getVideoFramePlan(120, 7,
     DEFAULT_VIDEO_CAMERA_PATH.steps.map(step => ({ type: step.type, seconds: step.seconds ?? DEFAULT_VIDEO_MOVE_SECONDS })));
   assert.deepEqual(plan.stepFrames, [30, 60, 30]);
   assert.equal(plan.turnFrames, 120);
@@ -90,19 +92,18 @@ test('recording requests frequent keyframes and a resolution-scaled bitrate', ()
 
 test('video duration follows monthly observations, speed, and camera turn', () => {
   assert.equal(VIDEO_EXPORT_FPS, 30);
-  const normal = getVideoFramePlan(1501, 1, 3);
-  const faster = getVideoFramePlan(1501, 3, 3);
+  const normal = getVideoFramePlan(1501, 1, [move(3)]);
+  const faster = getVideoFramePlan(1501, 3, [move(3)]);
   assert.equal(normal.drawSteps, 1500);
   assert.equal(faster.drawSteps, 500);
   assert.equal(normal.totalFrames - faster.totalFrames, 1000);
-  assert.equal(getVideoFramePlan(1501, 1, 0).totalFrames + 90, normal.totalFrames);
-  assert.throws(() => getVideoFramePlan(1, 1, 0));
-  assert.throws(() => getVideoFramePlan(1501, 0, 0));
-  assert.throws(() => getVideoFramePlan(1501, 1, NaN));
+  assert.equal(getVideoFramePlan(1501, 1, []).totalFrames + 90, normal.totalFrames);
+  assert.throws(() => getVideoFramePlan(1, 1, []), /No monthly data/);
+  assert.throws(() => getVideoFramePlan(1501, 0, []), /months per frame/);
 });
 
 test('each drawing frame ends on a real month and the last partial step reaches the final month', () => {
-  const plan = getVideoFramePlan(7, 2, 1);
+  const plan = getVideoFramePlan(7, 2, [move(1)]);
   const observations = Array.from({ length: plan.totalFrames }, (_, frame) => getVideoFrameTiming(frame, plan).observationIndex);
   assert.deepEqual(observations.slice(0, plan.startHoldFrames + plan.drawSteps),
     [...Array(plan.startHoldFrames).fill(0), 2, 4, 6]);
@@ -113,19 +114,19 @@ test('each drawing frame ends on a real month and the last partial step reaches 
   assert.equal(getVideoFrameTiming(plan.totalFrames - 1, plan).turn, 1);
   assert.equal(getVideoFrameTiming(plan.totalFrames - 1, plan).transition, 1);
 
-  const partial = getVideoFramePlan(8, 3, 0);
+  const partial = getVideoFramePlan(8, 3, []);
   assert.equal(getVideoFrameTiming(partial.startHoldFrames + partial.drawSteps - 1, partial).observationIndex, 7);
   assert.equal(getVideoFrameTiming(partial.totalFrames - 1, partial).turn, 0);
 });
 
 test('camera path advances through moves at fixed frame boundaries', () => {
-  const plan = getVideoFramePlan(13, 1, 1, 3);
-  assert.equal(plan.framesPerMove, VIDEO_EXPORT_FPS);
+  const plan = getVideoFramePlan(13, 1, [move(1), move(1), move(1)]);
+  assert.deepEqual(plan.stepFrames, Array(3).fill(VIDEO_EXPORT_FPS));
   assert.equal(plan.turnFrames, 3 * VIDEO_EXPORT_FPS);
   const first = plan.startHoldFrames + plan.drawSteps;
   for (let move = 0; move < 3; move++) {
-    const start = getVideoFrameTiming(first + move * plan.framesPerMove, plan);
-    const end = getVideoFrameTiming(first + (move + 1) * plan.framesPerMove - 1, plan);
+    const start = getVideoFrameTiming(first + move * VIDEO_EXPORT_FPS, plan);
+    const end = getVideoFrameTiming(first + (move + 1) * VIDEO_EXPORT_FPS - 1, plan);
     assert.equal(start.moveIndex, move);
     assert.equal(start.turn, 0);
     assert.equal(end.moveIndex, move);
@@ -136,20 +137,17 @@ test('camera path advances through moves at fixed frame boundaries', () => {
   assert.equal(hold.moveIndex, 2);
   assert.equal(hold.turn, 1);
 
-  const still = getVideoFramePlan(13, 1, 0, 0);
+  const still = getVideoFramePlan(13, 1, []);
   assert.equal(still.turnFrames, 0);
   assert.equal(getVideoFrameTiming(still.totalFrames - 1, still).turn, 0);
-  assert.equal(getVideoFramePlan(13, 1, 1, 8).moveCount, 8);
-  assert.throws(() => getVideoFramePlan(13, 1, 1, 21));
-  assert.throws(() => getVideoFramePlan(13, 1, 1, -1));
+  assert.equal(getVideoFramePlan(13, 1, Array(8).fill(move(1))).stepFrames.length, 8);
 });
 
 test('pause steps hold the last camera view for their exact duration', () => {
-  const plan = getVideoFramePlan(13, 1, 2, [
-    { type: 'view', seconds: 2 }, { type: 'pause', seconds: 3 }, { type: 'view', seconds: 1 },
+  const plan = getVideoFramePlan(13, 1, [
+    move(2), { type: 'pause', seconds: 3 }, move(1),
   ]);
   assert.deepEqual(plan.stepFrames, [60, 90, 30]);
-  assert.deepEqual(plan.stepTypes, ['view', 'pause', 'view']);
   assert.equal(plan.turnFrames, 180);
   const start = plan.startHoldFrames + plan.drawSteps;
   assert.equal(getVideoFrameTiming(start + 59, plan).moveIndex, 0);
@@ -157,5 +155,11 @@ test('pause steps hold the last camera view for their exact duration', () => {
   assert.equal(getVideoFrameTiming(start + 149, plan).moveIndex, 1);
   assert.equal(getVideoFrameTiming(start + 150, plan).moveIndex, 2);
   assert.equal(getVideoFrameTiming(start + 179, plan).turn, 1);
-  assert.throws(() => getVideoFramePlan(13, 1, 2, [{ type: 'pause', seconds: 31 }]));
+});
+
+test('frame plans require a bounded list of valid timed steps', () => {
+  for (const steps of [undefined, 3, Array(MAX_VIDEO_PATH_STEPS + 1).fill(move(1)),
+    [move(NaN)], [move(-1)], [move(11)], [{ type: 'pause', seconds: 31 }], [{ type: 'unknown', seconds: 1 }]]) {
+    assert.throws(() => getVideoFramePlan(13, 1, steps), /valid camera steps/);
+  }
 });
