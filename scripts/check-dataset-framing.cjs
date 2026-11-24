@@ -32,6 +32,29 @@ window.framingTest = {
     activeCamera.position.copy(controls.target).add(new THREE.Vector3(0, 120, 0.0001));
     controls.update();
   },
+  wrappedBounds(view) {
+    this.topView();
+    if (view === 'front') {
+      activeCamera.position.copy(controls.target).add(new THREE.Vector3(0, 0, 120));
+      controls.update();
+    }
+    drawScene();
+    const { width, height } = renderer.domElement;
+    const gl = renderer.getContext();
+    const pixels = new Uint8Array(width * height * 4);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    let left = width, right = 0, bottom = height, top = 0;
+    for (let y = 0, i = 0; y < height; y++) {
+      for (let x = 0; x < width; x++, i += 4) {
+        if (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) <= 20) continue;
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        bottom = Math.min(bottom, y);
+        top = Math.max(top, y);
+      }
+    }
+    return { left, right, bottom, top, width, height };
+  },
   graphState() {
     renderer.render(scene, activeCamera);
     const canvas = document.createElement('canvas');
@@ -74,7 +97,7 @@ window.framingTest = {
       monthScreen: monthLabelsGroup.children[0].getWorldPosition(new THREE.Vector3()).project(activeCamera).toArray(),
       graphWidth: monthlyLayout.width,
       cameraTop: orthographicCamera.top,
-      videoHalfHeight: getVideoOrbitFrame(getYearLabelRadius(currentMaxAnomaly),
+      videoHalfHeight: getVideoOrbitFrame(getYearLabelRadius(),
         getFramingHeight() / 2, 16 / 9, null, CONFIG.sceneScale).visibleHalfHeight,
       height: spiralHeight,
       metric: document.getElementById('infoTemp').textContent,
@@ -130,6 +153,17 @@ window.framingTest = {
         assert.ok(state.litPixels > 0, dataset + ' has a blank canvas');
         if (dataset === 'temperature' || dataset === datasets.at(-1) || volumeDatasets.has(dataset)) {
           await page.screenshot({ path: join(output, name + '-' + dataset + '.png') });
+        }
+        if (dataset === 'temperature') {
+          for (const view of ['top', 'front']) {
+            const { left, right, bottom, top, width, height } = await page.evaluate(view => framingTest.wrappedBounds(view), view);
+            assert.ok(left >= 2 && right < width - 2 && bottom >= 2 && top < height - 2,
+              name + ' ' + view + ': visible geometry touches the canvas edge');
+            assert.ok((right - left) / Math.min(width, height) > (name === 'mobile' ? 0.84 : 0.8),
+              name + ' ' + view + ': spiral and labels leave too much space');
+            if (view === 'front') await page.screenshot({ path: join(output, name + '-temperature-front.png') });
+          }
+          await page.evaluate(() => framingTest.topView());
         }
         if (volumeDatasets.has(dataset)) {
           assert.match(state.metric, /10\u00b3 km\u00b3/);

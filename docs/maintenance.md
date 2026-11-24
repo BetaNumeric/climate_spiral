@@ -38,7 +38,7 @@ For browser export checks, install dependencies with `npm ci`, install Chrome fo
 
 `node scripts/check-readme-camera-paths.mjs` checks the default two-second movements and one-second pauses, both README camera paths, stationary pauses, preview restoration, and nonblank frames on desktop and mobile. Screenshots are saved under `climate-readme-camera-paths` in the system temporary directory. It uses the local server at port 8000, or `README_VIDEO_BASE_URL` when set.
 
-The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame.
+The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame. In narrow viewports, the wrapped view also keeps enough width for the spiral and its year labels, independent of the timeline height.
 
 `node scripts/check-setting-state.cjs` checks the appearance settings with a small sparse-history fixture on desktop and mobile. It verifies line position/color buffers before the first render, visible geometry, and retained layout, palette, playback state, and month. Interpolation changes retain the calendar date rather than a geometry index; removing an interpolated month selects the nearest available month without pausing playback.
 
