@@ -93,9 +93,16 @@ window.lineTest = {
       await page.evaluate(() => lineTest.prepare());
       await page.click('#settingsBtn'); await page.click('#viewSettings > summary');
       const original = await page.evaluate(() => lineTest.state());
-      assert.equal(original.tube, true); assert.equal(original.sides, 8);
+      assert.equal(await page.locator('#tubeSides').inputValue(), '12');
+      assert.equal(await page.locator('#curveSegments').inputValue(), '12');
+      assert.equal(original.tube, true);
+      assert.equal(original.sides, 12);
+      assert.equal(original.capSides, 12);
+      assert.equal(original.detail, 12);
+      assert.equal(original.sampling, 12);
+      assert.equal(original.vertices, original.samples * 12 + 2);
       const slider = page.locator('#thicknessSlider');
-      for (const sides of ['4', '12', '24', '8']) {
+      for (const sides of ['4', '8', '24', '12']) {
         await page.selectOption('#tubeSides', sides);
         const state = await page.evaluate(() => lineTest.state());
         assert.equal(state.sides, Number(sides)); assert.equal(state.capSides, Number(sides));
@@ -200,22 +207,39 @@ window.lineTest = {
         await (await finished).saveAs(join(output, 'line-video.mp4'));
         const frames = await page.evaluate(async () => {
           const video = document.createElement('video'); video.muted = true;
-          const loaded = new Promise((resolve, reject) => { video.onloadedmetadata = resolve; video.onerror = reject; });
-          video.src = document.getElementById('videoDownload').href; await loaded;
-          const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-          const ctx = canvas.getContext('2d'); const result = [];
-          for (const time of [2, video.duration - 0.3]) {
-            await new Promise(resolve => { video.onseeked = () => setTimeout(resolve, 100); video.currentTime = time; });
-            ctx.drawImage(video, 0, 0);
-            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            let lit = 0;
-            for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width * 0.55; x++) {
-              const i = (y * canvas.width + x) * 4;
-              if (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) > 30) lit++;
+          // A visible decoder lets Chrome report when the sought frame is actually presented.
+          Object.assign(video.style, { position: 'fixed', top: '0', left: '0', width: '160px', zIndex: '10000' });
+          document.body.append(video);
+          try {
+            const loaded = new Promise((resolve, reject) => { video.onloadeddata = resolve; video.onerror = reject; });
+            video.src = document.getElementById('videoDownload').href; await loaded;
+            const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d'); const result = [];
+            for (const time of [2, video.duration - 0.3]) {
+              await new Promise((resolve, reject) => {
+                let callback;
+                const timeout = setTimeout(() => {
+                  video.cancelVideoFrameCallback(callback);
+                  reject(new Error('No presented video frame near ' + time));
+                }, 5000);
+                const checkFrame = (_, { mediaTime }) => {
+                  if (Math.abs(mediaTime - time) > 0.1) callback = video.requestVideoFrameCallback(checkFrame);
+                  else { clearTimeout(timeout); resolve(); }
+                };
+                callback = video.requestVideoFrameCallback(checkFrame);
+                video.currentTime = time;
+              });
+              ctx.drawImage(video, 0, 0);
+              const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+              let lit = 0;
+              for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width * 0.55; x++) {
+                const i = (y * canvas.width + x) * 4;
+                if (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) > 30) lit++;
+              }
+              result.push({ lit, image: canvas.toDataURL().split(',')[1] });
             }
-            result.push({ lit, image: canvas.toDataURL().split(',')[1] });
-          }
-          return result;
+            return result;
+          } finally { video.remove(); }
         });
         for (const [index, frame] of frames.entries()) {
           assert.ok(frame.lit > 200, 'Export must include the wide line, not only the legend');

@@ -19,7 +19,7 @@ const CAMERA_VIEWS = {
 const SIDE_VIEWS = ['front', 'right', 'back', 'left'];
 
 export function createCameraController({ THREE, OrbitControls, canvas, getSceneState, isBusy, defaultDistance,
-    onLayoutGesture = () => {} }) {
+    onLayoutGesture = () => {}, onViewChange = () => {} }) {
     const DEFAULT_ORTHOGRAPHIC_DISTANCE = defaultDistance;
     const defaultCameraQuaternion = getSceneState().orthographicCamera.quaternion.clone();
     let lastCameraResetTime = -Infinity;
@@ -166,6 +166,7 @@ export function createCameraController({ THREE, OrbitControls, canvas, getSceneS
             currentOffset: new THREE.Vector3()
         };
         if (cameraResetAnimation.duration === 0) updateCameraResetAnimation();
+        onViewChange();
     }
 
     function updateCameraResetAnimation() {

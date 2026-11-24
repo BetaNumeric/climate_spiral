@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createSpiralLine } from '../spiral-line.mjs';
+import { markColorRange } from '../spiral-colors.mjs';
 
 function fixture() {
     const center = new THREE.BufferGeometry();
@@ -57,5 +58,19 @@ test('wide lines follow morph positions, gap topology, and animated vertex color
         line.sync();
         assert.equal(line.geometry.instanceCount, 0, 'Coincident copies must not create a cap-like dot');
         assert.ok(positions.array.every(Number.isFinite));
+    } finally { dispose(); }
+});
+
+test('wide-line color uploads include both instances of a changed shared endpoint', () => {
+    const { center, line, dispose } = fixture();
+    try {
+        const source = center.attributes.color;
+        const colors = line.geometry.attributes.instanceColorStart.data;
+        colors.clearUpdateRanges();
+        source.setXYZ(1, 1, 1, 1);
+        markColorRange(source, 3, 3);
+        line.sync();
+        assert.deepEqual(colors.updateRanges, [{ start: 3, count: 6 }]);
+        assert.deepEqual([...colors.array.slice(0, 12)], [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1]);
     } finally { dispose(); }
 });

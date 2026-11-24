@@ -213,8 +213,8 @@
                         <select id="tubeSides">
                             <option value="4">4</option>
                             <option value="6">6</option>
-                            <option value="8" selected>8</option>
-                            <option value="12">12</option>
+                            <option value="8">8</option>
+                            <option value="12" selected>12</option>
                             <option value="16">16</option>
                             <option value="24">24</option>
                         </select>
@@ -223,8 +223,8 @@
                         <label for="curveSegments">Segments per Month</label>
                         <select id="curveSegments">
                             <option value="3">3</option>
-                            <option value="6" selected>6</option>
-                            <option value="12">12</option>
+                            <option value="6">6</option>
+                            <option value="12" selected>12</option>
                             <option value="24">24</option>
                         </select>
                     </div>
@@ -423,7 +423,8 @@
         import { createSpiralGeometry } from './spiral-geometry.mjs';
         import { createSpiralLine } from './spiral-line.mjs';
         import { YEAR_COLOR_STOPS, ANOMALY_COLOR_STOPS, UNAVAILABLE_ANOMALY_COLOR, createSeasonalColorModel,
-            getYearColorFraction, getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral } from './spiral-colors.mjs';
+            getYearColorFraction, getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral,
+            updateSpiralHighlight } from './spiral-colors.mjs';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
         import { createSpiralSvg } from './svg-export.mjs';
@@ -449,8 +450,8 @@
             radiusScale: 5,       
             heightPerYear: 0.24,
             tubeRadius: DEFAULT_TUBE_RADIUS,
-            radialSegments: 8,
-            curveSegments: 6,
+            radialSegments: 12,
+            curveSegments: 12,
             frustumSize: 45,
             sceneScale: 1.28, // Increase to enlarge the spiral in both the viewer and video exports.
             outerRadius: 20,
@@ -518,6 +519,10 @@
         let nonLocalColorMode = 'value';
         let timelineTimeout;
         let dataStatusTimeout;
+        let frameRequest = null;
+        let sceneDirty = false;
+        let drawnCamera = null, drawnZoom = 0;
+        const drawnPosition = new THREE.Vector3(), drawnRotation = new THREE.Quaternion();
 
         const datasetLoader = createDatasetLoader({
             getActiveDatasetKey: () => currentDatasetKey,
@@ -553,7 +558,6 @@
         
         clearDataVisualization();
         datasetLoader.loadBundled();
-        animate();
 
         // --- Functions ---
 
@@ -594,9 +598,11 @@
                 getSceneState: () => ({ controls, activeCamera, perspectiveCamera, orthographicCamera, spiralHeight }),
                 isBusy: () => videoController?.isBusy ?? false,
                 defaultDistance: DEFAULT_ORTHOGRAPHIC_DISTANCE,
-                onLayoutGesture: setChartLayout
+                onLayoutGesture: setChartLayout,
+                onViewChange: invalidateScene
             });
             controls = cameraController.createControls(activeCamera, new THREE.Vector3());
+            controls.addEventListener('change', requestSceneFrame);
             cameraController.setupGestures();
             videoController = createVideoController({
                 THREE, renderer, cameraController, fontFamily: FONT_FAMILY,
@@ -650,6 +656,8 @@
 
             // Listeners
             window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('webglcontextrestored', invalidateScene);
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) invalidateScene(); });
             setupUI();
             
             // Initial call to set correct zoom/frustum for current window size
@@ -1346,6 +1354,7 @@
                 if(tempLabelGroup) tempLabelGroup.visible = visible;
                 if(tempVerticalGroup) tempVerticalGroup.visible = visible;
                 if(endCapMesh) endCapMesh.visible = visible;
+                invalidateScene();
             });
             
             interpSwitch.addEventListener('change', () => {
@@ -1483,8 +1492,10 @@
                 const label = `${Math.round(scale * 100)}%`;
                 document.getElementById('thicknessValue').textContent = label;
                 slider.setAttribute('aria-valuetext', label);
-                if (!rebuild && spiralLine) spiralLine.material.linewidth = DEFAULT_TUBE_RADIUS * 2 * scale;
-                else {
+                if (!rebuild && spiralLine) {
+                    spiralLine.material.linewidth = DEFAULT_TUBE_RADIUS * 2 * scale;
+                    invalidateScene();
+                } else {
                     updateDataVisualization();
                     setPlaybackPosition(remapTimelinePosition(previousIndex, previousStops, timelineStops), false);
                 }
@@ -1572,6 +1583,7 @@
             const bottomWrapper = document.getElementById('bottomWrapper');
 
             if (isAnimating) {
+                requestSceneFrame();
                 nextPlaybackFrameAt = performance.now() + 1000 / VIDEO_EXPORT_FPS;
                 playIcon.classList.remove('show-play');
                 
@@ -1695,6 +1707,7 @@
             controls.object = activeCamera;
             controls.target.copy(target); 
             controls.update();
+            invalidateScene();
         }
 
         function checkForGaps(data) {
@@ -1731,6 +1744,7 @@
             videoController.updateDurationEstimate();
             updateSourceLabel(currentDatasetKey === 'local' ? 'No location loaded' : 'No data loaded');
             updateDataStatus('');
+            invalidateScene();
         }
 
         function updateDataVisualization(rawDataOverride) {
@@ -2013,6 +2027,7 @@
             layoutTransition = { from: layoutMix, to, start: performance.now(),
                 duration: LAYOUT_TRANSITION_MS * Math.abs(to - layoutMix) };
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishLayoutTransition();
+            else requestSceneFrame();
         }
 
         function updateLayoutTransition() {
@@ -2107,6 +2122,8 @@
             // Store original colors for highlight effect.
             geometry.userData.originalColorArray = new Float32Array(geometry.attributes.color.array);
             geometry.userData.lastTailRange = { start: 0, end: -1 };
+            const colors = geometry.attributes.color;
+            colors.setUsage(THREE.DynamicDrawUsage).onUpload(() => colors.clearUpdateRanges());
 
             const material = new THREE.MeshStandardMaterial({
                 vertexColors: true,
@@ -2198,6 +2215,7 @@
             perspectiveCamera.updateProjectionMatrix();
 
             updateOrthographicFrustum();
+            invalidateScene();
         }
 
         function updateOrthographicFrustum() {
@@ -2219,6 +2237,7 @@
         
         function updateSpiralVisuals() {
             if (!spiralMesh) return;
+            invalidateScene();
 
             // Snap to full rings to prevent spikes
             // Each segment (ring to ring) uses 6 * radial indices
@@ -2227,65 +2246,15 @@
             if (spiralLine) spiralLine.centerGeometry.setDrawRange(0, snappedIndex / stride * 2);
             const startCapIndices = CONFIG.radialSegments * 3;
             
-            spiralMesh.geometry.setDrawRange(0, startCapIndices + snappedIndex);
-
-            const currentRingIndex = Math.floor(snappedIndex / stride);
-            const radial = CONFIG.radialSegments;
-            const colorAttr = spiralMesh.geometry.attributes.color;
-            const originals = spiralMesh.geometry.userData.originalColorArray;
-            const lastRange = spiralMesh.geometry.userData.lastTailRange;
-
-            // Restore only the rings affected by the previous highlight.
-            if (lastRange.end >= lastRange.start) {
-                for (let r = lastRange.start; r <= lastRange.end; r++) {
-                    const ringStartIdx = r * radial * 3;
-                    const ringEndIdx = (r + 1) * radial * 3;
-                    for (let k = ringStartIdx; k < ringEndIdx; k++) {
-                        colorAttr.array[k] = originals[k];
-                    }
-                }
-            }
-
-            if (animationIndex >= totalIndices) {
-                 colorAttr.needsUpdate = true;
-                 spiralMesh.geometry.userData.lastTailRange = { start: 0, end: -1 };
-                 if(endCapMesh) endCapMesh.visible = false;
-                 // Show full geometry including baked end cap
-                 spiralMesh.geometry.setDrawRange(0, Infinity);
-                 spiralLine?.sync();
-                 return; 
-            }
-
-            const tailLen = 4 * pointsPerObservation;
-            const startRing = Math.max(0, currentRingIndex - tailLen);
-            const endRing = currentRingIndex; // Highlight up to the current tip
+            const complete = animationIndex >= totalIndices;
+            const geometry = spiralMesh.geometry;
+            geometry.setDrawRange(0, complete ? Infinity : startCapIndices + snappedIndex);
+            updateSpiralHighlight(geometry, CONFIG.radialSegments, complete ? -1 : snappedIndex / stride,
+                4 * pointsPerObservation);
             
-            const white = new THREE.Color(1, 1, 1);
-            const tempColor = new THREE.Color();
-
-            for (let r = startRing; r <= endRing; r++) {
-                if ((r + 1) * radial * 3 > colorAttr.array.length) continue;
-
-                let alpha = (r - startRing) / (endRing - startRing || 1);
-                // Non-linear for "hot" tip
-                alpha = Math.pow(alpha, 5); 
-
-                for (let j = 0; j < radial; j++) {
-                    const idx = (r * radial + j) * 3;
-                    
-                    tempColor.setRGB(originals[idx], originals[idx+1], originals[idx+2]);
-                    tempColor.lerp(white, alpha);
-                    
-                    colorAttr.array[idx] = tempColor.r;
-                    colorAttr.array[idx+1] = tempColor.g;
-                    colorAttr.array[idx+2] = tempColor.b;
-                }
-            }
-            
-            colorAttr.needsUpdate = true;
-            spiralMesh.geometry.userData.lastTailRange = { start: startRing, end: endRing };
-            
-            if (endCapMesh && generatedGeometryData) {
+            if (complete) {
+                if (endCapMesh) endCapMesh.visible = false;
+            } else if (endCapMesh && generatedGeometryData) {
                 const segmentIdx = snappedIndex / stride;
                 const ptIndex = Math.min(segmentIdx, generatedGeometryData.length - 1);
                 const data = generatedGeometryData[ptIndex];
@@ -2317,7 +2286,11 @@
                 }
             }
             // Wide-line instance buffers must be ready before the renderer uploads this frame.
-            spiralLine?.sync();
+            if (spiralLine) {
+                spiralLine.sync();
+                // In line mode the shared source buffer is not uploaded directly.
+                geometry.attributes.color.clearUpdateRanges();
+            }
         }
         
         function updateAnimation() {
@@ -2342,17 +2315,50 @@
             updateTimelineState(animationIndex);
         }
 
+        function requestSceneFrame() {
+            if (frameRequest === null) frameRequest = requestAnimationFrame(animate);
+        }
+
+        function invalidateScene() {
+            sceneDirty = true;
+            requestSceneFrame();
+        }
+
         function animate() {
-            requestAnimationFrame(animate);
+            let cameraMoved = false;
             if (videoController.isBusy) {
                 videoController.update();
+                sceneDirty = true;
             } else {
                 updateLayoutTransition();
                 updateAnimation();
-                if (cameraController.isAnimating) cameraController.update();
-                else controls.update();
+                if (cameraController.isAnimating) {
+                    cameraController.update();
+                    // Let OrbitControls settle once after the preset animation finishes.
+                    cameraMoved = true;
+                } else {
+                    controls.update();
+                    // OrbitControls can report a change on an unchanged orthographic view.
+                    cameraMoved = activeCamera !== drawnCamera || activeCamera.zoom !== drawnZoom
+                        || activeCamera.position.distanceToSquared(drawnPosition) > 1e-10
+                        || 1 - Math.abs(activeCamera.quaternion.dot(drawnRotation)) > 1e-12;
+                }
             }
-            
+
+            if (sceneDirty || cameraMoved) {
+                sceneDirty = false;
+                drawnCamera = activeCamera;
+                drawnZoom = activeCamera.zoom;
+                drawnPosition.copy(activeCamera.position);
+                drawnRotation.copy(activeCamera.quaternion);
+                drawScene();
+            }
+            frameRequest = null;
+            if (sceneDirty || cameraMoved || layoutTransition
+                || videoController.isBusy || (isAnimating && spiralMesh)) requestSceneFrame();
+        }
+
+        function drawScene() {
             // Sync Directional Light with Camera
             if (dirLight && activeCamera) {
                  dirLight.position.copy(activeCamera.position);

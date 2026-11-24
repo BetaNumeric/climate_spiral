@@ -114,6 +114,45 @@ export function getSpiralColorDisplay(mode, measurement, { startYear, endYear, c
     throw new Error('Unknown spiral coloring mode: ' + mode);
 }
 
+export function markColorRange(attribute, start, count) {
+    if (!count) return;
+    let end = start + count;
+    const ranges = attribute.updateRanges;
+    for (let i = ranges.length - 1; i >= 0; i--) {
+        const range = ranges[i], rangeEnd = range.start + range.count;
+        if (range.start > end || rangeEnd < start) continue;
+        start = Math.min(start, range.start);
+        end = Math.max(end, rangeEnd);
+        ranges.splice(i, 1);
+    }
+    attribute.addUpdateRange(start, end - start);
+    attribute.needsUpdate = true;
+}
+
+export function updateSpiralHighlight(geometry, radialSegments, tipRing, tailLength) {
+    const colors = geometry.attributes.color;
+    const originals = geometry.userData.originalColorArray;
+    const previous = geometry.userData.lastTailRange;
+    const stride = radialSegments * 3;
+    const start = tipRing < 0 ? 0 : Math.max(0, tipRing - tailLength);
+    const end = Math.min(tipRing, Math.floor(colors.array.length / stride) - 1);
+    if (previous.start === start && previous.end === end) return;
+
+    if (previous.end >= previous.start) {
+        const from = previous.start * stride, to = (previous.end + 1) * stride;
+        colors.array.set(originals.subarray(from, to), from);
+        markColorRange(colors, from, to - from);
+    }
+    for (let ring = start; ring <= end; ring++) {
+        const alpha = Math.pow((ring - start) / (tipRing - start || 1), 5);
+        for (let i = ring * stride; i < (ring + 1) * stride; i++) {
+            colors.array[i] = originals[i] + (1 - originals[i]) * alpha;
+        }
+    }
+    if (end >= start) markColorRange(colors, start * stride, (end - start + 1) * stride);
+    geometry.userData.lastTailRange = { start, end };
+}
+
 export function recolorSpiral(geometry, data, radialSegments, colorAt) {
     if (!data.length) return;
     const colors = geometry.attributes.color;
@@ -127,5 +166,5 @@ export function recolorSpiral(geometry, data, radialSegments, colorAt) {
     }
     geometry.userData.originalColorArray.set(colors.array);
     geometry.userData.lastTailRange = { start: 0, end: -1 };
-    colors.needsUpdate = true;
+    markColorRange(colors, 0, colors.array.length);
 }

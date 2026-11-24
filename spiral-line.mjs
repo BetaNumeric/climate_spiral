@@ -2,6 +2,7 @@ import { DynamicDrawUsage } from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { markColorRange } from './spiral-colors.mjs';
 
 export function createSpiralLine(centerGeometry, width) {
     const capacity = centerGeometry.index.count / 2;
@@ -9,7 +10,8 @@ export function createSpiralLine(centerGeometry, width) {
     geometry.setPositions(new Float32Array(capacity * 6));
     geometry.setColors(new Float32Array(capacity * 6));
     geometry.attributes.instanceStart.data.setUsage(DynamicDrawUsage);
-    geometry.attributes.instanceColorStart.data.setUsage(DynamicDrawUsage);
+    const colors = geometry.attributes.instanceColorStart.data;
+    colors.setUsage(DynamicDrawUsage).onUpload(() => colors.clearUpdateRanges());
     const material = new LineMaterial({ vertexColors: true, worldUnits: true, linewidth: width, alphaToCoverage: true });
     const line = new LineSegments2(geometry, material);
     line.centerGeometry = centerGeometry;
@@ -46,16 +48,29 @@ export function createSpiralLine(centerGeometry, width) {
             indexVersion = index.version;
         }
         if (moved || colorVersion !== color.version) {
-            const colors = geometry.attributes.instanceColorStart.data;
+            const ranges = color.updateRanges;
+            const partial = !moved && ranges.length && ranges[0].count !== color.array.length;
+            let runStart = -1;
             for (let i = 0; i < segmentCount * 2; i++) {
-                for (let axis = 0; axis < 3; axis++) colors.array[i * 3 + axis] = color.array[pairs[i] * 3 + axis];
+                const source = pairs[i] * 3, target = i * 3;
+                if (partial && !ranges.some(({ start, count }) => source < start + count && source + 3 > start)) {
+                    if (runStart >= 0) markColorRange(colors, runStart, target - runStart);
+                    runStart = -1;
+                    continue;
+                }
+                if (runStart < 0) runStart = target;
+                for (let axis = 0; axis < 3; axis++) colors.array[target + axis] = color.array[source + axis];
             }
-            colors.needsUpdate = true;
+            if (runStart >= 0) markColorRange(colors, runStart, segmentCount * 6 - runStart);
             colorVersion = color.version;
         }
-        let visible = 0;
+        let visible = 0, upper = segmentCount;
         const lastSlot = centerGeometry.drawRange.count / 2;
-        while (visible < segmentCount && slots[visible] < lastSlot) visible++;
+        while (visible < upper) {
+            const mid = Math.floor((visible + upper) / 2);
+            if (slots[mid] < lastSlot) visible = mid + 1;
+            else upper = mid;
+        }
         geometry.instanceCount = visible;
     };
     line.onBeforeRender = function (...args) {

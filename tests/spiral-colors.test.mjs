@@ -6,7 +6,8 @@ import { graphLayout } from '../spiral-layout.mjs';
 import { getDatasetDisplay } from '../dataset-display.mjs';
 import { DEFAULT_SINGLE_COLOR, YEAR_COLOR_STOPS, getYearColorFraction,
     ANOMALY_COLOR_STOPS, UNAVAILABLE_ANOMALY_COLOR, createSeasonalColorModel,
-    getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral } from '../spiral-colors.mjs';
+    getSpiralColorDisplay, getYearlyCoverageCaption, sampleColorStops, recolorSpiral,
+    updateSpiralHighlight } from '../spiral-colors.mjs';
 import { readFile } from 'node:fs/promises';
 import { DATASET_CONFIG } from '../datasets.mjs';
 
@@ -14,6 +15,35 @@ const seasonalYears = (start, end) => Array.from({ length: end - start + 1 }, (_
     year: start + index,
     anomalies: Array.from({ length: 12 }, (_, month) => month * 100 + start + index - 1991),
 }));
+
+test('highlight uploads only the old and new tail and does not update a stationary tip', () => {
+    const geometry = new THREE.BufferGeometry();
+    const colors = new THREE.Float32BufferAttribute(new Float32Array(120).fill(0.5), 3);
+    geometry.setAttribute('color', colors);
+    geometry.userData.originalColorArray = colors.array.slice();
+    geometry.userData.lastTailRange = { start: 0, end: -1 };
+    updateSpiralHighlight(geometry, 2, 4, 2);
+    assert.deepEqual(colors.updateRanges, [{ start: 12, count: 18 }]);
+    assert.equal(colors.array[18], 0.515625);
+    assert.equal(colors.array[24], 1);
+    const version = colors.version;
+    updateSpiralHighlight(geometry, 2, 4, 2);
+    assert.equal(colors.version, version);
+    colors.clearUpdateRanges();
+    updateSpiralHighlight(geometry, 2, 5, 2);
+    assert.deepEqual(colors.updateRanges, [{ start: 12, count: 24 }]);
+    colors.clearUpdateRanges();
+    updateSpiralHighlight(geometry, 2, 17, 2);
+    assert.deepEqual(colors.updateRanges, [{ start: 18, count: 18 }, { start: 90, count: 18 }]);
+    colors.clearUpdateRanges();
+    updateSpiralHighlight(geometry, 2, -1, 2);
+    assert.deepEqual(colors.updateRanges, [{ start: 90, count: 18 }]);
+    assert.deepEqual(colors.array, geometry.userData.originalColorArray);
+    const data = Array.from({ length: 19 }, () => ({ color: new THREE.Color(0.5, 0.5, 0.5) }));
+    recolorSpiral(geometry, data, 2, point => point.color.setRGB(0.1, 0.2, 0.3));
+    updateSpiralHighlight(geometry, 2, 4, 2);
+    assert.deepEqual(colors.updateRanges, [{ start: 0, count: 120 }], 'Do not narrow a pending palette upload');
+});
 
 test('seasonal anomalies use observed calendar-month means from a fixed 1991-2020 reference', () => {
     const data = seasonalYears(1991, 2020), before = structuredClone(data);
