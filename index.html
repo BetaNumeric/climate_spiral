@@ -174,6 +174,13 @@
                         </span>
                     </div>
                     <div class="setting-row">
+                        <label for="fitTopViewToggle">Fit Top View</label>
+                        <span class="switch">
+                            <input type="checkbox" id="fitTopViewToggle" checked>
+                            <span class="slider-switch"></span>
+                        </span>
+                    </div>
+                    <div class="setting-row">
                         <label for="freeCameraToggle">Free Camera</label>
                         <span class="switch">
                             <input type="checkbox" id="freeCameraToggle">
@@ -416,7 +423,7 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { createCameraController } from './camera-controller.mjs';
+        import { createCameraController, setOrthographicFrame } from './camera-controller.mjs';
         import { setupKeyboardShortcuts } from './keyboard-shortcuts.mjs';
         import { getCalendarStepIndex, remapTimelinePosition, setupStepButtons } from './timeline-controls.mjs';
         import { createVideoController } from './video-controller.mjs';
@@ -429,7 +436,7 @@
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
         import { createSpiralSvg } from './svg-export.mjs';
         import { calendarYear, layoutEase, graphLayout, unrollPolar, unrollFrame,
-            monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition } from './spiral-layout.mjs';
+            monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition, fitTopHalfHeight } from './spiral-layout.mjs';
         import { VIDEO_EXPORT_FPS } from './video-export.mjs';
         import { DATASET_CONFIG, getDatasetByKey, getDatasetPresentation, parseDatasetData, hasUsableData } from './datasets.mjs';
         import { createDatasetLoader } from './dataset-loader.mjs';
@@ -522,6 +529,7 @@
         let dataStatusTimeout;
         let frameRequest = null;
         let sceneDirty = false;
+        let fitTopView;
         let drawnCamera = null, drawnZoom = 0;
         const drawnPosition = new THREE.Vector3(), drawnRotation = new THREE.Quaternion();
 
@@ -611,6 +619,8 @@
                     layoutMix, animationIndex, isAnimating, totalIndices, currentDatasetKey, startYear, endYear,
                     localSnapshot, localTemperatureMode: getLocalTemperatureMode(), spiralHeight }),
                 getActiveColorDisplay, getFraming: getVideoFraming, finishLayoutTransition,
+                getCurrentFitHalfHeight: (aspect, polar) => fitTopView && getLayoutBend() < 1
+                    ? getOrthographicHalfHeight(aspect, polar, true) : null,
                 cancelLocalLoad: () => localControls.cancel(),
                 setPlaybackPosition, toggleAnimation,
                 setLayoutMix: mix => { layoutMix = mix; applyLayout(false); },
@@ -1023,14 +1033,15 @@
         function getVideoFraming(layouts) {
             let radius = layouts.includes(1) ? monthlyLayout.radius : getYearLabelRadius();
             if (Math.min(...layouts) < Math.max(...layouts)) {
-                // Reserve the entire unfolding envelope once; no frame-to-frame camera refitting.
+                // Reserve the entire unfolding envelope for the base framing.
                 radius = Math.max(getYearLabelRadius(), monthlyLayout.radius);
                 for (let step = 0; step <= 40; step++) {
                     radius = Math.max(radius, unrollFrame(step / 40, monthlyLayout).radius);
                 }
             }
             const framingHeight = layouts.every(layout => layout === 1) ? spiralHeight : getFramingHeight();
-            return { radius, height: framingHeight, scale: CONFIG.sceneScale };
+            return { radius, height: framingHeight, scale: CONFIG.sceneScale,
+                topFitRadius: fitTopView ? getTopFitRadius() : null };
         }
 
         function createYearIndicator() {
@@ -1253,6 +1264,9 @@
             const infoDetailsToggle = document.getElementById('infoDetailsToggle');
             
             const orthoSwitch = document.getElementById('orthoToggle');
+            const fitTopViewSwitch = document.getElementById('fitTopViewToggle');
+            fitTopView = fitTopViewSwitch.checked;
+            fitTopViewSwitch.disabled = !orthoSwitch.checked;
             const helpersSwitch = document.getElementById('helpersToggle'); 
             const interpSwitch = document.getElementById('interpolationToggle');
             const smoothSpiralSwitch = document.getElementById('smoothSpiralToggle');
@@ -1339,7 +1353,15 @@
                 });
             });
 
-            orthoSwitch.addEventListener('change', (e) => switchCamera(e.target.checked));
+            orthoSwitch.addEventListener('change', (e) => {
+                switchCamera(e.target.checked);
+                fitTopViewSwitch.disabled = !e.target.checked;
+            });
+            fitTopViewSwitch.addEventListener('change', event => {
+                fitTopView = event.target.checked;
+                updateOrthographicFrustum();
+                invalidateScene();
+            });
             document.querySelectorAll('input[name="chartLayout"]').forEach(input => {
                 input.addEventListener('change', () => {
                     if (input.checked) setChartLayout(input.value);
@@ -1688,6 +1710,7 @@
                 const dist = perspectiveCamera.position.distanceTo(target);
                 const fov = perspectiveCamera.fov; 
                 const visibleHeight = 2 * dist * Math.tan(THREE.MathUtils.degToRad(fov / 2));
+                updateOrthographicFrustum(fitTopView);
                 const frustumHeight = orthographicCamera.top - orthographicCamera.bottom;
                 orthographicCamera.zoom = frustumHeight / visibleHeight;
                 orthographicCamera.updateProjectionMatrix();
@@ -1704,6 +1727,7 @@
                 perspectiveCamera.position.copy(target).add(direction.multiplyScalar(dist));
                 perspectiveCamera.rotation.copy(orthographicCamera.rotation);
                 activeCamera = perspectiveCamera;
+                updateOrthographicFrustum();
             }
             controls.object = activeCamera;
             controls.target.copy(target); 
@@ -2219,8 +2243,17 @@
             invalidateScene();
         }
 
-        function updateOrthographicFrustum() {
+        function updateOrthographicFrustum(fitTop = fitTopView && activeCamera === orthographicCamera) {
             const aspect = window.innerWidth / window.innerHeight;
+            const halfHeight = getOrthographicHalfHeight(aspect, controls.getPolarAngle(), fitTop);
+            setOrthographicFrame(orthographicCamera, aspect, halfHeight);
+        }
+
+        function getTopFitRadius() {
+            return CONFIG.outerRadius + CONFIG.monthLabelOffset + 2;
+        }
+
+        function getOrthographicHalfHeight(aspect, polar, fitTop) {
             const bend = getLayoutBend();
             const monthRadius = CONFIG.outerRadius + CONFIG.monthLabelOffset;
             // Use the longest supported timeline so changing datasets does not change the zoom.
@@ -2231,13 +2264,8 @@
             // The wrapped spiral's width is independent of the timeline height. Leave room for the year glyphs.
             const spiralWidth = 2 * (getYearLabelRadius() + 2.5);
             const horizontalFrustum = THREE.MathUtils.lerp(spiralWidth, verticalFrustum, bend);
-            const adjustedFrustum = Math.max(verticalFrustum, horizontalFrustum / aspect);
-
-            orthographicCamera.left = -adjustedFrustum * aspect / 2;
-            orthographicCamera.right = adjustedFrustum * aspect / 2;
-            orthographicCamera.top = adjustedFrustum / 2;
-            orthographicCamera.bottom = -adjustedFrustum / 2;
-            orthographicCamera.updateProjectionMatrix();
+            const halfHeight = Math.max(verticalFrustum, horizontalFrustum / aspect) / 2;
+            return fitTop ? fitTopHalfHeight(halfHeight, getTopFitRadius(), aspect, polar, bend) : halfHeight;
         }
         
         function updateSpiralVisuals() {
@@ -2364,6 +2392,9 @@
         }
 
         function drawScene() {
+            if (fitTopView && activeCamera === orthographicCamera && !videoController.isBusy) {
+                updateOrthographicFrustum();
+            }
             // Sync Directional Light with Camera
             if (dirLight && activeCamera) {
                  dirLight.position.copy(activeCamera.position);

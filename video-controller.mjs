@@ -1,6 +1,8 @@
 import { VIDEO_EXPORT_FPS, MAX_VIDEO_PATH_STEPS, DEFAULT_VIDEO_CAMERA_PATH, DEFAULT_VIDEO_MOVE_SECONDS,
     DEFAULT_VIDEO_PAUSE_SECONDS, getVideoDimensions, getVideoFramePlan, getVideoFrameTiming,
     getVideoLayout, getVideoOrbitFrame, getVideoRecorderOptions } from './video-export.mjs';
+import { fitTopHalfHeight } from './spiral-layout.mjs';
+import { setOrthographicFrame } from './camera-controller.mjs';
 
 const VIDEO_VIEW_PRESETS = {
     'spiral-top': { label: 'Spiral · Top', layout: 0, polar: 0, azimuth: 0 },
@@ -12,7 +14,7 @@ const VIDEO_VIEW_PRESETS = {
 };
 
 export function createVideoController({ THREE, renderer, cameraController, fontFamily, getSceneState,
-    getActiveColorDisplay, getFraming, finishLayoutTransition, cancelLocalLoad, setPlaybackPosition,
+    getActiveColorDisplay, getFraming, getCurrentFitHalfHeight, finishLayoutTransition, cancelLocalLoad, setPlaybackPosition,
     toggleAnimation, setLayoutMix, advanceToObservation }) {
     let videoExport = null;
     let videoPreview = null;
@@ -427,12 +429,10 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
             if (activeCamera.isPerspectiveCamera) {
                 activeCamera.zoom *= Math.min(1, aspect / activeCamera.aspect);
                 activeCamera.aspect = aspect;
-            } else {
-                const halfHeight = Math.max(activeCamera.top, activeCamera.right / aspect);
-                activeCamera.left = -halfHeight * aspect;
-                activeCamera.right = halfHeight * aspect;
-                activeCamera.top = halfHeight;
-                activeCamera.bottom = -halfHeight;
+            } else if (session.isCurrentOnly) {
+                const halfHeight = getCurrentFitHalfHeight(aspect, session.views[0].polar)
+                    ?? Math.max(activeCamera.top, activeCamera.right / aspect);
+                setOrthographicFrame(activeCamera, aspect, halfHeight);
             }
             activeCamera.updateProjectionMatrix();
             if (!session.isCurrentOnly) initializeVideoOrbit(session);
@@ -485,20 +485,17 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
     function initializeVideoOrbit(session) {
         const { activeCamera, controls, spiralHeight } = getSceneState();
         const aspect = session.layout.scene.width / session.layout.scene.height;
-        const { radius, height: framingHeight, scale } = getFraming(session.views.map(view => view.layout));
+        const { radius, height: framingHeight, scale, topFitRadius } = getFraming(session.views.map(view => view.layout));
         const { visibleHalfHeight, distance, far } = getVideoOrbitFrame(
             radius, framingHeight / 2,
             aspect, activeCamera.isPerspectiveCamera ? activeCamera.fov : null,
             scale
         );
-        // Frame once, then orbit with the same fixed target, distance and projection as a viewport drag.
-        session.orbitDistance = distance;
+        session.orbit = { distance, aspect, visibleHalfHeight,
+            topFitRadius: activeCamera.isOrthographicCamera ? topFitRadius : null };
         activeCamera.zoom = 1;
         if (activeCamera.isOrthographicCamera) {
-            activeCamera.left = -visibleHalfHeight * aspect;
-            activeCamera.right = visibleHalfHeight * aspect;
-            activeCamera.top = visibleHalfHeight;
-            activeCamera.bottom = -visibleHalfHeight;
+            setOrthographicFrame(activeCamera, aspect, visibleHalfHeight);
         }
         activeCamera.far = Math.max(session.savedCamera.far, far);
         controls.target.set(0, spiralHeight / 2, 0);
@@ -518,7 +515,10 @@ export function createVideoController({ THREE, renderer, cameraController, fontF
         const polar = Math.max(0.000001, THREE.MathUtils.lerp(from.polar, to.polar, turn));
         const delta = Math.atan2(Math.sin(to.azimuth - from.azimuth), Math.cos(to.azimuth - from.azimuth));
         const azimuth = from.azimuth + delta * turn;
-        const distance = session.orbitDistance;
+        const { distance, aspect, visibleHalfHeight, topFitRadius } = session.orbit;
+        if (topFitRadius !== null) {
+            setOrthographicFrame(activeCamera, aspect, fitTopHalfHeight(visibleHalfHeight, topFitRadius, aspect, polar, mix));
+        }
         activeCamera.position.set(
             controls.target.x + distance * Math.sin(polar) * Math.sin(azimuth),
             controls.target.y + distance * Math.cos(polar),

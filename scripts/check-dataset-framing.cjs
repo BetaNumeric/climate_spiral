@@ -53,7 +53,17 @@ window.framingTest = {
         top = Math.max(top, y);
       }
     }
-    return { left, right, bottom, top, width, height };
+    return { left, right, bottom, top, width, height, cameraTop: orthographicCamera.top };
+  },
+  tiltFrames() {
+    this.topView();
+    return Array.from({ length: 17 }, (_, step) => {
+      const polar = step * Math.PI / 32;
+      activeCamera.position.setFromSphericalCoords(120, polar, 0).add(controls.target);
+      controls.update();
+      updateOrthographicFrustum();
+      return orthographicCamera.top;
+    });
   },
   graphState() {
     renderer.render(scene, activeCamera);
@@ -113,6 +123,47 @@ window.framingTest = {
 };
 `;
 
+async function checkTopFit(page, name) {
+  const frameSizes = () => page.evaluate(() => framingTest.tiltFrames());
+  const toggle = page.locator('#fitTopViewToggle');
+  assert.equal(await toggle.isChecked(), true, name + ': fit should be on by default');
+  const fitted = await frameSizes();
+  await toggle.evaluate(input => input.click());
+  const base = await frameSizes();
+  assert.ok(base.every(size => size === base[0]), name + ': disabling fit should fix the zoom');
+  await toggle.evaluate(input => input.click());
+  assert.ok(fitted[0] < base[0] && fitted.at(-1) === base.at(-1), name + ': top fit should retain side framing');
+  assert.ok(fitted.every((size, i) => i === 0 || size > fitted[i - 1]), name + ': zoom reverses during the tilt');
+  assert.ok(fitted[1] - fitted[0] < fitted[8] - fitted[7]
+    && fitted.at(-1) - fitted.at(-2) < fitted[8] - fitted[7], name + ': zoom should ease into both endpoints');
+
+  for (const view of ['top', 'front']) {
+    const { left, right, bottom, top, width, height, cameraTop } = await page.evaluate(view => framingTest.wrappedBounds(view), view);
+    assert.ok(Math.abs(cameraTop - fitted[view === 'top' ? 0 : fitted.length - 1]) < 1e-8,
+      name + ' ' + view + ': rendered framing does not follow the tilt');
+    assert.ok(left >= 2 && right < width - 2 && bottom >= 2 && top < height - 2 && right > left,
+      name + ' fitted ' + view + ': canvas is blank or clipped');
+    await page.screenshot({ path: join(output, name + '-fit-' + view + '.png') });
+  }
+
+  const setSpacing = value => page.locator('#spacingSlider').evaluate((input, value) => {
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }, value);
+  await setSpacing('0.8');
+  const taller = await frameSizes();
+  assert.ok(Math.abs(taller[0] - fitted[0]) < 1e-8 && taller.at(-1) > fitted.at(-1),
+    name + ': a taller spiral should only affect side framing');
+  await setSpacing('0.24');
+
+  await page.evaluate(() => framingTest.graphView());
+  const fittedGraph = (await page.evaluate(() => framingTest.state())).cameraTop;
+  await toggle.evaluate(input => input.click());
+  assert.equal((await page.evaluate(() => framingTest.state())).cameraTop, fittedGraph, name + ': unwrapped framing changed');
+  assert.deepEqual(await frameSizes(), base, name + ': turning off fit should restore the original framing');
+  await toggle.evaluate(input => input.click());
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true,
     args: ['--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader'] });
@@ -128,6 +179,12 @@ window.framingTest = {
       page.on('pageerror', error => errors.push(error.message));
       page.on('request', request => {
         if (/oras5|giomas/i.test(request.url())) archivedRequests.push(request.url());
+      });
+      const threePrefix = '/npm/three@0.160.0/';
+      await page.route('https://cdn.jsdelivr.net' + threePrefix + '**', route => {
+        const modulePath = new URL(route.request().url()).pathname.slice(threePrefix.length);
+        return route.fulfill({ path: join(__dirname, '..', 'node_modules', 'three', modulePath),
+          contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } });
       });
       await page.route('**/index.html', async route => {
         const response = await route.fetch();
@@ -163,6 +220,7 @@ window.framingTest = {
               name + ' ' + view + ': spiral and labels leave too much space');
             if (view === 'front') await page.screenshot({ path: join(output, name + '-temperature-front.png') });
           }
+          await checkTopFit(page, name);
           await page.evaluate(() => framingTest.topView());
         }
         if (volumeDatasets.has(dataset)) {

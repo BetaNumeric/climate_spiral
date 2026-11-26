@@ -2,6 +2,14 @@ export function calendarYear(decimalYear) {
   return Math.floor(decimalYear + 1e-7);
 }
 
+export function fitTopHalfHeight(baseHalfHeight, topRadius, aspect, polar, layout) {
+  const topHalfHeight = topRadius / Math.min(1, aspect);
+  // Blend endpoint sizes by tilt, not by the changing diagonal silhouette.
+  const t = Math.max(0, Math.min(1, polar / (Math.PI / 2)));
+  const topWeight = (1 - t * t * (3 - 2 * t)) * (1 - layout);
+  return baseHalfHeight + (topHalfHeight - baseHalfHeight) * topWeight;
+}
+
 export function isConnectedDataSegment(a, b, splitYears = false) {
   return !a.missing && !b.missing && b.decimalYear - a.decimalYear <= 1 / 12 + 1e-6
     && (!splitYears || a.stripYear === b.stripYear);

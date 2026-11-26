@@ -1,7 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calendarYear, yearlySegments, monthlyGraphSamples, layoutEase, graphLayout, unrollPolar, unrollFrame,
-  monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition, isConnectedDataSegment } from '../spiral-layout.mjs';
+  monthLabelOpacity, graphYearLabelOffset, verticalGuidePosition, isConnectedDataSegment, fitTopHalfHeight } from '../spiral-layout.mjs';
+
+test('top fit uses the short edge, blends to side framing and fades out while unwrapping', () => {
+  for (const aspect of [16 / 9, 1, 9 / 16]) {
+    const top = 23.5 / Math.min(1, aspect);
+    for (const base of [top * 0.9, top * 1.2]) {
+      assert.equal(fitTopHalfHeight(base, 23.5, aspect, 0, 0), top);
+      assert.equal(fitTopHalfHeight(base, 23.5, aspect, Math.PI / 2, 0), base);
+      assert.equal(fitTopHalfHeight(base, 23.5, aspect, 0, 1), base);
+      assert.equal(fitTopHalfHeight(base, 23.5, aspect, 0, 0.5), (top + base) / 2);
+    }
+  }
+});
 
 test('tubes and thin lines retain missing months and split only the graph year boundary', () => {
   const december = { decimalYear: 2000 + 11 / 12, stripYear: 2000 };

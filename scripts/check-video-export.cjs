@@ -122,7 +122,8 @@ async function checkSeeking(page) {
           stops: () => timelineStops.length,
           setExportPaused: value => videoController.setPaused(value),
           orbit: () => ({ distance: activeCamera.position.distanceTo(controls.target),
-            projection: activeCamera.projectionMatrix.toArray(), target: controls.target.toArray(), zoom: activeCamera.zoom }),
+            projection: activeCamera.projectionMatrix.toArray(), target: controls.target.toArray(), zoom: activeCamera.zoom,
+            halfHeight: activeCamera.top, topFitRadius: getTopFitRadius() }),
           ready: () => Boolean(spiralMesh && totalIndices)
         };
         // --- Configuration ---`) });
@@ -180,10 +181,12 @@ async function checkSeeking(page) {
     assert.ok(landscapeLayout.legend.x >= landscapeLayout.scene.x + landscapeLayout.scene.width);
     assert.ok((await page.evaluate(() => window.exportTest.phase())).polar < 0.001);
     const orbit = await page.evaluate(() => window.exportTest.orbit());
+    const landscapeAspect = landscapeLayout.scene.width / landscapeLayout.scene.height;
+    assert.ok(Math.abs(orbit.halfHeight - orbit.topFitRadius / Math.min(1, landscapeAspect)) < 1e-8);
     await page.waitForFunction(() => window.exportTest.phase().polar > 0.3);
     const turned = await page.evaluate(() => window.exportTest.orbit());
     assert.ok(Math.abs(turned.distance - orbit.distance) < 1e-8);
-    assert.deepEqual(turned.projection, orbit.projection);
+    assert.ok(turned.halfHeight > orbit.halfHeight, 'Orthographic video should ease out to its side framing');
     assert.deepEqual(turned.target, orbit.target);
     assert.equal(turned.zoom, orbit.zoom);
     assert.equal((await page.evaluate(() => window.exportTest.phase())).progress, 1);
@@ -273,6 +276,10 @@ async function checkSeeking(page) {
     await page.click('#videoExportBtn');
     await page.waitForFunction(() => window.exportTest.phase().recording);
     const portraitLayout = (await page.evaluate(() => window.exportTest.exportState())).layout;
+    const portraitOrbit = await page.evaluate(() => window.exportTest.orbit());
+    assert.ok(Math.abs(portraitOrbit.halfHeight * portraitLayout.scene.width / portraitLayout.scene.height
+      - portraitOrbit.topFitRadius) < 1e-8, 'Current view should fit to the portrait scene width');
+    assert.equal(portraitOrbit.zoom, before.zoom);
     assert.equal(portraitLayout.placement, 'below');
     assert.ok(portraitLayout.legend.y >= portraitLayout.scene.y + portraitLayout.scene.height);
     await page.waitForFunction(() => document.querySelector('#videoExportStatus').textContent === 'Download started.');

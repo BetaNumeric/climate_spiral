@@ -18,6 +18,16 @@ const CAMERA_VIEWS = {
 };
 const SIDE_VIEWS = ['front', 'right', 'back', 'left'];
 
+export function setOrthographicFrame(camera, aspect, halfHeight) {
+    const halfWidth = halfHeight * aspect;
+    if (camera.top === halfHeight && camera.right === halfWidth) return;
+    camera.left = -halfWidth;
+    camera.right = halfWidth;
+    camera.top = halfHeight;
+    camera.bottom = -halfHeight;
+    camera.updateProjectionMatrix();
+}
+
 export function createCameraController({ THREE, OrbitControls, canvas, getSceneState, isBusy, defaultDistance,
     onLayoutGesture = () => {}, onViewChange = () => {} }) {
     const DEFAULT_ORTHOGRAPHIC_DISTANCE = defaultDistance;

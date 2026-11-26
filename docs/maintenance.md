@@ -40,6 +40,8 @@ For browser export checks, install dependencies with `npm ci`, install Chrome fo
 
 The shared `CONFIG.sceneScale` setting in [`index.html`](../index.html) controls the default framing in the viewer and video exports. Its default is `1.28`; larger values make the visualization larger within the frame. In narrow viewports, the wrapped view also keeps enough width for the spiral and its year labels, independent of the timeline height.
 
+**Fit Top View** is on by default and fits the orthographic spiral and month labels independently of the year stack. It blends that framing into the standard side-view framing based on camera tilt, and fades out when unwrapping. The viewer and video exports use the same blend, with videos fitting to the scene area left by the legend. Current-view exports preserve manual zoom.
+
 `node scripts/check-setting-state.cjs` checks the appearance settings with a small sparse-history fixture on desktop and mobile. It verifies line position/color buffers before the first render, visible geometry, and retained layout, palette, playback state, and month. Interpolation changes retain the calendar date rather than a geometry index; removing an interpolated month selects the nearest available month without pausing playback.
 
 ## Data Updates
